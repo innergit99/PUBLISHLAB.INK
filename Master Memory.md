@@ -1,6 +1,6 @@
 # ARTISAN AI - Master Memory
 
-> **Last Update**: 2026-02-02 19:12
+> **Last Update**: 2026-02-03 22:22
 > **Current Status**: 🟢 STABLE (Free Tier Mode Active)
 
 ## Project Overview
@@ -27,6 +27,8 @@
 7.  **[CONTEXT] Skill Catalog**: Verified `MASTER_SKILL_CATALOG.md` lists 120+ skills, including "Token Economist" which manages the Snowbunny/Llama switch.
 8.  **[CONTEXT] Global Rules**: Successfully read `GEMINI.md` via terminal bypass. Confirmed "STRICT MODEL SWAP PROTOCOL" requires reading `GEMINI.md` at session start. Note: The file appears to have encoding/corruption issues but core text is readable.
 9.  **[RULE] Project Context**: Created `.agent/rules/project_context.md` (Always On) to enforce the "Strict Model Swap Protocol", linking to the Global `GEMINI.md` and local `Master Memory.md`.
+10. **[UI/UX] Landing Page "Operations Mode" Fix**: Resolved non-functional buttons on the Hero section. Implemented dynamic briefing panels and persona-specific CTAs.
+11. **[LEGAL] Nominal Fair Use Refactor**: Conducted a legal audit of brand usage. Replaced "Trusted by" with "Engineered for global ecosystem integration" and switched to functional descriptions (e.g., "DEPLOY TO AMAZON KDP") to mitigate trademark risks. Added a mandatory disclaimer in the footer.
 
 ## Critical Context
 -   **AI Economy**: The system behaves DIFFERENTLY in "Free Mode". Generative text (blurbs, stories) may be slower (HuggingFace) or static (Fallback). This is intentional to prevent cost.

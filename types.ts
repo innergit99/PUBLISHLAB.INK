@@ -116,6 +116,28 @@ export interface KDPChapter {
 export type KDPFormat = 'STANDALONE' | 'EPISODE' | 'SERIES';
 export type KDPTarget = 'PRINT' | 'EBOOK' | 'COVER' | 'COVER_EBOOK' | 'APLUS';
 
+
+
+export interface CharacterProfile {
+  id: string;
+  name: string;
+  role: 'PROTAGONIST' | 'ANTAGONIST' | 'SUPPORTING' | 'MENTOR';
+  physicalDNA: {
+    age?: string;
+    build?: string;
+    hair?: string;
+    eyes?: string;
+    clothingStyle?: string;
+    distinguishingMarks?: string[];
+  };
+  personality: {
+    traits: string[];
+    motivation: string;
+    flaw: string;
+  };
+  visualMasterPrompt: string; // The "Golden Prompt" for top-tier consistency
+}
+
 export interface KDPBlueprint {
   PROJECT_META: {
     title_working: string;
@@ -164,7 +186,7 @@ export interface KDPBlueprint {
 
   // Advanced Skills Data (Optional)
   SKILLS_DATA?: {
-    characterProfiles?: any[];
+    characterProfiles?: CharacterProfile[];
     continuityIssues?: any[];
     marketingCopy?: any;
     seriesBible?: any;

@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import { ToolType, GeneratedImage, PODStyle, MockupType, SEOMetadata, KDPGenrePreset, KDPProject, KDPBlueprint, KDPFormat, KDPTarget, TrendingNiche, BrandDNAReport, NicheRadarReport, KDPSeoDossier, ProductionDossier } from '../types';
+import { ToolType, GeneratedImage, PODStyle, MockupType, SEOMetadata, KDPGenrePreset, KDPProject, KDPBlueprint, KDPFormat, KDPTarget, TrendingNiche, BrandDNAReport, NicheRadarReport, KDPSeoDossier, ProductionDossier, CharacterProfile } from '../types';
 
 
 import { TOOLS, POD_STYLES, KDP_GENRES, KDP_TRIM_SIZES, KDP_TONES } from '../constants';
@@ -550,67 +549,56 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   }, [initialPrompt, toolType]);
 
 
-  // Auto-save logic - OPTIMIZED to prevent quota exceeded
+  // Auto-save logic - CLOUD SYNCED (PHASE 5)
   useEffect(() => {
-    if (kdpBlueprint) {
-      try {
-        // Create lightweight version without images and full content
-        // Create lightweight version without large images but KEEPING full content
-        const lightweightBlueprint = {
-          ...kdpBlueprint,
-          // VISUAL_COVER_DECK removed as it is not part of KDPBlueprint type
-          INTERIOR_CONTENT: kdpBlueprint.INTERIOR_CONTENT?.map(ch => ({
-            ...ch,
-            // KEEP the content! Storing text is cheap compared to images.
-            content: ch.content,
-            // Only strip base64 image data
-            generatedImageUrl: ch.generatedImageUrl?.startsWith('data:') ? undefined : ch.generatedImageUrl
-          })),
-          COVER_SPEC: {
-            ...kdpBlueprint.COVER_SPEC,
-            full_wrap_url: undefined, // Never save heavy base64 to LS
-            ebook_url: undefined,
-            back_cover_url: undefined
-          }
-        };
-
-        localStorage.setItem('kdp_blueprint_autosave', JSON.stringify(lightweightBlueprint));
-        localStorage.setItem('kdp_project_autosave', JSON.stringify(kdpProject));
-        localStorage.setItem('kdp_genre_autosave', JSON.stringify(selectedGenre));
-      } catch (e) {
-        // If still too large, clear old saves
-        console.warn('Auto-save failed, clearing old data:', e);
+    if (kdpBlueprint && kdpProject && !isGenerating && !isDoctoring) {
+      const saveToCloud = async () => {
         try {
-          localStorage.removeItem('kdp_blueprint_autosave');
-          localStorage.removeItem('kdp_project_autosave');
-        } catch (clearError) {
-          console.error('Could not clear localStorage:', clearError);
+          const projectId = kdpBlueprint.id || `kdp-${Date.now()}`;
+          await storage.saveProject(
+            projectId,
+            toolType,
+            kdpProject,
+            kdpBlueprint
+          );
+        } catch (e) {
+          console.warn('Auto-sync to cloud failed:', e);
         }
-      }
+      };
+
+      // Debounce saving to avoid spamming Supabase
+      const timer = setTimeout(saveToCloud, 2000);
+      return () => clearTimeout(timer);
     }
-  }, [kdpBlueprint, kdpProject, selectedGenre]);
+  }, [kdpBlueprint, kdpProject, toolType, isGenerating, isDoctoring]);
 
   // Load saved project on mount (KDP Book Lab only)
   useEffect(() => {
     if (toolType === ToolType.COLORING_PAGES) {
-      try {
-        const savedBlueprint = localStorage.getItem('kdp_blueprint_autosave');
-        const savedProject = localStorage.getItem('kdp_project_autosave');
-        const savedGenre = localStorage.getItem('kdp_genre_autosave');
-        const savedWordTarget = localStorage.getItem('kdp_word_target');
+      const loadSaved = async () => {
+        try {
+          // 1. Try cloud first
+          const saved = await storage.getLatestProject(toolType);
+          if (saved) {
+            setKdpBlueprint(saved.blueprint);
+            setKdpProject(saved.project);
+            setKdpStep('BLUEPRINT');
+            return;
+          }
 
-        if (savedBlueprint && savedProject && savedGenre) {
-          setKdpBlueprint(JSON.parse(savedBlueprint));
-          setKdpProject(JSON.parse(savedProject));
-          setSelectedGenre(JSON.parse(savedGenre));
-          setKdpStep('BLUEPRINT');
+          // 2. Fallback to LocalStorage (Legacy)
+          const savedBlueprint = localStorage.getItem('kdp_blueprint_autosave');
+          const savedProject = localStorage.getItem('kdp_project_autosave');
+          if (savedBlueprint && savedProject) {
+            setKdpBlueprint(JSON.parse(savedBlueprint));
+            setKdpProject(JSON.parse(savedProject));
+            setKdpStep('BLUEPRINT');
+          }
+        } catch (e) {
+          console.warn('Failed to load saved project:', e);
         }
-        if (savedWordTarget) {
-          setKdpWordTarget(Number(savedWordTarget));
-        }
-      } catch (e) {
-        console.warn('Failed to load saved project:', e);
-      }
+      };
+      loadSaved();
     }
   }, [toolType]);
 

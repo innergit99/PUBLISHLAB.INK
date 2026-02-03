@@ -21,7 +21,7 @@ export default function LandingPage({
     onViewPricing?: () => void
 }) {
     const [legalModal, setLegalModal] = useState<'terms' | 'privacy' | null>(null);
-    const [activePersona, setActivePersona] = useState<'writer' | 'designer'>('writer');
+    const [selectedMode, setSelectedMode] = useState<'SELF-PUBLISHER' | 'POD SELLER' | 'STUDIO / AGENCY'>('SELF-PUBLISHER');
     const [isVideoPlaying, setIsVideoPlaying] = useState(false);
     const [activeFeature, setActiveFeature] = useState(0);
 
@@ -36,13 +36,27 @@ export default function LandingPage({
     const artisanCost = roiBooks * 15;
     const yearlySavings = oldStackCost - artisanCost;
 
-    // Auto-switch persona for demo effect
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setActivePersona(prev => prev === 'writer' ? 'designer' : 'writer');
-        }, 8000);
-        return () => clearInterval(interval);
-    }, []);
+    // Mode-specific briefing data
+    const MODE_BRIEFING = {
+        'SELF-PUBLISHER': {
+            icon: <BookOpen size={16} />,
+            text: "Optimizing for KDP Velocity. Automated manuscripts, bleed-safe covers, and keyword-rich metadata.",
+            cta: "Launch Manuscript Engine",
+            color: "indigo"
+        },
+        'POD SELLER': {
+            icon: <Shirt size={16} />,
+            text: "Scaling Merchandise Factory. Procedural designs for Etsy/Shopify. Automated background removal.",
+            cta: "Launch Merch Foundry",
+            color: "emerald"
+        },
+        'STUDIO / AGENCY': {
+            icon: <Globe size={16} />,
+            text: "Enterprise Infrastructure. Multi-project management, deep market intelligence, and ROI metrics.",
+            cta: "View Enterprise Stack",
+            color: "purple"
+        }
+    };
 
     const handleGenesisSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -126,16 +140,43 @@ export default function LandingPage({
                         {/* Persona Selector */}
                         <div className="pt-8 border-t border-white/5">
                             <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-4">Select Operations Mode:</p>
-                            <div className="flex flex-wrap gap-2">
-                                {['Self-Publisher', 'POD Seller', 'Studio / Agency'].map((persona) => (
+                            <div className="flex flex-wrap gap-2 mb-6">
+                                {(['SELF-PUBLISHER', 'POD SELLER', 'STUDIO / AGENCY'] as const).map((mode) => (
                                     <button
-                                        key={persona}
-                                        className="px-4 py-2 bg-[#111] border border-white/10 rounded hover:border-indigo-500/50 hover:text-indigo-400 text-xs font-mono text-gray-400 transition-colors uppercase"
+                                        key={mode}
+                                        onClick={() => setSelectedMode(mode)}
+                                        className={`px-4 py-2 border rounded text-xs font-mono transition-all uppercase ${selectedMode === mode
+                                            ? 'bg-indigo-600/20 border-indigo-500 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.3)]'
+                                            : 'bg-[#111] border-white/10 text-gray-400 hover:border-white/20'
+                                            }`}
                                     >
-                                        [{persona}]
+                                        [{mode}]
                                     </button>
                                 ))}
                             </div>
+
+                            {/* Dynamic Mode Briefing */}
+                            <motion.div
+                                key={selectedMode}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="p-4 rounded-lg bg-[#0A0A0A] border border-white/5 flex items-start gap-4 max-w-md group hover:border-indigo-500/20 transition-colors"
+                            >
+                                <div className={`p-2 rounded bg-${MODE_BRIEFING[selectedMode].color}-500/10 text-${MODE_BRIEFING[selectedMode].color}-400`}>
+                                    {MODE_BRIEFING[selectedMode].icon}
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-300 leading-relaxed mb-2">
+                                        {MODE_BRIEFING[selectedMode].text}
+                                    </p>
+                                    <button
+                                        onClick={() => onLaunchApp()}
+                                        className={`text-[10px] font-black uppercase tracking-widest text-indigo-400 flex items-center gap-2 group-hover:gap-3 transition-all`}
+                                    >
+                                        {MODE_BRIEFING[selectedMode].cta} <ChevronRight size={10} />
+                                    </button>
+                                </div>
+                            </motion.div>
                         </div>
                     </div>
 
@@ -179,15 +220,15 @@ export default function LandingPage({
             {/* TRUST / SOCIAL PROOF */}
             <section className="py-12 border-y border-white/5 bg-black/40 backdrop-blur-sm">
                 <div className="max-w-7xl mx-auto px-6 text-center">
-                    <p className="text-sm text-gray-500 font-medium mb-8">
-                        Trusted by serious independent publishers, POD operators, and studios worldwide.
+                    <p className="text-sm text-gray-400 font-bold mb-8 uppercase tracking-[0.2em]">
+                        Engineered for global ecosystem integration.
                     </p>
                     <div className="flex flex-wrap justify-center gap-12 md:gap-24 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
                         {/* Replaced generic avatars with enterprise logos concept */}
-                        <div className="flex items-center gap-3"><Box size={24} /> <span className="font-black text-xl tracking-tight">AMAZON KDP</span></div>
-                        <div className="flex items-center gap-3"><Globe size={24} /> <span className="font-black text-xl tracking-tight">SHOPIFY</span></div>
-                        <div className="flex items-center gap-3"><BookOpen size={24} /> <span className="font-black text-xl tracking-tight">INGRAM</span></div>
-                        <div className="flex items-center gap-3"><Palette size={24} /> <span className="font-black text-xl tracking-tight">ETSY</span></div>
+                        <div className="flex items-center gap-3"><Box size={24} /> <span className="font-black text-xl tracking-tight">DEPLOY TO AMAZON KDP</span></div>
+                        <div className="flex items-center gap-3"><Globe size={24} /> <span className="font-black text-xl tracking-tight">SYNC WITH SHOPIFY</span></div>
+                        <div className="flex items-center gap-3"><BookOpen size={24} /> <span className="font-black text-xl tracking-tight">FORMAT FOR INGRAM</span></div>
+                        <div className="flex items-center gap-3"><Palette size={24} /> <span className="font-black text-xl tracking-tight">EXPORT TO ETSY</span></div>
                     </div>
                 </div>
             </section>
@@ -422,6 +463,13 @@ export default function LandingPage({
                         <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                         <span className="text-xs font-mono text-green-500">SYSTEM ONLINE: v2.4.0 (Stable)</span>
                     </div>
+
+                    {/* LEGAL DISCLAIMER - NOMINAL FAIR USE */}
+                    <p className="text-[10px] text-gray-500 max-w-2xl leading-relaxed opacity-60">
+                        Artisan AI is an independent software provider. We are not affiliated with, endorsed by, or sponsored by Amazon, Shopify, Ingram, or Etsy.
+                        All brand names and trademarks are the property of their respective owners and are used here for descriptive compatibility purposes only according to nominal fair use principles.
+                    </p>
+
                     <div className="flex gap-6 text-xs uppercase tracking-wider">
                         <button onClick={() => setLegalModal('terms')} className="hover:text-white transition-colors">Terms</button>
                         <button onClick={() => setLegalModal('privacy')} className="hover:text-white transition-colors">Privacy</button>

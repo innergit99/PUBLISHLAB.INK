@@ -157,9 +157,111 @@ export class StorageService {
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });
+  }
 
-    // We typically DON'T clear cloud DB on "Clear History", but if requested:
-    // await supabase.from('creations').delete().eq('user_id', user.id); 
+  // --- PROJECT SPECIFIC SYNC (PHASE 5) ---
+
+  /**
+   * Saves a full project state (Blueprint + Project Config) to the cloud
+   * Decoupled from "Image Generation" to allow early draft persistence
+   */
+  async saveProject(id: string, tool: string, project: any, blueprint: any): Promise<void> {
+    // 1. Save Locally
+    if (!this.db) await this.init();
+    const projectRecord = {
+      id,
+      tool,
+      timestamp: Date.now(),
+      kdpProject: project,
+      kdpBlueprint: blueprint,
+      type: 'PROJECT'
+    };
+
+    await new Promise<void>((resolve, reject) => {
+      const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.put(projectRecord);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+
+    // 2. Sync to Cloud
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        const shapeForDb = {
+          id: id,
+          user_id: user.id,
+          image_url: 'PROJECT_STATE',
+          prompt: `Project: ${project.title || 'Untitled'}`,
+          tool_used: tool,
+          created_at: new Date().toISOString(),
+          metadata: {
+            kdpProject: project,
+            kdpBlueprint: blueprint,
+            isProjectState: true
+          }
+        };
+
+        const { error } = await supabase
+          .from('creations')
+          .upsert(shapeForDb);
+
+        if (error) console.error('Cloud Project Sync Error:', error.message);
+      }
+    } catch (e) {
+      console.warn('Project Sync failed (Offline?)');
+    }
+  }
+
+  /**
+   * Fetches the most recent project state for a specific tool
+   */
+  async getLatestProject(tool: string): Promise<{ project: any, blueprint: any } | null> {
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('creations')
+          .select('metadata')
+          .eq('user_id', user.id)
+          .eq('tool_used', tool)
+          .eq('metadata->isProjectState', true)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (data && data.length > 0 && !error) {
+          return {
+            project: data[0].metadata.kdpProject,
+            blueprint: data[0].metadata.kdpBlueprint
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('Cloud fetch for project failed');
+    }
+
+    // Local fallback
+    if (!this.db) await this.init();
+    return new Promise((resolve) => {
+      const transaction = this.db!.transaction([STORE_NAME], 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.getAll();
+
+      request.onsuccess = () => {
+        const records = request.result as any[];
+        const latest = records
+          .filter(r => r.tool === tool && r.type === 'PROJECT')
+          .sort((a, b) => b.timestamp - a.timestamp)[0];
+
+        if (latest) {
+          resolve({ project: latest.kdpProject, blueprint: latest.kdpBlueprint });
+        } else {
+          resolve(null);
+        }
+      };
+      request.onerror = () => resolve(null);
+    });
   }
 }
 

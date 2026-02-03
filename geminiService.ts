@@ -1,7 +1,7 @@
 
 
 import { Type } from "@google/genai"; // Keep types for compatibility if needed
-import { SEOMetadata, ToolType, TrendingNiche, KDPProject, KDPBlueprint, BrandDNAReport, NicheRadarReport, KDPSeoDossier, ProductionDossier, ListingDossier, AestheticContinuityReport, KDPAplusModule } from "./types";
+import { SEOMetadata, ToolType, TrendingNiche, KDPProject, KDPBlueprint, BrandDNAReport, NicheRadarReport, KDPSeoDossier, ProductionDossier, ListingDossier, AestheticContinuityReport, KDPAplusModule, CharacterProfile } from "./types";
 import { hfBackend } from "./hfBackendService";
 import { structureService } from "./structureService";
 import { coverGenerator } from "./coverGenerator";
@@ -1430,10 +1430,122 @@ HUMAN PROTOCOL: Use interiority, fragmented rhythm, and human subtext. Ban AI-st
 
       console.log(`✅ [Humanity Pro] Audit complete. Efficiency: ${auditMetrics.efficiency}%`);
       return { content: finalContent, audit: auditMetrics };
-    } catch {
-      console.log(`⚠️ [Humanity Pro] Audit timed out. Using Pass 1 output.`);
+    } catch (e) {
+      console.log(`⚠️ [Humanity Pro] Audit timed out or failed. Using Pass 1 output.`);
       return { content: cleanedContent, audit: auditMetrics };
     }
+  }
+
+  // --- CONSISTENT CHARACTER ENGINE (PHASE 5) ---
+
+  /**
+   * EXTRACT CHARACTER BIBLE
+   * Parses the established manuscript/blueprint to find and define characters.
+   */
+  async extractCharacterBible(blueprint: KDPBlueprint): Promise<CharacterProfile[]> {
+    const textContext = blueprint.INTERIOR_CONTENT
+      .slice(0, 3) // First 3 chapters are usually enough for intro
+      .map(ch => ch.summary + "\n" + ch.content.substring(0, 500))
+      .join("\n\n");
+
+    const prompt = `As "CHARACTER ARCHITECT", analyze this story context and define the core characters.
+    CONTEXT:
+    ${textContext}
+
+    For each character found, provide:
+    1. Name
+    2. Role (PROTAGONIST, ANTAGONIST, SUPPORTING, MENTOR)
+    3. Physical traits (be VERY specific: hair color, eye color, build, specific clothing style)
+    4. Personality traits, motivation, and core flaw.
+
+    Return ONLY a JSON array matching the CharacterProfile[] schema.
+    Ensure physical descriptions are "Midjourney/Stable Diffusion" ready.`;
+
+    try {
+      const res = await this.queryAI(prompt, true);
+      const cleaned = this.cleanAndRepairJSON(res);
+      const profiles = JSON.parse(cleaned);
+
+      if (Array.isArray(profiles)) {
+        // Post-process to add IDs and Generate Visual Masters
+        const processed = await Promise.all(profiles.map(async (p: any) => {
+          const profile: CharacterProfile = {
+            ...p,
+            id: p.id || `char_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+            visualMasterPrompt: p.visualMasterPrompt || await this.generateCharacterVisualMaster(p)
+          };
+          return profile;
+        }));
+        return processed;
+      }
+      return [];
+    } catch (e) {
+      console.warn("Character Extraction failed:", e);
+      return [];
+    }
+  }
+
+  /**
+   * GENERATE CHARACTER VISUAL MASTER
+   * Creates a high-fidelity "Golden Prompt" that locks the character's appearance.
+   */
+  async generateCharacterVisualMaster(profile: CharacterProfile): Promise<string> {
+    const dna = profile.physicalDNA;
+    const traits = [
+      dna.age ? `${dna.age} old` : '',
+      dna.build || '',
+      dna.hair ? `${dna.hair} hair` : '',
+      dna.eyes ? `${dna.eyes} eyes` : '',
+      dna.clothingStyle || '',
+      ...(dna.distinguishingMarks || [])
+    ].filter(Boolean).join(", ");
+
+    const prompt = `Convert this character description into a professional, highly detailed character design prompt.
+    CHARACTER: ${profile.name}
+    TRAITS: ${dna.age}, ${dna.build}, ${dna.hair}, ${dna.eyes}, ${dna.clothingStyle}
+    PERSONALITY: ${profile.personality.traits.join(', ')}
+
+    Return a 1-sentence prompt focusing on visual markers that ensure consistency. Use terminology like "high-fidelity", "specific facial structure", and "unique attire". 
+    DO NOT include the name. Focus on the LOOK.`;
+
+    try {
+      const visualDna = await this.queryAI(prompt);
+      return `Photorealistic character portrait of ${visualDna.trim()}, consistent lighting, highly detailed features, cinematic 8k.`;
+    } catch {
+      return `Character portrait, ${traits}, high quality, consistent features.`;
+    }
+  }
+
+  /**
+   * SYNC AESTHETIC CONTINUITY
+   * Ensures all image prompts in a blueprint respect the character bibles.
+   */
+  async syncAestheticContinuity(blueprint: KDPBlueprint): Promise<KDPBlueprint> {
+    if (!blueprint.SKILLS_DATA?.characterProfiles || blueprint.SKILLS_DATA.characterProfiles.length === 0) {
+      return blueprint;
+    }
+
+    const characters = blueprint.SKILLS_DATA.characterProfiles;
+    const hero = characters.find(c => c.role === 'PROTAGONIST') || characters[0];
+
+    const updatedChapters = blueprint.INTERIOR_CONTENT.map(ch => {
+      // If the summary mentions a character, inject their DNA into the prompt
+      let updatedPrompt = ch.visualPrompt;
+      characters.forEach(char => {
+        if (ch.summary.toLowerCase().includes(char.name.toLowerCase())) {
+          // Inject DNA if not already present
+          if (!updatedPrompt.toLowerCase().includes(char.physicalDNA.hair?.toLowerCase() || '')) {
+            updatedPrompt = `${char.visualMasterPrompt}, ${updatedPrompt}`;
+          }
+        }
+      });
+      return { ...ch, visualPrompt: updatedPrompt };
+    });
+
+    return {
+      ...blueprint,
+      INTERIOR_CONTENT: updatedChapters
+    };
   }
 
   // Clean AND Polish AI-generated chapter content (Style Refiner Engine)
