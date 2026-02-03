@@ -1,0 +1,38 @@
+{
+    "mcpServers": {
+        "github": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-github"
+            ],
+            "enabled": true
+        },
+        "firecrawl": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "firecrawl-mcp"
+            ],
+            "env": {
+                "FIRECRAWL_API_KEY": "REPLACE_WITH_ACTUAL_KEY"
+            },
+            "enabled": true,
+            "description": "Used for scraping Amazon, Etsy, and TikTok for the Niche Radar."
+        },
+        "serpapi": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-serpapi"
+            ],
+            "enabled": false,
+            "description": "Backup for Google Trends and Search Grounding."
+        }
+    },
+    "bridge": {
+        "streaming_enabled": true,
+        "interval_ms": 5000,
+        "fallback_to_simulation": true
+    }
+}

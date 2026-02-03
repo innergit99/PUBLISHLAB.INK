@@ -1,0 +1,21 @@
+# Artisan AI Backend - Updated Compatible Versions
+# Last updated: 2026-01-18
+
+gradio==4.44.0
+spaces==0.46.0
+
+# Core ML
+torch==2.1.2
+transformers==4.46.0
+diffusers==0.31.0
+accelerate==1.2.1
+safetensors==0.4.5
+
+# NumPy - Force 1.x for compatibility
+numpy<2.0,>=1.24.0
+
+# Image processing
+pillow==10.2.0
+
+# Tokenization
+sentencepiece==0.1.99

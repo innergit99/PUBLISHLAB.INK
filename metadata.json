@@ -1,0 +1,7 @@
+{
+  "name": "ArtisanAI - Creative Studio",
+  "description": "An AI-powered creative dashboard for generating images, logos, coloring pages, and merchandise designs using the latest Gemini models.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

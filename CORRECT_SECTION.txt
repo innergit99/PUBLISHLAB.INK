@@ -1,0 +1,13 @@
+      }
+    }
+
+    // --- TIER 3: CANVAS FALLBACK (Always Works) ---
+    if (module === 'KDP') {
+      console.log('🎨 Using canvas-based cover generator');
+      return this.generateFallbackCover(prompt, width, height);
+    }
+
+    throw new Error("Image generation failed. Please check connection.");
+  }
+
+  private generateFallbackCover(prompt: string, width: number, height: number): string {

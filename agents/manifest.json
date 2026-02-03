@@ -1,0 +1,61 @@
+{
+    "agents": [
+        {
+            "id": "design_lead",
+            "name": "Design Lead",
+            "role": "UI/UX & Frontend Artisan",
+            "specialization": [
+                "Tailwind 4.x",
+                "Glassmorphism",
+                "Micro-animations"
+            ],
+            "industrial_standard": "Promax 2026"
+        },
+        {
+            "id": "researcher",
+            "name": "The Researcher",
+            "role": "Market Intelligence & Signal Analyst",
+            "specialization": [
+                "Amazon Scaping",
+                "Etsy Trends",
+                "TikTok Velocity"
+            ],
+            "industrial_standard": "Deep Grounding"
+        },
+        {
+            "id": "backend_architect",
+            "name": "Backend Architect",
+            "role": "Infrastructure & API Orchestrator",
+            "specialization": [
+                "FastAPI",
+                "Agentic Bridges",
+                "GPU Optimization"
+            ],
+            "industrial_standard": "Zero-Latency"
+        },
+        {
+            "id": "the_nerd",
+            "name": "The Nerd",
+            "role": "QA & Quality Control",
+            "specialization": [
+                "Unit Testing",
+                "KDP Compliance",
+                "Accessibility"
+            ],
+            "industrial_standard": "Zero-Fault"
+        },
+        {
+            "id": "security_officer",
+            "name": "Security Officer",
+            "role": "Vulnerability & Compliance Guard",
+            "specialization": [
+                "Sonatype Audit",
+                "TOS Compliance",
+                "Data Privacy"
+            ],
+            "industrial_standard": "Hardened"
+        }
+    ],
+    "orchestration_mode": "Parallel-Agentic-Swarm",
+    "version": "2026.1"
+}

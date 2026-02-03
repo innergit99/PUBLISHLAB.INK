@@ -1,0 +1,168 @@
+/* Existing content */
+@keyframes float-hero {
+  0% {
+    transform: translateY(0px) rotateX(10deg) rotateY(-10deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotateX(12deg) rotateY(-8deg);
+  }
+
+  100% {
+    transform: translateY(0px) rotateX(10deg) rotateY(-10deg);
+  }
+}
+
+@keyframes glow-pulse {
+  0% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.5);
+  }
+
+  100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes gradient-x {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* NEW ANIMATIONS */
+@keyframes shine {
+  0% {
+    transform: translateX(-200%);
+  }
+
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes pulse-slow {
+
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes bounce-slow {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-shine {
+  animation: shine 1.5s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 6s ease-in-out infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s ease-in-out infinite;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.hero-3d-card {
+  transform-style: preserve-3d;
+  animation: float-hero 8s ease-in-out infinite;
+  /* Slowed down slightly for 'industrial' weight */
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  /* Sharper, thinner border */
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+  /* Slower for industrial readability */
+  width: max-content;
+}
+
+.text-gradient-animated {
+  background: linear-gradient(-45deg, #6366f1, #a855f7, #ec4899, #6366f1);
+  background-size: 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-x 5s ease infinite;
+}
+
+/* 3D Grid Item Hover Effect */
+.bento-card {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bento-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 20px 40px -5px rgba(99, 102, 241, 0.2);
+  z-index: 10;
+}
+
+/* ROBUST BACKGROUNDS */
+.bg-grid-pattern {
+  background-size: 60px 60px;
+  /* Slightly larger grid */
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+}
+
+.bg-radial-glow {
+  background: radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.12) 0%, rgba(5, 5, 5, 0) 60%);
+}
+
+/* UTILITIES */
+.strike-through {
+  text-decoration: line-through;
+}

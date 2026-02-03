@@ -1,0 +1,320 @@
+/// <reference types="vite/client" />
+/// <reference types="vite/client" />
+// Paddle Payment Integration for Artisan AI SaaS
+// Handles subscriptions, user tiers, and payment processing
+
+export interface SubscriptionTier {
+    id: string;
+    name: string;
+    price: number;
+    features: string[];
+    paddleProductId?: string; // Set after Paddle setup
+    limits: {
+        booksPerMonth: number;
+        imagesPerMonth: number;
+        chaptersPerBook: number;
+        priority: 'low' | 'normal' | 'high';
+    };
+}
+
+// Define subscription tiers
+export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
+    FREE: {
+        id: 'free',
+        name: 'Free',
+        price: 0,
+        features: [
+            '2 books per month',
+            '5 images per month',
+            'Basic templates',
+            'Watermarked exports',
+        ],
+        limits: {
+            booksPerMonth: 2,
+            imagesPerMonth: 5,
+            chaptersPerBook: 10,
+            priority: 'low',
+        },
+    },
+
+    CREATOR: {
+        id: 'creator',
+        name: 'Creator',
+        price: 4.99,
+        paddleProductId: 'pri_01kgj1n3qkqj57dxpnt3b0cjxe', // Sandbox Creator Plan
+        features: [
+            '15 books per month',
+            '50 images per month',
+            'All templates',
+            'No watermarks',
+            'PDF exports',
+            'Priority generation',
+        ],
+        limits: {
+            booksPerMonth: 15,
+            imagesPerMonth: 50,
+            chaptersPerBook: 20,
+            priority: 'normal',
+        },
+    },
+
+    PRO: {
+        id: 'pro',
+        name: 'Pro',
+        price: 14.99,
+        paddleProductId: 'pro_01kgj1pccf8r87ha871a8dyjt2', // Sandbox Pro Plan
+        features: [
+            'Unlimited books',
+            'Unlimited images',
+            'All premium templates',
+            'No watermarks',
+            'All export formats',
+            'Highest priority',
+            'API access',
+            'Commercial license',
+        ],
+        limits: {
+            booksPerMonth: 999,
+            imagesPerMonth: 999,
+            chaptersPerBook: 50,
+            priority: 'high',
+        },
+    },
+};
+
+// User subscription state
+export interface UserSubscription {
+    tier: keyof typeof SUBSCRIPTION_TIERS;
+    paddleSubscriptionId?: string;
+    subscriptionStatus: 'active' | 'cancelled' | 'past_due' | 'trial';
+    currentPeriodEnd?: Date;
+    usage: {
+        booksThisMonth: number;
+        imagesThisMonth: number;
+    };
+}
+
+// Initialize Paddle
+export async function initializePaddle(): Promise<void> {
+    const paddleVendorId = import.meta.env.VITE_PADDLE_VENDOR_ID;
+
+    if (!paddleVendorId) {
+        console.warn('Paddle vendor ID not configured');
+        return;
+    }
+
+    // Load Paddle.js
+    const script = document.createElement('script');
+    script.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
+    script.async = true;
+
+    script.onload = () => {
+        // @ts-ignore
+        if (window.Paddle) {
+            // @ts-ignore
+            window.Paddle.Environment.set('sandbox'); // Change to 'production' when ready
+            // @ts-ignore
+            window.Paddle.Initialize({
+                token: paddleVendorId,
+                eventCallback: handlePaddleEvent,
+            });
+            console.log('✅ Paddle initialized');
+        }
+    };
+
+    document.head.appendChild(script);
+}
+
+// Handle Paddle events
+function handlePaddleEvent(event: any) {
+    console.log('Paddle event:', event);
+
+    switch (event.name) {
+        case 'checkout.completed':
+            handleCheckoutCompleted(event.data);
+            break;
+        case 'checkout.closed':
+            handleCheckoutClosed(event.data);
+            break;
+    }
+}
+
+// Open Paddle checkout
+export async function openPaddleCheckout(tier: SubscriptionTier, userEmail?: string): Promise<void> {
+    // @ts-ignore
+    if (!window.Paddle) {
+        alert('Payment system not loaded. Please refresh and try again.');
+        return;
+    }
+
+    if (!tier.paddleProductId) {
+        alert('This plan is not yet configured. Please contact support.');
+        return;
+    }
+
+    // @ts-ignore
+    window.Paddle.Checkout.open({
+        items: [
+            {
+                priceId: tier.paddleProductId,
+                quantity: 1,
+            },
+        ],
+        customer: userEmail ? { email: userEmail } : undefined,
+        customData: {
+            tierId: tier.id,
+            source: 'artisan-ai',
+        },
+    });
+}
+
+// Handle successful checkout
+function handleCheckoutCompleted(data: any) {
+    console.log('✅ Checkout completed:', data);
+
+    // Save subscription data to localStorage (in production, use backend)
+    const subscription: UserSubscription = {
+        tier: data.customData.tierId,
+        paddleSubscriptionId: data.subscription_id,
+        subscriptionStatus: 'active',
+        currentPeriodEnd: new Date(data.next_payment_date),
+        usage: {
+            booksThisMonth: 0,
+            imagesThisMonth: 0,
+        },
+    };
+
+    localStorage.setItem('userSubscription', JSON.stringify(subscription));
+
+    // Reload to apply new tier
+    window.location.reload();
+}
+
+// Handle checkout closed
+function handleCheckoutClosed(data: any) {
+    console.log('Checkout closed:', data);
+}
+
+// Get current user tier
+export function getCurrentTier(): SubscriptionTier {
+    const subscriptionStr = localStorage.getItem('userSubscription');
+
+    if (!subscriptionStr) {
+        return SUBSCRIPTION_TIERS.FREE;
+    }
+
+    try {
+        const subscription: UserSubscription = JSON.parse(subscriptionStr);
+        return SUBSCRIPTION_TIERS[subscription.tier] || SUBSCRIPTION_TIERS.FREE;
+    } catch (e) {
+        return SUBSCRIPTION_TIERS.FREE;
+    }
+}
+
+// Check if user can perform action
+export function canPerformAction(action: 'book' | 'image' | 'chapter'): boolean {
+    const tier = getCurrentTier();
+    const subscriptionStr = localStorage.getItem('userSubscription');
+
+    if (!subscriptionStr) {
+        // Free tier user
+        const usage = getUsage();
+
+        if (action === 'book') {
+            return usage.booksThisMonth < tier.limits.booksPerMonth;
+        } else if (action === 'image') {
+            return usage.imagesThisMonth < tier.limits.imagesPerMonth;
+        }
+    }
+
+    // Paid tier - check limits
+    try {
+        const subscription: UserSubscription = JSON.parse(subscriptionStr);
+
+        if (action === 'book') {
+            return subscription.usage.booksThisMonth < tier.limits.booksPerMonth;
+        } else if (action === 'image') {
+            return subscription.usage.imagesThisMonth < tier.limits.imagesPerMonth;
+        }
+    } catch (e) {
+        return false;
+    }
+
+    return true;
+}
+
+// Track usage
+export function trackUsage(action: 'book' | 'image') {
+    const subscriptionStr = localStorage.getItem('userSubscription');
+
+    if (!subscriptionStr) {
+        // Track free tier usage
+        const usage = getUsage();
+
+        if (action === 'book') {
+            usage.booksThisMonth++;
+        } else if (action === 'image') {
+            usage.imagesThisMonth++;
+        }
+
+        localStorage.setItem('usage', JSON.stringify(usage));
+        return;
+    }
+
+    try {
+        const subscription: UserSubscription = JSON.parse(subscriptionStr);
+
+        if (action === 'book') {
+            subscription.usage.booksThisMonth++;
+        } else if (action === 'image') {
+            subscription.usage.imagesThisMonth++;
+        }
+
+        localStorage.setItem('userSubscription', JSON.stringify(subscription));
+    } catch (e) {
+        console.error('Failed to track usage:', e);
+    }
+}
+
+// Get usage for free tier
+function getUsage(): { booksThisMonth: number; imagesThisMonth: number } {
+    const usageStr = localStorage.getItem('usage');
+
+    if (!usageStr) {
+        return { booksThisMonth: 0, imagesThisMonth: 0 };
+    }
+
+    try {
+        return JSON.parse(usageStr);
+    } catch (e) {
+        return { booksThisMonth: 0, imagesThisMonth: 0 };
+    }
+}
+
+// Reset usage (call this monthly)
+export function resetUsage() {
+    const subscriptionStr = localStorage.getItem('userSubscription');
+
+    if (subscriptionStr) {
+        const subscription: UserSubscription = JSON.parse(subscriptionStr);
+        subscription.usage = { booksThisMonth: 0, imagesThisMonth: 0 };
+        localStorage.setItem('userSubscription', JSON.stringify(subscription));
+    }
+
+    localStorage.setItem('usage', JSON.stringify({ booksThisMonth: 0, imagesThisMonth: 0 }));
+}
+
+// Cancel subscription
+export async function cancelSubscription() {
+    // In production, call Paddle API to cancel
+    // For now, just update local state
+    const subscriptionStr = localStorage.getItem('userSubscription');
+
+    if (subscriptionStr) {
+        const subscription: UserSubscription = JSON.parse(subscriptionStr);
+        subscription.subscriptionStatus = 'cancelled';
+        localStorage.setItem('userSubscription', JSON.stringify(subscription));
+    }
+
+    alert('Subscription cancelled. You can continue using until the end of the billing period.');
+}

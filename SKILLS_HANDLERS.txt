@@ -1,0 +1,82 @@
+// Add these imports at the top of ToolView.tsx
+import { kdpSkills, CharacterProfile, ContinuityIssue, MarketingCopy } from '../kdpSkills';
+
+// Add these handler functions after handleGenerateAplusAsset (around line 361)
+
+  // SKILLS HANDLERS
+  const handleGenerateCharacterProfiles = async () => {
+    if (!kdpBlueprint) return;
+    setIsGeneratingSkill(true);
+    try {
+      const profiles = await kdpSkills.generateCharacterProfiles(kdpBlueprint);
+      setKdpBlueprint({
+        ...kdpBlueprint,
+        SKILLS_DATA: {
+          ...kdpBlueprint.SKILLS_DATA,
+          characterProfiles: profiles
+        }
+      });
+    } catch (e: any) {
+      setError('Character profile generation failed');
+    } finally {
+      setIsGeneratingSkill(false);
+    }
+  };
+
+  const handleCheckContinuity = async () => {
+    if (!kdpBlueprint) return;
+    setIsGeneratingSkill(true);
+    try {
+      const issues = await kdpSkills.checkContinuity(kdpBlueprint);
+      setKdpBlueprint({
+        ...kdpBlueprint,
+        SKILLS_DATA: {
+          ...kdpBlueprint.SKILLS_DATA,
+          continuityIssues: issues
+        }
+      });
+    } catch (e: any) {
+      setError('Continuity check failed');
+    } finally {
+      setIsGeneratingSkill(false);
+    }
+  };
+
+  const handleGenerateMarketing = async () => {
+    if (!kdpBlueprint) return;
+    setIsGeneratingSkill(true);
+    try {
+      const marketing = await kdpSkills.generateMarketingCopy(kdpBlueprint);
+      setKdpBlueprint({
+        ...kdpBlueprint,
+        SKILLS_DATA: {
+          ...kdpBlueprint.SKILLS_DATA,
+          marketingCopy: marketing
+        }
+      });
+    } catch (e: any) {
+      setError('Marketing generation failed');
+    } finally {
+      setIsGeneratingSkill(false);
+    }
+  };
+
+  const handleGenerateReaderMagnet = async (type: 'bonus-chapter' | 'character-interview' | 'behind-scenes' | 'prequel-scene') => {
+    if (!kdpBlueprint) return;
+    setIsGeneratingSkill(true);
+    try {
+      const content = await kdpSkills.generateReaderMagnet(kdpBlueprint, type);
+      const magnets = kdpBlueprint.SKILLS_DATA?.readerMagnets || [];
+      setKdpBlueprint({
+        ...kdpBlueprint,
+        SKILLS_DATA: {
+          ...kdpBlueprint.SKILLS_DATA,
+          readerMagnets: [...magnets, { type, content }]
+        }
+      });
+    } catch (e: any) {
+      setError('Reader magnet generation failed');
+    } finally {
+      setIsGeneratingSkill(false);
+    }
+  };

@@ -1,0 +1,11 @@
+Due to the complexity of the fixes needed, I'm creating a comprehensive fix document. Please restart the dev server after I complete all changes.
+
+## CRITICAL FIXES IN PROGRESS:
+
+1. Reversing AI priority (Ollama primary, Gemini fallback)
+2. Fixing duplicate chapter titles
+3. Fixing title generation timeout
+4. Fixing cover generation
+5. Fixing downloads
+
+Please wait for all fixes to complete before restarting.
