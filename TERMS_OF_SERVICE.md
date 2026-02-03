@@ -152,7 +152,7 @@ You agree NOT to use the Service to:
 ## 15. Contact Information
 
 For questions about these Terms:
-- Email: support@artisan-ai.com
+- Email: **support@innerwinner.com**
 - Response within 48 hours
 
 ## 16. Severability
@@ -181,5 +181,5 @@ By using Artisan AI, you agree to:
 ---
 
 **Artisan AI**  
-**Last Updated: January 18, 2026**  
+**Last Updated: February 3, 2026**  
 **Version: 1.0**

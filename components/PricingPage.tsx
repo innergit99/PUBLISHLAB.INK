@@ -269,6 +269,52 @@ export const PricingPage: React.FC<{ onBack?: () => void; onPlanSelected?: () =>
                     ))}
                 </div>
 
+                {/* FAQ Section */}
+                <div className="mt-40 max-w-4xl mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl font-black uppercase tracking-widest text-white mb-4">Frequently Asked Questions</h2>
+                        <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">Everything you need to know about the Artisan Foundry</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
+                        {[
+                            {
+                                q: "How do credits work?",
+                                a: "Each plan comes with a monthly allocation of 'Node Credits'. 1 Credit = 1 high-resolution 4K generation or 1 deep manuscript audit. Unused credits don't rollover, but recharge every billing cycle."
+                            },
+                            {
+                                q: "Can I cancel anytime?",
+                                a: "Absolutely. You can cancel your subscription with one click from your profile settings. You'll retain access to your plan's features until the end of your current billing period."
+                            },
+                            {
+                                q: "What is 'Foundry Level Persistence'?",
+                                a: "This is our industrial-grade cloud sync. Your manuscripts, cover designs, and research stay synced across all your devices, backed by encrypted global redundancy."
+                            },
+                            {
+                                q: "Do I own the copyrights?",
+                                a: "Yes. Any content, images, or manuscripts generated inside your Artisan account belong entirely to you for commercial use, subject to our Acceptable Use Policy."
+                            },
+                            {
+                                q: "What happens if I run out of credits?",
+                                a: "You can either wait for your monthly recharge or purchase 'Emergency Credit Packs' directly from the dashboard to keep your production line running."
+                            },
+                            {
+                                q: "Is the Manuscript Doctor safe?",
+                                a: "We use private, isolated instances for deep audits. Your intellectual property is never used for training public models and is treated with high-security confidentiality."
+                            }
+                        ].map((faq, i) => (
+                            <div key={i} className="group p-6 rounded-3xl bg-white/[0.01] border border-white/5 hover:border-indigo-500/30 transition-all duration-300">
+                                <h3 className="text-white font-black text-sm uppercase tracking-wider mb-3 group-hover:text-indigo-400 transition-colors flex items-center gap-2">
+                                    <span className="text-indigo-500">?</span> {faq.q}
+                                </h3>
+                                <p className="text-gray-500 text-sm leading-relaxed font-medium">
+                                    {faq.a}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Footer Badges */}
                 <div className="mt-32 pt-16 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8">
                     {[

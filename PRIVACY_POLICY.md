@@ -1,6 +1,6 @@
 # Privacy Policy - Artisan AI
 
-**Effective Date: January 18, 2026**
+**Effective Date: February 3, 2026**
 
 ## 1. Introduction
 
@@ -54,21 +54,14 @@ We implement industrial-grade security measures:
 You have the right to:
 - **Access:** Request a copy of your personal data.
 - **Rectify:** Correct inaccurate information.
-- **Delete:** Request total account deletion (Right to be Forgotten).
-- **Export:** Download your projects in standard formats (PDF, JSON).
+- **Delete:** Request total account deletion.
+- **Export:** Download your projects in standard formats.
 
-To exercise these rights, email: **privacy@artisan-ai.com**
-
-## 8. Cookies & Tracking
-
-We use local storage and necessary cookies to:
-- Maintain your login session.
-- Remember UI preferences (e.g., Dark Mode).
-- We do **not** sell your data to advertisers.
+For privacy inquiries: **privacy@innerwinner.com**
 
 ## 9. Changes to This Policy
 
-We may update this policy to reflect changes in our technology or legal requirements. We will notify you of significant changes via email or dashboard alerts.
+We may update this policy to reflect changes in our technology or legal requirements. We will notify you of significant changes via dashboard alerts.
 
 ---
 
