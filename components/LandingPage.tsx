@@ -477,6 +477,7 @@ export default function LandingPage({
                             <button onClick={() => setLegalModal('refund')} className="hover:text-white transition-colors underline underline-offset-4 decoration-indigo-500/50">Refund Policy</button>
                         </div>
                         <div className="flex items-center gap-2 opacity-50 italic text-[10px]">Registered Office: Adh Dhawq Street, Abu Dhabi, 00971, United Arab Emirates</div>
+                        <div className="flex items-center gap-2 opacity-50 text-[10px] hover:text-white transition-colors"><Mail size={12} /> support@artisan-ai.com</div>
                     </div>
                 </div>
                 <p className="text-xs font-mono opacity-50">&copy; 2026 ARTISAN AI INDUSTRIAL GROUP. ALL RIGHTS RESERVED.</p>
