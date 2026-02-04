@@ -2,9 +2,13 @@ import React from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
 
+// Use a global or ref to persist nodes across renders
+let globalNodes: any[] = [];
+
 export const NeuralNetworkBackground: React.FC = () => {
-    let nodes: Node[] = [];
-    const linkDist = 150;
+    const canvasRef = React.useRef<p5Types | null>(null);
+    const nodesRef = React.useRef<Node[]>([]);
+    const linkDist = 180; // Increased for better full-page spiderweb look
 
     class Node {
         x: number;
@@ -17,8 +21,8 @@ export const NeuralNetworkBackground: React.FC = () => {
             this.p5 = p5;
             this.x = p5.random(p5.width);
             this.y = p5.random(p5.height);
-            this.vx = p5.random(-0.5, 0.5);
-            this.vy = p5.random(-0.5, 0.5);
+            this.vx = p5.random(-0.4, 0.4);
+            this.vy = p5.random(-0.4, 0.4);
         }
 
         update() {
@@ -30,23 +34,29 @@ export const NeuralNetworkBackground: React.FC = () => {
         }
 
         draw() {
+            // Invisible nodes, just lines for the plexus look
             this.p5.noStroke();
-            this.p5.fill(99, 102, 241, 150); // Indigo
-            this.p5.circle(this.x, this.y, 4);
+            this.p5.fill(99, 102, 241, 120);
+            this.p5.circle(this.x, this.y, 2.5);
         }
     }
 
     const setup = (p5: p5Types, canvasParentRef: Element) => {
         p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(canvasParentRef);
-        for (let i = 0; i < 40; i++) {
-            nodes.push(new Node(p5));
+        canvasRef.current = p5;
+
+        // Initialize nodes if they don't exist
+        if (nodesRef.current.length === 0) {
+            for (let i = 0; i < 60; i++) { // Increased density
+                nodesRef.current.push(new Node(p5));
+            }
         }
     };
 
     const draw = (p5: p5Types) => {
-        p5.clear(); // Transparent background
+        p5.clear();
 
-        // Draw connections
+        const nodes = nodesRef.current;
         for (let i = 0; i < nodes.length; i++) {
             nodes[i].update();
             nodes[i].draw();
@@ -54,9 +64,9 @@ export const NeuralNetworkBackground: React.FC = () => {
             for (let j = i + 1; j < nodes.length; j++) {
                 let d = p5.dist(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
                 if (d < linkDist) {
-                    let alpha = p5.map(d, 0, linkDist, 100, 0);
+                    let alpha = p5.map(d, 0, linkDist, 120, 0); // Higher visibility
                     p5.stroke(99, 102, 241, alpha);
-                    p5.strokeWeight(1);
+                    p5.strokeWeight(1.2);
                     p5.line(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
                 }
             }
@@ -67,7 +77,7 @@ export const NeuralNetworkBackground: React.FC = () => {
         p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
     };
 
-    return <Sketch setup={setup} draw={draw} windowResized={windowResized} className="absolute inset-0 pointer-events-none" />;
+    return <Sketch setup={setup} draw={draw} windowResized={windowResized} className="fixed inset-0 pointer-events-none z-0" />;
 };
 
 

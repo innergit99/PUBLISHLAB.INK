@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Shield, Lock, FileText, ChevronLeft, Mail } from 'lucide-react';
 
 interface LegalModalProps {
-    type: 'terms' | 'privacy' | null;
+    type: 'terms' | 'privacy' | 'refund' | null;
     onClose: () => void;
 }
 
@@ -32,7 +32,9 @@ export default function LegalModal({ type, onClose }: LegalModalProps) {
                         </div>
                         <div>
                             <h2 className="text-xl font-bold text-white">
-                                {type === 'terms' ? 'Terms of Service' : 'Privacy Policy'}
+                                {type === 'terms' && 'Terms of Service'}
+                                {type === 'privacy' && 'Privacy Policy'}
+                                {type === 'refund' && 'Refund Policy'}
                             </h2>
                             <p className="text-xs text-gray-500">Effective Date: January 18, 2026</p>
                         </div>
@@ -52,7 +54,7 @@ export default function LegalModal({ type, onClose }: LegalModalProps) {
                         <>
                             <section>
                                 <h3 className="text-white font-bold text-lg mb-2">1. Agreement to Terms</h3>
-                                <p>By accessing Artisan AI ("Service"), you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access the Service.</p>
+                                <p>By accessing Artisan AI ("Service"), provided by <strong>Artisan AI Industrial Group</strong> ("Company"), you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access the Service.</p>
                             </section>
 
                             <section>
@@ -106,6 +108,30 @@ export default function LegalModal({ type, onClose }: LegalModalProps) {
                             <section>
                                 <h3 className="text-white font-bold text-lg mb-2">5. Contact Data Officer</h3>
                                 <p className="flex items-center gap-2"><Mail size={16} /> privacy@artisan-ai.com</p>
+                            </section>
+                        </>
+                    )}
+
+                    {type === 'refund' && (
+                        <>
+                            <section>
+                                <h3 className="text-white font-bold text-lg mb-2">1. 14-Day Money-Back Guarantee</h3>
+                                <p>We want you to be completely satisfied with The Foundry. If you are not satisfied with your purchase of credits or subscription, you may request a full refund within 14 days of the transaction date, provided that you have not significantly consumed the purchased credits (usage &lt; 10%).</p>
+                            </section>
+
+                            <section>
+                                <h3 className="text-white font-bold text-lg mb-2">2. How to Request a Refund</h3>
+                                <p>To initiate a refund, please contact our support team at <a href="mailto:support@artisan-ai.com" className="text-indigo-400 hover:underline">support@artisan-ai.com</a> with your order number/receipt ID.</p>
+                            </section>
+
+                            <section>
+                                <h3 className="text-white font-bold text-lg mb-2">3. Processing Time</h3>
+                                <p>Refunds are processed by our payment partner, Paddle. Once approved, funds usually return to your bank account within 5-10 business days.</p>
+                            </section>
+
+                            <section>
+                                <h3 className="text-white font-bold text-lg mb-2">4. Digital Goods Exception</h3>
+                                <p>Please note that due to the nature of digital goods, we cannot offer refunds for downloadable assets (e.g., exported manuscripts, high-res images) once they have been successfully generated and downloaded, unless the file is technically defective.</p>
                             </section>
                         </>
                     )}

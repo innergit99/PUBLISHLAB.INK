@@ -4,7 +4,7 @@ import { ToolType } from '../types';
 import {
   LayoutDashboard, Palette, Shirt, Box, PenTool, Scissors, Maximize,
   ImageIcon, Settings, Crown, TrendingUp, Search, BookOpen, Target,
-  Rocket, ShieldCheck, BarChart3, ShieldAlert
+  Rocket, ShieldCheck, BarChart3, ShieldAlert, Users
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -95,6 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onNavigate, isDarkMode }) 
           </div>
         </div>
         <NavItem isDarkMode={isDarkMode} isActive={activeTab === ToolType.MY_GALLERY} onClick={() => onNavigate(ToolType.MY_GALLERY)} icon={<ImageIcon size={18} />} label="Master Gallery" />
+        <NavItem isDarkMode={isDarkMode} isActive={activeTab === ToolType.CHARACTER_VAULT} onClick={() => onNavigate(ToolType.CHARACTER_VAULT)} icon={<Users size={18} />} label="Character Vault" />
         <NavItem isDarkMode={isDarkMode} isActive={activeTab === ToolType.SETTINGS} onClick={() => onNavigate(ToolType.SETTINGS)} icon={<Settings size={18} />} label="Diagnostics" />
       </div>
     </aside>

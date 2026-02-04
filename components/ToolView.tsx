@@ -16,6 +16,7 @@ import { intelligenceService } from '../intelligenceService';
 import { visualService } from '../visualService';
 import { complianceService } from '../complianceService';
 import { NicheRadarView } from './NicheRadarView';
+import { CharacterVault } from './CharacterVault';
 import {
   ChevronLeft, Sparkles, Download, Loader2, ImageIcon, X, Rocket, Upload,
   Search, Copy, CheckCircle, ZoomIn, ZoomOut, Move, Palette, Edit3,
@@ -2418,6 +2419,31 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
         </div>
 
         <button onClick={onBack} className="text-[10px] font-black uppercase text-slate-600 hover:text-white transition-colors tracking-[0.3em] mt-12">Return to HQ</button>
+      </div>
+    );
+  }
+
+  // --- CHARACTER VAULT VIEW ---
+  if (toolType === ToolType.CHARACTER_VAULT) {
+    return (
+      <div className="p-12 max-w-[1600px] mx-auto pb-24 animate-in fade-in">
+        <div className="flex items-center justify-between mb-16">
+          <button onClick={onBack} className="flex items-center space-x-2 text-slate-500 hover:text-white transition-colors uppercase font-black text-[10px] tracking-widest leading-none">
+            <ChevronLeft size={16} /> <span>Exit Vault</span>
+          </button>
+          <div className="px-6 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-[10px] font-black uppercase text-indigo-400 tracking-widest">
+            Character Continuity Engine V1.0
+          </div>
+        </div>
+
+        <div className="space-y-12">
+          <div className="text-center space-y-4">
+            <h1 className="text-7xl font-black uppercase italic tracking-tighter leading-none">Character <span className="text-indigo-500">Vault</span></h1>
+            <p className="text-slate-500 font-bold uppercase tracking-widest text-xs italic">Maintain Visual DNA Consitency across the Multiverse.</p>
+          </div>
+
+          <CharacterVault />
+        </div>
       </div>
     );
   }

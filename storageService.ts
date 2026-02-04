@@ -18,6 +18,9 @@ export class StorageService {
         if (!db.objectStoreNames.contains(STORE_NAME)) {
           db.createObjectStore(STORE_NAME, { keyPath: 'id' });
         }
+        if (!db.objectStoreNames.contains('characters')) {
+          db.createObjectStore('characters', { keyPath: 'id' });
+        }
       };
 
       request.onsuccess = (event: any) => {
@@ -262,6 +265,61 @@ export class StorageService {
       };
       request.onerror = () => resolve(null);
     });
+  }
+
+  // --- CHARACTER VAULT (PHASE 5) ---
+
+  async saveCharacter(profile: any): Promise<void> {
+    if (!this.db) await this.init();
+    await new Promise<void>((resolve, reject) => {
+      const transaction = this.db!.transaction(['characters'], 'readwrite');
+      const store = transaction.objectStore('characters');
+      const request = store.put(profile);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+
+    // Cloud Sync (Optional for now)
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        await supabase.from('characters').upsert({
+          id: profile.id,
+          user_id: user.id,
+          data: profile,
+          updated_at: new Date().toISOString()
+        });
+      }
+    } catch (e) { }
+  }
+
+  async getAllCharacters(): Promise<any[]> {
+    if (!this.db) await this.init();
+    return new Promise((resolve) => {
+      const transaction = this.db!.transaction(['characters'], 'readonly');
+      const store = transaction.objectStore('characters');
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => resolve([]);
+    });
+  }
+
+  async deleteCharacter(id: string): Promise<void> {
+    if (!this.db) await this.init();
+    await new Promise<void>((resolve, reject) => {
+      const transaction = this.db!.transaction(['characters'], 'readwrite');
+      const store = transaction.objectStore('characters');
+      const request = store.delete(id);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        await supabase.from('characters').delete().eq('id', id);
+      }
+    } catch (e) { }
   }
 }
 
