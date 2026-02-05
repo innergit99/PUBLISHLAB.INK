@@ -509,6 +509,7 @@ export default function LandingPage({
                             <button onClick={() => setLegalModal('terms')} className="hover:text-white transition-colors">Terms of Service</button>
                             <button onClick={() => setLegalModal('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
                             <button onClick={() => setLegalModal('refund')} className="hover:text-white transition-colors underline underline-offset-4 decoration-indigo-500/50">Refund Policy</button>
+                            <button onClick={onViewPricing} className="hover:text-white transition-colors">Pricing</button>
                         </div>
                         <div className="flex items-center gap-2 opacity-50 italic text-[10px]">Registered Office: Adh Dhawq Street, Abu Dhabi, 00971, United Arab Emirates</div>
                         <div className="flex items-center gap-2 opacity-50 text-[10px] hover:text-white transition-colors"><Mail size={12} /> support@publishlab.ink</div>
