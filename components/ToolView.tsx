@@ -2491,7 +2491,7 @@ h1, h2, h3 { page -break-after: avoid; }
             </button>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center overflow-hidden">
-                <img src="/assets/publishlab_logo.png" alt="PublishLab" className="w-10 h-10 object-contain p-1" />
+                <img src="/assets/publishlab_logo.svg" alt="PublishLab" className="w-10 h-10 object-contain p-1" />
               </div>
               <div>
                 <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">PublishLab</h2>
