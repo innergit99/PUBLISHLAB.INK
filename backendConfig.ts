@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="vite/client" />
-// Backend API Configuration for Artisan AI
+// Backend API Configuration for PublishLab
 
 // Detect environment
 const isDevelopment = import.meta.env.DEV;

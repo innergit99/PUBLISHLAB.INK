@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="vite/client" />
-// Paddle Payment Integration for Artisan AI SaaS
+// Paddle Payment Integration for PublishLab SaaS
 // Handles subscriptions, user tiers, and payment processing
 
 export interface SubscriptionTier {
@@ -163,7 +163,7 @@ export async function openPaddleCheckout(tier: SubscriptionTier, userEmail?: str
         customer: userEmail ? { email: userEmail } : undefined,
         customData: {
             tierId: tier.id,
-            source: 'artisan-ai',
+            source: 'publishlab-ink',
         },
     });
 }
