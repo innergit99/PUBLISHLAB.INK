@@ -25,7 +25,7 @@ const TIERS = [
     },
     {
         id: 'creator',
-        name: 'Artisan',
+        name: 'Creator',
         price: '4.99',
         description: 'The industrial standard for solo builders.',
         features: [
@@ -46,7 +46,7 @@ const TIERS = [
         price: '14.99',
         description: 'Scalable infrastructure for publishing empires.',
         features: [
-            'Everything in Artisan',
+            'Everything in Creator',
             'Multi-Agent Collaboration',
             '1-Click KDP Deployment',
             'Whitelabel Export',
