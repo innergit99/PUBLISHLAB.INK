@@ -157,6 +157,61 @@ export class ImageService {
     }
 
     /**
+     * Generate a POD design with two-tier quality system
+     * - Preview mode: Canvas (free, instant)
+     * - Final mode: Fal.ai (paid, print-ready)
+     */
+    async generatePODDesign(options: {
+        prompt: string;
+        style: string;
+        mode: 'preview' | 'final';
+    }): Promise<string> {
+        const fullPrompt = `${options.prompt}, ${options.style}`;
+
+        if (options.mode === 'preview') {
+            console.log('🎨 POD Preview Mode: Using Canvas (free)');
+            // Always use Canvas for previews (unlimited, free)
+            return this.generateWithCanvas({
+                prompt: fullPrompt,
+                width: 1024,
+                height: 1024
+            });
+        }
+
+        // FINAL MODE: Production-ready print design
+        console.log('🖨️ POD Final Mode: Using Fal.ai (print-ready)');
+
+        if (isLocalMode()) {
+            console.warn('⚠️ Local mode: Using Canvas for final (production would use Fal.ai)');
+            return this.generateWithCanvas({
+                prompt: `${fullPrompt}, ultra high quality, 300 DPI`,
+                width: 2048,
+                height: 2048
+            });
+        }
+
+        // Production: Use Fal.ai Flux Dev for highest quality
+        try {
+            return await this.generateWithFal({
+                prompt: `${fullPrompt}, ultra high quality, 300 DPI, print-ready, professional`,
+                width: 2048,
+                height: 2048,
+                model: 'dev', // Higher quality for print
+                numInferenceSteps: 28, // More steps = better quality
+                guidanceScale: 7.5 // Higher guidance for better prompt adherence
+            });
+        } catch (error: any) {
+            console.error('❌ Fal.ai failed for POD final, falling back to Canvas:', error.message);
+            // Fallback to high-res Canvas if Fal.ai fails
+            return this.generateWithCanvas({
+                prompt: `${fullPrompt}, ultra high quality`,
+                width: 2048,
+                height: 2048
+            });
+        }
+    }
+
+    /**
      * Generate a book cover (uses existing Canvas logic for now)
      */
     async generateCover(options: {

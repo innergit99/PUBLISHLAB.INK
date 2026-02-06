@@ -974,63 +974,47 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
       effectivePrompt = "Cyberpunk Industrial City";
     }
 
-    console.log("Engaging Engine with Prompt:", effectivePrompt);
+    console.log("🎨 POD Designer: Generating PREVIEW variants (Canvas - Free)");
 
     setIsGenerating(true);
     setError(null);
     setVariants([]);
-    setResult(null); // Fix: Clear previous selection so variants are visible
+    setResult(null);
 
     try {
-      console.log("Dispatching Cascade Request...");
-      // Using effectivePrompt instead of prompt state
+      // Import imageService
+      const { imageService } = await import('../imageService');
 
+      // Get style definition
+      const styleDef = POD_STYLES.find(s => s.id === selectedStyle);
+      const stylePrompt = styleDef ? styleDef.promptSuffix : 'professional commercial design';
 
-      // const subdomains = ['image', 'images', 'image']; // REVERTED due to DNS errors
-      const styles = [", artistic style", ", vector style", ", minimalist style"];
       const res = [];
 
-      // Execute SEQUENTIALLY to truly respect rate limits
-      for (let i = 0; i < styles.length; i++) {
-        // Wait before starting the next request (except the first one)
-        if (i > 0) {
-          console.log(`Waiting to cool down rate limiter... (${i}/3)`);
-          // Random jitter + longer delay (Increased to 55s base to avoid Pollinations block)
-          const jitter = Math.floor(Math.random() * 5000);
-          await new Promise(resolve => setTimeout(resolve, 55000 + jitter));
-        }
+      // Generate 3 preview variants (Canvas - FREE)
+      for (let i = 0; i < 3; i++) {
+        console.log(`Generating Preview Variant ${i + 1}/3...`);
 
-        console.log(`Generating Variant ${i + 1}...`);
-        const startTime = performance.now(); // Start Timer
+        // Add variation to each preview
+        const variations = [', artistic style', ', vector style', ', minimalist style'];
+        let finalPrompt = effectivePrompt + variations[i];
 
-        // CONTEXT-AWARE INJECTION (PHASE 6)
-        let finalPrompt = effectivePrompt + styles[i];
+        // Inject character context if available
         if (activeCharacter) {
           console.log(`🧬 Injecting Visual DNA: ${activeCharacter.name}`);
           finalPrompt = `(Character Context: ${activeCharacter.visualMasterPrompt}), ${finalPrompt}`;
         }
 
-        const variantUrl = await gemini.generateImageForModule(
-          finalPrompt,
-          'POD',
-          { aspectRatio, negativePrompt }
-        );
-        const duration = ((performance.now() - startTime) / 1000).toFixed(2);
-        console.log(`Variant ${i + 1} generated in ${duration}s`);
-
-        // CRITICAL FIX: Force the browser to fetch the image NOW.
-        try {
-          await fetch(variantUrl, { mode: 'no-cors', cache: 'no-store' });
-          console.log("Pre-fetched:", variantUrl);
-        } catch (e) {
-          console.warn("Pre-fetch trigger failed, but browser should prioritize later.", e);
-        }
+        const variantUrl = await imageService.generatePODDesign({
+          prompt: finalPrompt,
+          style: stylePrompt,
+          mode: 'preview' // FREE Canvas generation
+        });
 
         res.push(variantUrl);
       }
 
-      console.log(`[🎨 ToolView] Engine Returned Results (Variant Count): ${res.length}`);
-      console.log(`[🎨 ToolView] Variants URLs:`, res);
+      console.log(`✅ Generated ${res.length} preview variants (FREE)`);
 
       if (!res || res.length === 0) {
         throw new Error("Engine returned empty spectrum.");
