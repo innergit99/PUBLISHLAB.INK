@@ -63,11 +63,11 @@ export default function LegalModal({ type, onClose }: LegalModalProps) {
                             </section>
 
                             <section>
-                                <h3 className="text-white font-bold text-lg mb-2">3. Payment & Credits</h3>
+                                <h3 className="text-white font-bold text-lg mb-2">3. Payment & Subscription</h3>
                                 <ul className="list-disc pl-5 space-y-1">
-                                    <li><strong>Pay-Per-Result:</strong> Services are billed based on consumable "Credits" or direct purchases via Paddle.</li>
-                                    <li><strong>Refunds:</strong> We offer a 14-day money-back guarantee for unused credits. Contact support@publishlab.ink.</li>
-                                    <li><strong>Cancellation:</strong> You may cease using the service at any time. No long-term contracts.</li>
+                                    <li><strong>Billing:</strong> Services are billed as subscriptions or one-time allocations (Manuscript Projections & Image Generations) via Paddle.</li>
+                                    <li><strong>Refunds:</strong> We offer a 14-day money-back guarantee for unused allocations (usage &lt; 10%). Contact support@publishlab.ink.</li>
+                                    <li><strong>Cancellation:</strong> You may cancel your subscription at any time. No long-term industrial contracts.</li>
                                 </ul>
                             </section>
 
@@ -87,7 +87,7 @@ export default function LegalModal({ type, onClose }: LegalModalProps) {
                         <>
                             <section>
                                 <h3 className="text-white font-bold text-lg mb-2">1. Data Collection</h3>
-                                <p>We collect only the essential data required to operate the service: Email address (for account identification) and Usage Data (to track credit consumption).</p>
+                                <p>We collect only the essential data required to operate the service: Email address (for account identification) and Usage Data (to track manuscript projections and generation consumption).</p>
                             </section>
 
                             <section>
