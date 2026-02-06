@@ -124,8 +124,6 @@ export class CoverGenerator {
 
         this.ctx.fillStyle = '#FFFFFF';
         this.ctx.fillRect(barcodeX, barcodeY, barcodeW, barcodeH);
-        // Clean white box - No text for final export as KDP adds barcode here often, or user adds it.
-        // We leave it clean to avoid "ISBN ZONE" text printing over barcode.
 
         // Draw Blurb
         if (options.blurb) {
@@ -297,10 +295,27 @@ export class CoverGenerator {
         const { width, height } = this.canvas;
         const gradient = this.ctx.createLinearGradient(0, 0, width, height);
         gradient.addColorStop(0, palette.primary);
-        gradient.addColorStop(1, palette.secondary);
+        gradient.addColorStop(0.5, palette.secondary);
+        gradient.addColorStop(1, palette.accent);
 
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, width, height);
+
+        // Add subtle film grain for premium texture
+        this.addGrain(0.05);
+    }
+
+    private addGrain(intensity: number) {
+        const { width, height } = this.canvas;
+        const imageData = this.ctx.getImageData(0, 0, width, height);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+            const noise = (Math.random() - 0.5) * intensity * 255;
+            data[i] = Math.min(255, Math.max(0, data[i] + noise));
+            data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise));
+            data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise));
+        }
+        this.ctx.putImageData(imageData, 0, 0);
     }
 
     private drawGenericFrontCover(width: number, height: number, options: CoverOptions, palette: any) {
@@ -364,13 +379,16 @@ export class CoverGenerator {
             }
         }
         else {
-            // DEFAULT: Abstract Circles
+            // DEFAULT: Elegant Geometric Flow
             this.ctx.strokeStyle = palette.accent;
-            this.ctx.globalAlpha = 0.15;
-            this.ctx.lineWidth = 3;
-            for (let i = 0; i < 20; i++) {
+            this.ctx.globalAlpha = 0.1;
+            this.ctx.lineWidth = 1;
+            for (let i = 0; i < 50; i++) {
                 this.ctx.beginPath();
-                this.ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 200, 0, Math.PI * 2);
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = Math.random() * 300;
+                this.ctx.rect(x, y, size, size);
                 this.ctx.stroke();
             }
         }
@@ -490,32 +508,24 @@ export class CoverGenerator {
         this.ctx.fillStyle = '#FFFFFF';
         this.ctx.fillRect(0, 0, width, height);
 
-        // Simple abstract shapes based on genre
+        // Abstract Design - NO TEXT Labelling
+        this.ctx.save();
+        this.ctx.globalAlpha = 0.08;
         this.ctx.strokeStyle = '#000000';
-        this.ctx.lineWidth = 2;
-        this.ctx.globalAlpha = 0.1;
+        this.ctx.lineWidth = 1;
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 40; i++) {
             this.ctx.beginPath();
-            this.ctx.arc(
-                Math.random() * width,
-                Math.random() * height,
-                Math.random() * 100 + 50,
-                0, Math.PI * 2
-            );
+            const x = Math.random() * width;
+            const y = Math.random() * height;
+            const r = Math.random() * 150;
+            this.ctx.moveTo(x + r, y);
+            this.ctx.arc(x, y, r, 0, Math.PI * 2);
             this.ctx.stroke();
         }
+        this.ctx.restore();
 
-        // Add title text if available
-        this.ctx.globalAlpha = 1;
-        this.ctx.fillStyle = '#333333';
-        this.ctx.font = 'bold 32px serif';
-        this.ctx.textAlign = 'center';
-        if (title) {
-            this.ctx.fillText(title.toUpperCase(), width / 2, height / 2);
-        }
-
-        return this.canvas.toDataURL('image/jpeg', 0.8);
+        return this.canvas.toDataURL('image/jpeg', 0.9);
     }
 
     /**
@@ -528,37 +538,28 @@ export class CoverGenerator {
         const palette = this.getColorPalette('FICTION', 'vibrant');
         this.drawBackground(palette);
 
-        // Abstract Design
+        // High-End Procedural Background
+        this.drawProceduralPattern('FICTION', width, height, palette);
+
+        // Abstract Design Layers
         this.ctx.save();
-        this.ctx.globalAlpha = 0.2;
+        this.ctx.globalAlpha = 0.1;
         this.ctx.strokeStyle = '#ffffff';
-        this.ctx.lineWidth = 2;
-        for (let i = 0; i < 50; i++) {
+        this.ctx.lineWidth = 0.5;
+        for (let i = 0; i < 100; i++) {
             this.ctx.beginPath();
-            this.ctx.moveTo(Math.random() * width, Math.random() * height);
-            this.ctx.lineTo(Math.random() * width, Math.random() * height);
+            this.ctx.moveTo(Math.random() * width, 0);
+            this.ctx.lineTo(Math.random() * width, height);
+            this.ctx.stroke();
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, Math.random() * height);
+            this.ctx.lineTo(width, Math.random() * height);
             this.ctx.stroke();
         }
         this.ctx.restore();
 
-        // Text Overlay
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-
-        // Dynamic font size
-        const fontSize = Math.min(width, height) / 12;
-        this.ctx.font = `bold ${fontSize}px "Arial", sans-serif`;
-
-        const words = prompt.split(' ').slice(0, 6).join(' ');
-        this.ctx.shadowColor = 'rgba(0,0,0,0.5)';
-        this.ctx.shadowBlur = 10;
-        this.ctx.fillText(words.toUpperCase(), width / 2, height / 2);
-
-        this.ctx.shadowBlur = 0;
-        this.ctx.font = `italic ${fontSize / 2}px "Arial", sans-serif`;
-        this.ctx.fillText("INDUSTRIAL ASSET GEN ∞", width / 2, height / 2 + (fontSize * 1.5));
-
+        // NO OVERLAY TEXT FOR PREMIUM LOOK
         return this.canvas.toDataURL('image/png');
     }
 }

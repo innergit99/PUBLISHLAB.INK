@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf';
 import { KDPBlueprint } from './types';
+import { kdpExportValidator } from './kdpExportValidator';
 
 export const downloadService = {
     /**
@@ -15,8 +16,17 @@ export const downloadService = {
 
     /**
      * Download the full book as a PDF
+     * CRITICAL: Validates content before export to prevent placeholder leaks
      */
     async downloadFullBook(blueprint: KDPBlueprint) {
+        // VALIDATION GATE: Block export if placeholder content detected
+        const validation = kdpExportValidator.validate(blueprint);
+        if (!validation.canExport) {
+            const report = kdpExportValidator.generateReport(validation);
+            console.error('🚨 EXPORT BLOCKED:', report);
+            throw new Error(`Export blocked: ${validation.blockers.length} placeholder leak(s) detected. Please generate all chapters before exporting.`);
+        }
+
         // Lazy load jsPDF
         const doc = new jsPDF({
             unit: 'in',
@@ -60,7 +70,7 @@ export const downloadService = {
 
         doc.setFontSize(10);
         doc.setFont('times', 'normal');
-        doc.text(`Published by ${blueprint.PROJECT_META.publisher_imprint || 'Artisan AI Genesis ∞'}`, pageWidth / 2, 8, { align: 'center' });
+        doc.text(`${blueprint.PROJECT_META.publisher_imprint || 'Independently Published'}`, pageWidth / 2, 8, { align: 'center' });
 
         // 2. Copyright Page
         addNewPage();
@@ -87,11 +97,12 @@ export const downloadService = {
         cursorY += 0.3;
 
         if (blueprint.ISBN_SPEC.source === 'KDP') {
-            doc.text("ISBN: Assign via KDP Dashboard", margin, cursorY);
-        } else {
-            doc.text("ISBN: [USER ISBN PENDING]", margin, cursorY);
+            // KDP assigns ISBN - omit line entirely for cleaner look
+        } else if ((blueprint.ISBN_SPEC as any).isbn) {
+            doc.text(`ISBN: ${(blueprint.ISBN_SPEC as any).isbn}`, margin, cursorY);
+            cursorY += 0.3;
         }
-        cursorY += 0.3;
+        // No placeholder text - leave blank if no ISBN
 
         // AI Disclosure
         doc.text("This work was created with the assistance of artificial intelligence tools and has been reviewed, edited, and curated by the author.", margin, cursorY);
@@ -171,7 +182,7 @@ export const downloadService = {
             doc.setFont('times', 'normal');
             doc.setFontSize(12);
 
-            const lines = doc.splitTextToSize(ch.content || 'Content pending...', contentWidth);
+            const lines = doc.splitTextToSize(ch.content || '', contentWidth);
             lines.forEach((line: string) => {
                 if (cursorY > pageHeight - margin) {
                     addNewPage();

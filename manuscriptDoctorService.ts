@@ -496,7 +496,7 @@ export class ManuscriptDoctorService {
                 title: `Chapter ${index + 1}`,
                 content: text,
                 summary: 'Imported content.',
-                visualPrompt: `Illustration for Chapter ${index + 1}: ${text.substring(0, 100)}...`,
+                visualPrompt: `${upload.contextProfile.detectedGenre} cinematic book illustration depicting: ${text.substring(0, 150)}`,
                 wordCount: text.split(/\s+/).length
             })),
             BOOK_STRUCTURE: {
