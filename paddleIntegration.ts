@@ -123,10 +123,10 @@ export interface UserSubscription {
 
 // Initialize Paddle
 export async function initializePaddle(): Promise<void> {
-    const paddleVendorId = import.meta.env.VITE_PADDLE_VENDOR_ID;
+    const paddleToken = import.meta.env.VITE_PADDLE_CLIENT_TOKEN || import.meta.env.VITE_PADDLE_VENDOR_ID;
 
-    if (!paddleVendorId) {
-        console.warn('Paddle vendor ID not configured');
+    if (!paddleToken) {
+        console.warn('Paddle initialization token not configured (VITE_PADDLE_CLIENT_TOKEN)');
         return;
     }
 
@@ -144,10 +144,10 @@ export async function initializePaddle(): Promise<void> {
             window.Paddle.Environment.set(paddleEnv);
             // @ts-ignore
             window.Paddle.Initialize({
-                token: paddleVendorId,
+                token: paddleToken,
                 eventCallback: handlePaddleEvent,
             });
-            console.log('✅ Paddle initialized');
+            console.log(`✅ Paddle initialized in ${paddleEnv} mode`);
         }
     };
 
