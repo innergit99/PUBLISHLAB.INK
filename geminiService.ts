@@ -202,94 +202,88 @@ No explanations. No quotes.`;
 
 
   // ============================================================
-  // CORE AI QUERY ENGINE - HF BACKEND PRIMARY, OLLAMA BACKUP, GEMINI FALLBACK
+  // CORE AI QUERY ENGINE - ENVIRONMENT-AWARE RESOURCE ROUTING
   // ============================================================
 
   public async queryAI(prompt: string, jsonMode: boolean = false): Promise<string> {
-    // 0. CHECK MODE: If we've already fallen back to Ollama in this session (and we are in DEV), skip HF entirely.
-    if (import.meta.env.DEV && (this as any)._isUsingOllama) {
-      // Direct jump to Ollama logic (Code deduplication via recursion would be cleaner but risky with retries, duplicating fallback logic here)
-      // Actually, we can just call the Ollama retry block.
+    const { isLocalMode } = await import('./environmentConfig');
+
+    // HARD RULE: Local development MUST use only Ollama (zero API costs)
+    if (isLocalMode()) {
+      console.log('🏠 LOCAL MODE: Routing to Ollama (zero API costs)');
       try {
-        // console.log('🔄 Ollama Mode Active (Skipping HF)...'); // Optional: Reduce log spam
         return await this.retryWithBackoff(
           () => this.queryOllamaDirectly(prompt, jsonMode),
-          2, // 2 retries for Ollama
-          500, // 500ms base delay
+          2,
+          500,
           'Ollama'
         );
       } catch (ollamaError: any) {
-        // If Ollama fails, we STOP here. No Gemini fallback.
-        console.warn('❌ Ollama failed (Sticky Mode):', ollamaError.message);
-        (this as any)._isUsingOllama = false; // Reset if Ollama dies.
+        console.error('❌ Ollama failed in LOCAL mode:', ollamaError.message);
 
-        // Fallback to static
+        // Fallback to static content (no paid APIs in local mode)
         if (jsonMode) return "[]";
         if (prompt.includes('MASTER ENGINE') || prompt.includes('chapter')) {
           return this.generateStaticChapterContent(prompt);
         }
-        return "AI services unavailable (Ollama Failed).";
+        return "AI services unavailable. Please ensure Ollama is running (http://localhost:11434).";
       }
     }
 
-    // 1. TRY OPENAI (Premium/Industrial Tier) - The "Gold Standard"
-    if (process.env.OPENAI_API_KEY && !process.env.OPENAI_API_KEY.includes('PLACEHOLDER')) {
+    // PRODUCTION MODE: Use paid APIs for industrial-grade quality
+    console.log('🚀 PRODUCTION MODE: Using premium APIs');
+
+    // 1. TRY GEMINI 1.5 FLASH (Primary - Fastest & Cheapest)
+    const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    if (geminiKey && !geminiKey.includes('PLACEHOLDER')) {
       try {
-        console.log('💎 Calling OpenAI (GPT-4o-mini)...');
+        console.log('💎 Calling Gemini 1.5 Flash...');
         return await this.retryWithBackoff(
-          () => this.queryOpenAIDirectly(prompt, jsonMode),
+          () => this.queryGeminiFlash(prompt, jsonMode),
           2,
           1000,
-          'OpenAI'
+          'Gemini'
         );
       } catch (e: any) {
-        console.warn('⚠️ OpenAI failed, falling back to HuggingFace:', e.message);
+        console.warn('⚠️ Gemini failed, falling back to Groq:', e.message);
       }
     }
 
-    // 2. TRY HUGGINGFACE BACKEND (Llama 3.1-8B on ZeroGPU)
+    // 2. TRY GROQ LLAMA 3.3-70B (Fallback - High Quality)
+    const groqKey = import.meta.env.VITE_GROQ_API_KEY || process.env.GROQ_API_KEY;
+    if (groqKey && !groqKey.includes('PLACEHOLDER')) {
+      try {
+        console.log('🔄 Calling Groq Llama 3.3-70B...');
+        return await this.retryWithBackoff(
+          () => this.queryGroqDirectly(prompt, jsonMode),
+          2,
+          1000,
+          'Groq'
+        );
+      } catch (e: any) {
+        console.warn('⚠️ Groq failed:', e.message);
+      }
+    }
+
+    // 3. FINAL FALLBACK - HUGGINGFACE (Legacy)
     try {
-      console.log('🚀 Trying HuggingFace Backend (primary - Llama 3.1-8B on ZeroGPU)...');
+      console.log('🤗 Trying HuggingFace Backend (legacy fallback)...');
       const result = await this.retryWithBackoff(
         () => hfBackend.generateText(prompt, jsonMode ? 2000 : 4000, 0.7),
-        3, // Increase to 3 retries (Cold start can take 2-3 attempts)
-        5000, // 5s initial delay (give it time to wake up)
+        2,
+        5000,
         'HF Backend'
       );
       return result;
     } catch (hfError: any) {
-      console.warn('⚠️ HF Backend failed, switching to Ollama Local Mode:', hfError.message);
+      console.error('❌ All AI engines failed:', hfError.message);
 
-      // Set flag for Ollama mode
-      (this as any)._isUsingOllama = true;
-
-      // FALLBACK TO OLLAMA (Local backup - DEV ONLY or EXPLICIT CONFIG)
-      if (import.meta.env.DEV) {
-        try {
-          console.log('🔄 Trying Ollama (backup - Llama 3.2)...');
-          return await this.retryWithBackoff(
-            () => this.queryOllamaDirectly(prompt, jsonMode),
-            2,
-            500,
-            'Ollama'
-          );
-        } catch (ollamaError: any) {
-          console.warn('❌ Ollama failed:', ollamaError.message);
-        }
-      }
-
-      // Clear Ollama flag if we skipped or failed
-      (this as any)._isUsingOllama = false;
-
-      // FINAL FALLBACK - STATIC CONTENT ONLY (NO GEMINI)
-      console.error('All AI engines failed (Gemini Disabled per User Request).');
-
-      // STATIC FALLBACK
+      // Static fallback
       if (jsonMode) return "[]";
       if (prompt.includes('MASTER ENGINE') || prompt.includes('chapter')) {
         return this.generateStaticChapterContent(prompt);
       }
-      return "AI services temporarily unavailable. Please verify HuggingFace API status or run Ollama locally.";
+      return "AI services temporarily unavailable. Please check your API keys.";
     }
   }
 
@@ -489,6 +483,100 @@ No explanations. No quotes.`;
       }
       console.error('Ollama error details:', { name: e?.name, message: e?.message, reason: controller.signal.reason, error: e });
       throw new Error(`Ollama failed: ${errorMsg}`);
+    }
+  }
+
+  private async queryGeminiFlash(prompt: string, jsonMode: boolean = false): Promise<string> {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error("Gemini API Key missing");
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({
+            contents: [{
+              parts: [{ text: prompt }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 8192,
+              ...(jsonMode && { responseMimeType: "application/json" })
+            }
+          })
+        }
+      );
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(`Gemini Error: ${err.error?.message || response.statusText}`);
+      }
+
+      const data = await response.json();
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!content) throw new Error("Empty Gemini response");
+
+      console.log('✅ Gemini 1.5 Flash generation successful');
+      return content;
+    } catch (e: any) {
+      clearTimeout(timeoutId);
+      throw new Error(`Gemini Failed: ${e.message}`);
+    }
+  }
+
+  private async queryGroqDirectly(prompt: string, jsonMode: boolean = false): Promise<string> {
+    const apiKey = import.meta.env.VITE_GROQ_API_KEY || process.env.GROQ_API_KEY;
+    if (!apiKey) throw new Error("Groq API Key missing");
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    try {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "system",
+              content: jsonMode
+                ? "You are a JSON-only API. Return valid JSON only."
+                : "You are a specialized creative writing engine for Amazon KDP."
+            },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 8000
+        })
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(`Groq Error: ${err.error?.message || response.statusText}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices[0].message.content;
+      console.log('✅ Groq generation successful');
+      return content;
+    } catch (e: any) {
+      clearTimeout(timeoutId);
+      throw new Error(`Groq Failed: ${e.message}`);
     }
   }
 
