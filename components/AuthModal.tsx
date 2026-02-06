@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { X, Mail, Lock, Loader2, Github } from 'lucide-react';
+import { X, Mail, Lock, Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface AuthModalProps {
@@ -9,12 +9,15 @@ interface AuthModalProps {
     onSuccess: () => void;
 }
 
+type AuthMode = 'login' | 'signup' | 'forgot';
+
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
-    const [isLogin, setIsLogin] = useState(true);
+    const [mode, setMode] = useState<AuthMode>('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [resetSent, setResetSent] = useState(false);
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,26 +25,40 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         setError(null);
 
         try {
-            if (isLogin) {
+            if (mode === 'login') {
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
                 });
                 if (error) throw error;
-            } else {
+                onSuccess();
+                onClose();
+            } else if (mode === 'signup') {
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
                 });
                 if (error) throw error;
+                onSuccess();
+                onClose();
+            } else if (mode === 'forgot') {
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: `${window.location.origin}/reset-password`,
+                });
+                if (error) throw error;
+                setResetSent(true);
             }
-            onSuccess();
-            onClose();
         } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleModeChange = (newMode: AuthMode) => {
+        setMode(newMode);
+        setError(null);
+        setResetSent(false);
     };
 
     if (!isOpen) return null;
@@ -58,9 +75,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                     {/* Header */}
                     <div className="p-8 pb-0 flex justify-between items-center">
                         <div>
-                            <h2 className="text-2xl font-black italic uppercase text-white">Public Beta Access</h2>
+                            <h2 className="text-2xl font-black italic uppercase text-white">
+                                {mode === 'forgot' ? 'Reset Password' : 'Public Beta Access'}
+                            </h2>
                             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                                {isLogin ? 'Enter Your Studio' : 'Claim Your Beta Account — Free Forever'}
+                                {mode === 'login' && 'Enter Your Studio'}
+                                {mode === 'signup' && 'Claim Your Beta Account — Free Forever'}
+                                {mode === 'forgot' && 'We\'ll send you a reset link'}
                             </p>
                         </div>
                         <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
@@ -76,55 +97,103 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                             </div>
                         )}
 
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Email Address</label>
-                                <div className="relative">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                    <input
-                                        type="email"
-                                        required
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-700"
-                                        placeholder="user@example.com"
-                                    />
-                                </div>
+                        {resetSent ? (
+                            <div className="text-center space-y-4 py-4">
+                                <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto" />
+                                <p className="text-white font-bold">Password Reset Email Sent!</p>
+                                <p className="text-slate-400 text-sm">
+                                    Check your inbox for <span className="text-white">{email}</span> and follow the link to reset your password.
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => handleModeChange('login')}
+                                    className="mt-4 text-indigo-400 hover:text-indigo-300 text-sm font-bold flex items-center gap-2 mx-auto"
+                                >
+                                    <ArrowLeft size={14} /> Back to Login
+                                </button>
                             </div>
+                        ) : (
+                            <>
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Email Address</label>
+                                        <div className="relative">
+                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                                            <input
+                                                type="email"
+                                                required
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-700"
+                                                placeholder="user@example.com"
+                                            />
+                                        </div>
+                                    </div>
 
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Password</label>
-                                <div className="relative">
-                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                    <input
-                                        type="password"
-                                        required
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-700"
-                                        placeholder="••••••••"
-                                    />
+                                    {mode !== 'forgot' && (
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Password</label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                                                <input
+                                                    type="password"
+                                                    required
+                                                    value={password}
+                                                    onChange={(e) => setPassword(e.target.value)}
+                                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-700"
+                                                    placeholder="••••••••"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
-                        </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl py-4 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:shadow-[0_0_30px_rgba(99,102,241,0.3)]"
-                        >
-                            {loading ? <Loader2 className="animate-spin" size={16} /> : (isLogin ? 'Restore Session' : 'Activate Free Beta Access')}
-                        </button>
+                                {/* Forgot Password Link - Only show on login */}
+                                {mode === 'login' && (
+                                    <div className="text-right">
+                                        <button
+                                            type="button"
+                                            onClick={() => handleModeChange('forgot')}
+                                            className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                                        >
+                                            Forgot password?
+                                        </button>
+                                    </div>
+                                )}
 
-                        <div className="text-center">
-                            <button
-                                type="button"
-                                onClick={() => setIsLogin(!isLogin)}
-                                className="text-xs text-slate-500 hover:text-white transition-colors"
-                            >
-                                {isLogin ? "Don't have an account? Sign up" : "Already have an account? Log in"}
-                            </button>
-                        </div>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl py-4 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:shadow-[0_0_30px_rgba(99,102,241,0.3)]"
+                                >
+                                    {loading ? <Loader2 className="animate-spin" size={16} /> : (
+                                        mode === 'login' ? 'Restore Session' :
+                                            mode === 'signup' ? 'Activate Free Beta Access' :
+                                                'Send Reset Link'
+                                    )}
+                                </button>
+
+                                <div className="text-center space-y-2">
+                                    {mode === 'forgot' ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleModeChange('login')}
+                                            className="text-xs text-slate-500 hover:text-white transition-colors flex items-center gap-1 mx-auto"
+                                        >
+                                            <ArrowLeft size={12} /> Back to Login
+                                        </button>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleModeChange(mode === 'login' ? 'signup' : 'login')}
+                                            className="text-xs text-slate-500 hover:text-white transition-colors"
+                                        >
+                                            {mode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Log in"}
+                                        </button>
+                                    )}
+                                </div>
+                            </>
+                        )}
                     </form>
                 </motion.div>
             </div>
