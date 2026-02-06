@@ -45,7 +45,8 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
         name: 'Solo Builder',
         price: 12.99,
         yearlyPrice: 124.99, // ~20% discount
-        paddleProductId: 'pri_decoy_monthly',
+        paddleProductId: 'pri_01kgrr2bfas8jwm082vqfzeybg',
+        paddleYearlyProductId: 'pri_01kgrr2bfas8jwm082vqfzeybg', // FLAG: Identical to monthly
         features: [
             '5 Manuscripts / Mo',
             '300 DPI Print-Ready Covers',
@@ -66,8 +67,8 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
         name: 'Artisan',
         price: 14.99,
         yearlyPrice: 143.99, // ~20% discount ($11.99/mo)
-        paddleProductId: 'pri_01kgj1n3qkqj57dxpnt3b0cjxe', // Target Plan
-        paddleYearlyProductId: 'pri_artisan_yearly',
+        paddleProductId: 'pri_01kgrr7qv64p4c514xd76gp8aw',
+        paddleYearlyProductId: 'pri_01kgrrbchq7v2hsbxjajb5v75j',
         features: [
             'Unlimited Manuscripts',
             '300 DPI Print-Ready Covers',
@@ -89,7 +90,8 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
         name: 'PublishLab Master',
         price: 49.00,
         yearlyPrice: 470.00, // ~20% discount
-        paddleProductId: 'pro_01kgj1pccf8r87ha871a8dyjt2',
+        paddleProductId: 'pri_01kgrreb2y6aer1qg8x41z7r6k',
+        paddleYearlyProductId: 'pri_01kgrrkrgfc795b67vst0dbcya',
         features: [
             'Everything in Artisan',
             'Multi-Agent Collaboration',
@@ -165,15 +167,17 @@ function handlePaddleEvent(event: any) {
 }
 
 // Open Paddle checkout
-export async function openPaddleCheckout(tier: SubscriptionTier, userEmail?: string): Promise<void> {
+export async function openPaddleCheckout(tier: SubscriptionTier, userEmail?: string, billingCycle: 'monthly' | 'yearly' = 'monthly'): Promise<void> {
     // @ts-ignore
     if (!window.Paddle) {
         alert('Payment system not loaded. Please refresh and try again.');
         return;
     }
 
-    if (!tier.paddleProductId) {
-        alert('This plan is not yet configured. Please contact support.');
+    const priceId = billingCycle === 'yearly' ? tier.paddleYearlyProductId : tier.paddleProductId;
+
+    if (!priceId) {
+        alert('This plan is not yet configured for the selected billing cycle. Please contact support.');
         return;
     }
 
@@ -181,13 +185,14 @@ export async function openPaddleCheckout(tier: SubscriptionTier, userEmail?: str
     window.Paddle.Checkout.open({
         items: [
             {
-                priceId: tier.paddleProductId,
+                priceId: priceId,
                 quantity: 1,
             },
         ],
         customer: userEmail ? { email: userEmail } : undefined,
         customData: {
             tierId: tier.id,
+            billingCycle: billingCycle,
             source: 'publishlab-ink',
         },
     });

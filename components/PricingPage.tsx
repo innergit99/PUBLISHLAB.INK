@@ -139,7 +139,7 @@ export const PricingPage: React.FC<{ onBack?: () => void; onPlanSelected?: () =>
             const tierConfig = SUBSCRIPTION_TIERS[tierKey];
 
             if (tierConfig) {
-                await openPaddleCheckout(tierConfig, email);
+                await openPaddleCheckout(tierConfig, email, billingCycle);
             }
         } catch (error) {
             console.error("Checkout failed", error);
