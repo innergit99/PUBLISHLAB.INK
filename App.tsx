@@ -114,8 +114,8 @@ const App: React.FC = () => {
   };
 
   const handleNavigate = (tab: ToolType, prompt?: string) => {
-    // GATEKEEPING: Require login for "Save to Gallery" or deep features
-    if (!user && (tab === ToolType.MY_GALLERY || tab === ToolType.SETTINGS)) {
+    // GATEKEEPING: Require login for EVERYTHING in the Studio during Beta
+    if (!user && tab !== ToolType.DASHBOARD) {
       setShowAuthModal(true);
       return;
     }
@@ -242,6 +242,13 @@ const App: React.FC = () => {
               <div className="flex items-center gap-6">
                 <button onClick={() => setIsDarkMode(!isDarkMode)}>{isDarkMode ? <Sun size={18} /> : <Moon size={18} />}</button>
                 <button onClick={() => setShowLanding(true)} className="text-[9px] font-black uppercase tracking-widest text-indigo-500">Back to Landing</button>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-indigo-400">Public Beta Preview</span>
+                </div>
               </div>
             </header>
             {renderContent()}

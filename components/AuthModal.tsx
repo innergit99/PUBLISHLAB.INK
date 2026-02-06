@@ -58,9 +58,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                     {/* Header */}
                     <div className="p-8 pb-0 flex justify-between items-center">
                         <div>
-                            <h2 className="text-2xl font-black italic uppercase text-white">Artisan Cloud</h2>
+                            <h2 className="text-2xl font-black italic uppercase text-white">Public Beta Access</h2>
                             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                                {isLogin ? 'Access Your Foundry' : 'Join the Industrial Revolution'}
+                                {isLogin ? 'Enter Your Studio' : 'Claim Your Beta Account — Free Forever'}
                             </p>
                         </div>
                         <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
@@ -113,7 +113,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                             disabled={loading}
                             className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl py-4 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:shadow-[0_0_30px_rgba(99,102,241,0.3)]"
                         >
-                            {loading ? <Loader2 className="animate-spin" size={16} /> : (isLogin ? 'Enter Studio' : 'Create Account')}
+                            {loading ? <Loader2 className="animate-spin" size={16} /> : (isLogin ? 'Restore Session' : 'Activate Free Beta Access')}
                         </button>
 
                         <div className="text-center">

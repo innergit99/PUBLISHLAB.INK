@@ -98,7 +98,7 @@ export default function LandingPage({
                             className="relative group overflow-hidden px-6 py-3 bg-white text-black text-xs font-black uppercase tracking-widest rounded-full transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
                         >
                             <span className="relative z-10 flex items-center gap-2">
-                                Launch PublishLab
+                                Launch Beta Studio
                             </span>
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent translate-x-[-200%] group-hover:animate-shine" />
                         </button>
@@ -133,7 +133,7 @@ export default function LandingPage({
                                 className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] flex items-center justify-center gap-3"
                             >
                                 <Play size={18} fill="currentColor" />
-                                Launch PublishLab
+                                Launch Studio (Public Beta)
                             </button>
                             <button
                                 onClick={() => document.getElementById('system')?.scrollIntoView({ behavior: 'smooth' })}
