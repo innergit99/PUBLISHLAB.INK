@@ -80,6 +80,16 @@ export default function LegalModal({ type, onClose }: LegalModalProps) {
                                 <h3 className="text-white font-bold text-lg mb-2">5. Intellectual Property</h3>
                                 <p><strong>Your Content:</strong> You retain full ownership of the content you generate using our tools (Book Manuscripts, Covers). We claim no copyright over your creations.</p>
                             </section>
+
+                            <section>
+                                <h3 className="text-white font-bold text-lg mb-2">6. Contact Information</h3>
+                                <p>For any questions regarding these Terms, please contact us at:</p>
+                                <ul className="mt-2 space-y-1 text-sm font-mono text-gray-400">
+                                    <li>Proprietor: Bishal Gautam</li>
+                                    <li>Email: support@publishlab.ink</li>
+                                    <li>Registered Office: Adh Dhawq Street, Abu Dhabi, 00971, UAE</li>
+                                </ul>
+                            </section>
                         </>
                     )}
 
