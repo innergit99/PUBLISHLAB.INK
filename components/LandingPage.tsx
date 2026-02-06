@@ -302,6 +302,17 @@ export default function LandingPage({
                                         Live_Pipeline_Feed
                                     </div>
                                     <LivePipelineTerminal />
+
+                                    {/* Final Impact Message */}
+                                    <div className="absolute bottom-0 inset-x-0 h-10 bg-indigo-500/10 border-t border-indigo-500/20 flex items-center justify-center">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-1 h-1 rounded-full bg-indigo-400 animate-ping" />
+                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]">
+                                                The SaaS Hell, Ends Here
+                                            </span>
+                                            <div className="w-1 h-1 rounded-full bg-indigo-400 animate-ping" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
