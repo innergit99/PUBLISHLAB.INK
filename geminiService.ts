@@ -2217,6 +2217,11 @@ AVOID: Any imagery that could interfere with barcode scanning`;
    */
   async generateImageForModule(prompt: string, module: 'POD' | 'KDP' | 'MOCKUP' | 'KDP_INTERIOR' = 'POD', options: { forceEngine?: 'POLLINATIONS' | 'HF_ZERO_GPU' | 'DEEPAI', aspectRatio?: string, negativePrompt?: string, colorMode?: 'Color' | 'B&W', author?: string, genre?: string } = {}): Promise<string> {
 
+    // ENVIRONMENT-AWARE IMAGE GENERATION
+    // Local mode: Canvas (zero cost)
+    // Production mode: Fal.ai (industrial quality)
+    const { imageService } = await import('./imageService');
+
     // Default size logic
     let width = 1024;
     let height = 1024;
@@ -2266,19 +2271,32 @@ AVOID: Any imagery that could interfere with barcode scanning`;
           commercial illustration quality,
           Amazon bestseller aesthetic`;
       }
+    } else if (module === 'KDP_INTERIOR') {
+      // Chapter illustrations
+      suffix = "professional book chapter illustration, high quality, detailed, engaging visual storytelling, 300 DPI";
     }
 
     const finalPrompt = `${enhancedPrompt}, ${suffix}`;
-    // size is already defined above based on module type
 
-    console.log(`[🏭 Industrial Engine] Generating for ${module} via Cascade. Prompt: ${finalPrompt.substring(0, 50)}...`);
+    console.log(`[🏭 KDP Book Lab] Generating ${module} image via environment-aware routing`);
 
-    // 2. ENGINE CASCADE EXECUTION
-
-    // --- TIER 1: HUGGING FACE BACKEND (SDXL on ZeroGPU) ---
-    // Primary engine for high-quality generation
+    // 2. ROUTE TO IMAGE SERVICE
     try {
-      console.log(`[Industrial Engine] 🏭 Generating via HF Backend (SDXL). Size: ${width}x${height}`);
+      return await imageService.generateImage({
+        prompt: finalPrompt,
+        width,
+        height,
+        model: module === 'KDP' || module === 'KDP_INTERIOR' ? 'dev' : 'schnell', // Higher quality for book content
+        numInferenceSteps: module === 'KDP' ? 28 : 4, // More steps for covers
+        guidanceScale: 7.5
+      });
+    } catch (error: any) {
+      console.error(`❌ Image generation failed for ${module}:`, error.message);
+      throw error;
+    }
+  }
+
+      console.log(`[Industrial Engine] 🏭 Generating via HF Backend (SDXL). Size: ${width}x${ height } `);
 
       // Calculate aspect ratio string for SDXL (e.g. "1024x1024" or "768x1024")
       // SDXL works best with specific buckets, but we'll try to match requested dim
@@ -2383,382 +2401,382 @@ AVOID: Any imagery that could interfere with barcode scanning`;
     else if (/fantasy|magic|epic|dragon/i.test(prompt)) genre = 'fantasy';
     else if (/sci-fi|scifi|science fiction|space|tech/i.test(prompt)) genre = 'scifi';
 
-    const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    const svg = `< svg width = "${width}" height = "${height}" xmlns = "http://www.w3.org/2000/svg" >
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  <rect width="100%" height="100%" fill="url(#bg)"/>
-  <circle cx="${width * 0.2}" cy="${height * 0.2}" r="${width * 0.25}" fill="#3b82f6" opacity="0.1"/>
-  <circle cx="${width * 0.8}" cy="${height * 0.8}" r="${width * 0.2}" fill="#3b82f6" opacity="0.1"/>
-  <rect x="10%" y="${height * 0.2}" width="80%" height="2" fill="#3b82f6" opacity="0.5"/>
-  <text x="50%" y="${height * 0.45}" font-family="Georgia,serif" font-size="${width * 0.085}" font-weight="bold" fill="white" text-anchor="middle">${line1}</text>
-  ${line2 ? `<text x="50%" y="${height * 0.55}" font-family="Georgia,serif" font-size="${width * 0.085}" font-weight="bold" fill="white" text-anchor="middle">${line2}</text>` : ''}
-  <text x="50%" y="${height * 0.85}" font-family="Arial,sans-serif" font-size="${width * 0.04}" fill="white" text-anchor="middle" opacity="0.8">BY [AUTHOR NAME]</text>
-  <rect x="10%" y="${height * 0.75}" width="80%" height="2" fill="#3b82f6" opacity="0.5"/>
-</svg>`;
+  <linearGradient id="bg" x1 = "0%" y1 = "0%" x2 = "100%" y2 = "100%" >
+    <stop offset="0%" style = "stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style = "stop-color:#1e293b;stop-opacity:1" />
+        </linearGradient>
+        </defs>
+        < rect width = "100%" height = "100%" fill = "url(#bg)" />
+          <circle cx="${width * 0.2}" cy = "${height * 0.2}" r = "${width * 0.25}" fill = "#3b82f6" opacity = "0.1" />
+            <circle cx="${width * 0.8}" cy = "${height * 0.8}" r = "${width * 0.2}" fill = "#3b82f6" opacity = "0.1" />
+              <rect x="10%" y = "${height * 0.2}" width = "80%" height = "2" fill = "#3b82f6" opacity = "0.5" />
+                <text x="50%" y = "${height * 0.45}" font - family="Georgia,serif" font - size="${width * 0.085}" font - weight="bold" fill = "white" text - anchor="middle" > ${ line1 } </text>
+  ${ line2 ? `<text x="50%" y="${height * 0.55}" font-family="Georgia,serif" font-size="${width * 0.085}" font-weight="bold" fill="white" text-anchor="middle">${line2}</text>` : '' }
+<text x="50%" y = "${height * 0.85}" font - family="Arial,sans-serif" font - size="${width * 0.04}" fill = "white" text - anchor="middle" opacity = "0.8" > BY[AUTHOR NAME]</text>
+  < rect x = "10%" y = "${height * 0.75}" width = "80%" height = "2" fill = "#3b82f6" opacity = "0.5" />
+    </svg>`;
 
-    return `data:image/svg+xml;base64,${btoa(svg)}`;
+return `data:image/svg+xml;base64,${btoa(svg)}`;
   }
 
   // Helper function to wrap long titles
   private wrapText(text: string, maxLength: number): string {
-    if (text.length <= maxLength) return text;
+  if (text.length <= maxLength) return text;
 
-    const words = text.split(' ');
-    const lines: string[] = [];
-    let currentLine = '';
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let currentLine = '';
 
-    for (const word of words) {
-      if ((currentLine + word).length > maxLength) {
-        if (currentLine) lines.push(currentLine.trim());
-        currentLine = word + ' ';
-      } else {
-        currentLine += word + ' ';
-      }
+  for (const word of words) {
+    if ((currentLine + word).length > maxLength) {
+      if (currentLine) lines.push(currentLine.trim());
+      currentLine = word + ' ';
+    } else {
+      currentLine += word + ' ';
     }
-    if (currentLine) lines.push(currentLine.trim());
-
-    // Return first 2 lines joined (SVG doesn't support multi-line text easily)
-    return lines.slice(0, 2).join(' ');
   }
+  if (currentLine) lines.push(currentLine.trim());
+
+  // Return first 2 lines joined (SVG doesn't support multi-line text easily)
+  return lines.slice(0, 2).join(' ');
+}
 
   // --- ENGINE IMPLEMENTATIONS ---
 
-  async generateImage(prompt: string, systemPrompt?: string, aspectRatio: string = "1:1"): Promise<string> {
-    // Legacy support -> redirects to POD module default
-    return this.generateImageForModule(prompt, 'POD');
+  async generateImage(prompt: string, systemPrompt ?: string, aspectRatio: string = "1:1"): Promise < string > {
+  // Legacy support -> redirects to POD module default
+  return this.generateImageForModule(prompt, 'POD');
+}
+
+  private async generateWithPollinations(prompt: string, width: number, height: number, negativePrompt: string, returnBase64: boolean = false): Promise < string > {
+  // ENVIRONMENT-AWARE IMAGE GENERATION
+  // Local mode: Canvas (zero cost)
+  // Production mode: Fal.ai Flux (industrial quality)
+  const { imageService } = await import('./imageService');
+
+  try {
+    return await imageService.generateImage({
+      prompt,
+      width,
+      height,
+      model: 'schnell',
+      numInferenceSteps: 4,
+      guidanceScale: 3.5
+    });
+  } catch(error: any) {
+    console.error('❌ Image generation failed:', error.message);
+    throw error;
   }
+}
 
-  private async generateWithPollinations(prompt: string, width: number, height: number, negativePrompt: string, returnBase64: boolean = false): Promise<string> {
-    // ENVIRONMENT-AWARE IMAGE GENERATION
-    // Local mode: Canvas (zero cost)
-    // Production mode: Fal.ai Flux (industrial quality)
-    const { imageService } = await import('./imageService');
+  private async generateWithHuggingFaceZeroGPU(prompt: string, size: number): Promise < string > {
+  // Requires Bearer Token effectively
+  if(!process.env.HF_API_TOKEN) throw new Error("No HF Token");
 
-    try {
-      return await imageService.generateImage({
-        prompt,
-        width,
-        height,
-        model: 'schnell',
-        numInferenceSteps: 4,
-        guidanceScale: 3.5
-      });
-    } catch (error: any) {
-      console.error('❌ Image generation failed:', error.message);
-      throw error;
-    }
-  }
-
-  private async generateWithHuggingFaceZeroGPU(prompt: string, size: number): Promise<string> {
-    // Requires Bearer Token effectively
-    if (!process.env.HF_API_TOKEN) throw new Error("No HF Token");
-
-    // We try to fetch. If CORS blocks it, the catch block in the main facade will handle it.
-    const response = await fetch(
-      'https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.HF_API_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          inputs: prompt,
-          parameters: { width: size, height: size }
-        }),
-      }
-    );
-
-    if (!response.ok) throw new Error(`HF returned ${response.status}`);
-    const blob = await response.blob();
-    return URL.createObjectURL(blob);
-  }
-
-  private async generateWithDeepAI(prompt: string, width: number, height: number): Promise<string> {
-    // Commercial-friendly fallback
-    // Uses user's key if available, otherwise falls back to free 'quickstart' key
-    const apiKey = process.env.DEEPAI_API_KEY || 'quickstart-QUdJIGlzIGNvbWluZy4uLi4K';
-
-    const response = await fetch('https://api.deepai.org/api/text2img', {
+  // We try to fetch. If CORS blocks it, the catch block in the main facade will handle it.
+  const response = await fetch(
+    'https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell',
+    {
       method: 'POST',
       headers: {
-        'Api-Key': apiKey,
+        'Authorization': `Bearer ${process.env.HF_API_TOKEN}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        text: prompt,
-        grid_size: "1",
-        width: width,
-        height: height,
+        inputs: prompt,
+        parameters: { width: size, height: size }
       }),
-    });
-
-    if (!response.ok) throw new Error(`DeepAI Error`);
-    const data = await response.json();
-    return data.output_url;
-  }
-
-  private async generateWithIDETool(prompt: string, width: number, height: number): Promise<string | null> {
-    // Use Antigravity IDE's built-in generate_image tool
-    // This uses FLUX.1 (Visual Lead agent) or Gemini Nano Banana Pro
-    // Supports 4K output and high text accuracy
-
-    try {
-      // The IDE exposes generate_image as a global tool
-      // We need to call it via the MCP interface or window object
-
-      // Check if running in IDE environment
-      if (typeof window === 'undefined') {
-        return null; // Not in browser/IDE environment
-      }
-
-      // Try to use IDE's generate_image tool
-      // The exact API might vary, but typically it's exposed via window
-      const ideImageGen = (window as any).generateImage || (window as any).aistudio?.generateImage;
-
-      if (!ideImageGen) {
-        console.log("IDE generate_image tool not found");
-        return null;
-      }
-
-      // Call IDE's image generation
-      const result = await ideImageGen({
-        Prompt: prompt,
-        ImageName: `kdp_image_${Date.now()}`,
-        // IDE typically handles size automatically for optimal quality
-      });
-
-      if (result && typeof result === 'string') {
-        // Result is likely a file path or data URL
-        return result;
-      }
-
-      return null;
-    } catch (error) {
-      console.warn("IDE tool generation error:", error);
-      return null;
     }
+  );
+
+  if(!response.ok) throw new Error(`HF returned ${response.status}`);
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
+}
+
+  private async generateWithDeepAI(prompt: string, width: number, height: number): Promise < string > {
+  // Commercial-friendly fallback
+  // Uses user's key if available, otherwise falls back to free 'quickstart' key
+  const apiKey = process.env.DEEPAI_API_KEY || 'quickstart-QUdJIGlzIGNvbWluZy4uLi4K';
+
+  const response = await fetch('https://api.deepai.org/api/text2img', {
+    method: 'POST',
+    headers: {
+      'Api-Key': apiKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      text: prompt,
+      grid_size: "1",
+      width: width,
+      height: height,
+    }),
+  });
+
+  if(!response.ok) throw new Error(`DeepAI Error`);
+  const data = await response.json();
+  return data.output_url;
+}
+
+  private async generateWithIDETool(prompt: string, width: number, height: number): Promise < string | null > {
+  // Use Antigravity IDE's built-in generate_image tool
+  // This uses FLUX.1 (Visual Lead agent) or Gemini Nano Banana Pro
+  // Supports 4K output and high text accuracy
+
+  try {
+    // The IDE exposes generate_image as a global tool
+    // We need to call it via the MCP interface or window object
+
+    // Check if running in IDE environment
+    if(typeof window === 'undefined') {
+  return null; // Not in browser/IDE environment
+}
+
+// Try to use IDE's generate_image tool
+// The exact API might vary, but typically it's exposed via window
+const ideImageGen = (window as any).generateImage || (window as any).aistudio?.generateImage;
+
+if (!ideImageGen) {
+  console.log("IDE generate_image tool not found");
+  return null;
+}
+
+// Call IDE's image generation
+const result = await ideImageGen({
+  Prompt: prompt,
+  ImageName: `kdp_image_${Date.now()}`,
+  // IDE typically handles size automatically for optimal quality
+});
+
+if (result && typeof result === 'string') {
+  // Result is likely a file path or data URL
+  return result;
+}
+
+return null;
+    } catch (error) {
+  console.warn("IDE tool generation error:", error);
+  return null;
+}
   }
 
   // --- HELPER METHODS ---
 
   private cleanAndRepairJSON(jsonString: string): string {
-    if (!jsonString) return "[]";
+  if (!jsonString) return "[]";
 
-    // 1. Remove markdown code blocks
-    let cleaned = jsonString.replace(/```json/g, "").replace(/```/g, "").trim();
+  // 1. Remove markdown code blocks
+  let cleaned = jsonString.replace(/```json/g, "").replace(/```/g, "").trim();
 
-    // 2. Check if it's a numbered list format (common with Ollama)
-    // Example: 1. "Title" or 1. Title (with or without quotes)
-    if (/^\d+\./.test(cleaned)) {
-      const lines = cleaned.split('\n');
-      const titles: string[] = [];
+  // 2. Check if it's a numbered list format (common with Ollama)
+  // Example: 1. "Title" or 1. Title (with or without quotes)
+  if (/^\d+\./.test(cleaned)) {
+    const lines = cleaned.split('\n');
+    const titles: string[] = [];
 
-      for (const line of lines) {
-        // Match: "1. Title" or "1. "Title"" or "1. Title: description"
-        const match = line.match(/^\d+\.\s*(?:["']([^"'\n]+)["']|([^:\n]+))/);
-        if (match) {
-          const title = (match[1] || match[2] || '').trim();
-          if (title && title.length > 0) {
-            titles.push(title);
-          }
+    for (const line of lines) {
+      // Match: "1. Title" or "1. "Title"" or "1. Title: description"
+      const match = line.match(/^\d+\.\s*(?:["']([^"'\n]+)["']|([^:\n]+))/);
+      if (match) {
+        const title = (match[1] || match[2] || '').trim();
+        if (title && title.length > 0) {
+          titles.push(title);
         }
       }
-
-      if (titles.length > 0) {
-        console.log(`📋 Parsed ${titles.length} titles from numbered list`);
-        return JSON.stringify(titles);
-      }
     }
 
-    // 3. Extract content between the first [ or { and the last ] or }
-    const firstBracket = cleaned.indexOf('[');
-    const firstBrace = cleaned.indexOf('{');
-
-    let start = -1;
-    let end = -1;
-
-    // Determine if we look for Array or Object
-    if (firstBracket !== -1 && (firstBrace === -1 || firstBracket < firstBrace)) {
-      start = firstBracket;
-      end = cleaned.lastIndexOf(']');
-    } else if (firstBrace !== -1) {
-      start = firstBrace;
-      end = cleaned.lastIndexOf('}');
+    if (titles.length > 0) {
+      console.log(`📋 Parsed ${titles.length} titles from numbered list`);
+      return JSON.stringify(titles);
     }
-
-    if (start !== -1 && end !== -1) {
-      cleaned = cleaned.substring(start, end + 1);
-    }
-
-    return cleaned;
   }
 
-  async enhancePrompt(basePrompt: string, styleLabel: string): Promise<string> {
-    const prompt = `Enhance this design prompt for a professional POD artist: "${basePrompt}" (Style: ${styleLabel}). Keep it concise but descriptive. Output ONLY the enhanced prompt.`;
-    return await this.queryAI(prompt);
+  // 3. Extract content between the first [ or { and the last ] or }
+  const firstBracket = cleaned.indexOf('[');
+  const firstBrace = cleaned.indexOf('{');
+
+  let start = -1;
+  let end = -1;
+
+  // Determine if we look for Array or Object
+  if (firstBracket !== -1 && (firstBrace === -1 || firstBracket < firstBrace)) {
+    start = firstBracket;
+    end = cleaned.lastIndexOf(']');
+  } else if (firstBrace !== -1) {
+    start = firstBrace;
+    end = cleaned.lastIndexOf('}');
   }
 
-  async generateSEOMetadata(prompt: string): Promise<SEOMetadata> {
-    const res = await this.queryAI(`Generate Amazon SEO JSON (title, description, story, tags) for: "${prompt}". Output ONLY JSON.`, true);
-    return JSON.parse(this.cleanAndRepairJSON(res));
+  if (start !== -1 && end !== -1) {
+    cleaned = cleaned.substring(start, end + 1);
   }
 
-  async processTransparency(imageUrl: string): Promise<string> {
-    try {
-      console.log("🎨 Transparency: Fetching image...", imageUrl.substring(0, 50));
-      // Robust CORS-safe fetching with cache busting
-      const response = await fetch(imageUrl, { mode: 'cors', cache: 'reload' });
-      if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
-      const blob = await response.blob();
-      const bitmap = await createImageBitmap(blob);
+  return cleaned;
+}
 
-      const canvas = document.createElement('canvas');
-      canvas.width = bitmap.width;
-      canvas.height = bitmap.height;
-      const ctx = canvas.getContext('2d')!;
+  async enhancePrompt(basePrompt: string, styleLabel: string): Promise < string > {
+  const prompt = `Enhance this design prompt for a professional POD artist: "${basePrompt}" (Style: ${styleLabel}). Keep it concise but descriptive. Output ONLY the enhanced prompt.`;
+  return await this.queryAI(prompt);
+}
 
-      ctx.drawImage(bitmap, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
+  async generateSEOMetadata(prompt: string): Promise < SEOMetadata > {
+  const res = await this.queryAI(`Generate Amazon SEO JSON (title, description, story, tags) for: "${prompt}". Output ONLY JSON.`, true);
+  return JSON.parse(this.cleanAndRepairJSON(res));
+}
 
-      // Industrial White Removal (Luminance Key)
-      // We assume the background is pure white or very close to it.
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
+  async processTransparency(imageUrl: string): Promise < string > {
+  try {
+    console.log("🎨 Transparency: Fetching image...", imageUrl.substring(0, 50));
+    // Robust CORS-safe fetching with cache busting
+    const response = await fetch(imageUrl, { mode: 'cors', cache: 'reload' });
+    if(!response.ok) throw new Error(`Fetch failed: ${response.status}`);
+    const blob = await response.blob();
+    const bitmap = await createImageBitmap(blob);
 
-        // Check if pixel is near white (Tolerance of 40/255)
-        if (r > 215 && g > 215 && b > 215) {
-          // Create a soft alpha mask based on how white it is
-          const brightness = (r + g + b) / 3;
-          const alpha = 255 - (brightness - 215) * 6; // Fade out edge
-          data[i + 3] = Math.max(0, Math.min(255, alpha));
-          if (brightness > 240) data[i + 3] = 0; // Hard cut for pure white
-        }
-      }
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d')!;
 
-      ctx.putImageData(imageData, 0, 0);
-      return canvas.toDataURL('image/png');
+    ctx.drawImage(bitmap, 0, 0);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    // Industrial White Removal (Luminance Key)
+    // We assume the background is pure white or very close to it.
+    for(let i = 0; i <data.length; i += 4) {
+  const r = data[i];
+  const g = data[i + 1];
+  const b = data[i + 2];
+
+  // Check if pixel is near white (Tolerance of 40/255)
+  if (r > 215 && g > 215 && b > 215) {
+    // Create a soft alpha mask based on how white it is
+    const brightness = (r + g + b) / 3;
+    const alpha = 255 - (brightness - 215) * 6; // Fade out edge
+    data[i + 3] = Math.max(0, Math.min(255, alpha));
+    if (brightness > 240) data[i + 3] = 0; // Hard cut for pure white
+  }
+}
+
+ctx.putImageData(imageData, 0, 0);
+return canvas.toDataURL('image/png');
     } catch (e) {
-      console.error("Transparency Engine Failed:", e);
-      return imageUrl; // Fallback to original if processing fails
+  console.error("Transparency Engine Failed:", e);
+  return imageUrl; // Fallback to original if processing fails
+}
+  }
+
+generateFallbackSEO(prompt: string): any {
+  const topics = prompt.split(' ').filter(w => w.length > 4);
+  const mainTopic = topics[0] || "Design";
+
+  // Industrial Randomizer
+  const styles = ["Neo-Industrial", "Retro-Futuristic", "Minimalist", "Avant-Garde", "Urban"];
+  const adjs = ["Premium", "Exclusive", "Limited", "High-Fidelity", "Bespoke"];
+
+  const style = styles[Math.floor(Math.random() * styles.length)];
+  const adj = adjs[Math.floor(Math.random() * adjs.length)];
+
+  const storyTemplates = [
+    `Captured through the lens of ${style} aesthetics, this piece explores the duality of ${mainTopic}. Designed for the modern curator.`,
+    `A study in ${adj} simplicity. This design deconstructs the concept of ${mainTopic} into its purest visual form.`,
+    `Forged in the digital foundries of the ${style} movement. "${prompt.substring(0, 25)}..." represents a shift in visual language.`,
+    `Engineered for impact. The ${mainTopic} motif is reimagined here with clean lines and absolute precision.`
+  ];
+
+  const story = storyTemplates[Math.floor(Math.random() * storyTemplates.length)];
+
+  // Tag Generator
+  const baseTags = ["art", "design", "illustration", "graphic", "vector", "print", "merch"];
+  const randomTags = ["cool", "gift", "trendy", "style", "fashion", "urban", "streetwear"];
+
+  // Shuffle and slice
+  const specificTags = prompt.split(' ').filter(w => w.length > 3).map(w => w.replace(/[^a-zA-Z]/g, '').toLowerCase());
+  const finalTags = [...new Set([...specificTags, ...baseTags, ...randomTags])].slice(0, 15);
+
+  return {
+    originalPrompt: prompt,
+    style: style,
+    timestamp: new Date().toISOString(),
+    continuityReport: { score: 99, status: 'MATCH', feedback: 'Fallback Engine Active. High fidelity assumed.' },
+    listingDossiers: {
+      'Amazon/Etsy': {
+        title: `${adj} ${mainTopic} ${style} Graphic Tee`,
+        description: `Official ${style} Collection. ${story}`,
+        story: story,
+        tags: finalTags
+      },
+      'Redbubble': { title: `${mainTopic} - ${style} Edition`, description: story, story: story, tags: finalTags },
+      'Shopify': { title: `${adj} ${mainTopic} - Limited Run`, description: story, story: story, tags: finalTags }
     }
-  }
-
-  generateFallbackSEO(prompt: string): any {
-    const topics = prompt.split(' ').filter(w => w.length > 4);
-    const mainTopic = topics[0] || "Design";
-
-    // Industrial Randomizer
-    const styles = ["Neo-Industrial", "Retro-Futuristic", "Minimalist", "Avant-Garde", "Urban"];
-    const adjs = ["Premium", "Exclusive", "Limited", "High-Fidelity", "Bespoke"];
-
-    const style = styles[Math.floor(Math.random() * styles.length)];
-    const adj = adjs[Math.floor(Math.random() * adjs.length)];
-
-    const storyTemplates = [
-      `Captured through the lens of ${style} aesthetics, this piece explores the duality of ${mainTopic}. Designed for the modern curator.`,
-      `A study in ${adj} simplicity. This design deconstructs the concept of ${mainTopic} into its purest visual form.`,
-      `Forged in the digital foundries of the ${style} movement. "${prompt.substring(0, 25)}..." represents a shift in visual language.`,
-      `Engineered for impact. The ${mainTopic} motif is reimagined here with clean lines and absolute precision.`
-    ];
-
-    const story = storyTemplates[Math.floor(Math.random() * storyTemplates.length)];
-
-    // Tag Generator
-    const baseTags = ["art", "design", "illustration", "graphic", "vector", "print", "merch"];
-    const randomTags = ["cool", "gift", "trendy", "style", "fashion", "urban", "streetwear"];
-
-    // Shuffle and slice
-    const specificTags = prompt.split(' ').filter(w => w.length > 3).map(w => w.replace(/[^a-zA-Z]/g, '').toLowerCase());
-    const finalTags = [...new Set([...specificTags, ...baseTags, ...randomTags])].slice(0, 15);
-
-    return {
-      originalPrompt: prompt,
-      style: style,
-      timestamp: new Date().toISOString(),
-      continuityReport: { score: 99, status: 'MATCH', feedback: 'Fallback Engine Active. High fidelity assumed.' },
-      listingDossiers: {
-        'Amazon/Etsy': {
-          title: `${adj} ${mainTopic} ${style} Graphic Tee`,
-          description: `Official ${style} Collection. ${story}`,
-          story: story,
-          tags: finalTags
-        },
-        'Redbubble': { title: `${mainTopic} - ${style} Edition`, description: story, story: story, tags: finalTags },
-        'Shopify': { title: `${adj} ${mainTopic} - Limited Run`, description: story, story: story, tags: finalTags }
-      }
-    };
-  }
+  };
+}
 
 
 
-  async fetchTrends(): Promise<{ pod: TrendingNiche[], kdp: TrendingNiche[] }> {
-    const prompt = `EXPLOITATION ENGINE: Identify 5 POD niches (Print on Demand) and 5 KDP niches (Books). 
+  async fetchTrends(): Promise < { pod: TrendingNiche[], kdp: TrendingNiche[] } > {
+  const prompt = `EXPLOITATION ENGINE: Identify 5 POD niches (Print on Demand) and 5 KDP niches (Books). 
     JSON format ONLY:
     {
       "pod": [{"keyword": "...", "description": "...", "tags": ["..."], "reason": "...", "demandScore": "High", "competitionLevel": "Medium", "avgPriceRange": "$15-$25", "velocityStatus": "Rising", "suitability": "POD", "recommended": true, "visualOverlay": "sticker"}],
       "kdp": [{"keyword": "...", "description": "...", "tags": ["..."], "reason": "...", "demandScore": "High", "competitionLevel": "Low", "avgPriceRange": "$9.99-$14.99", "velocityStatus": "Rising", "suitability": "KDP", "recommended": true, "visualOverlay": "book"}]
     }`;
 
-    try {
-      const res = await this.queryAI(prompt, true);
-      const cleaned = this.cleanAndRepairJSON(res);
-      const parsed = JSON.parse(cleaned);
+  try {
+    const res = await this.queryAI(prompt, true);
+    const cleaned = this.cleanAndRepairJSON(res);
+    const parsed = JSON.parse(cleaned);
 
-      const mapNiche = (n: any) => ({
-        keyword: n.keyword || n.topic || "Unknown Niche",
-        description: n.description || "No description available.",
-        tags: Array.isArray(n.tags) ? n.tags : ["Market", "Trend"],
-        reason: n.reason || "Market anomaly detected.",
-        demandScore: n.demandScore || 'Medium',
-        competitionLevel: n.competitionLevel || 'Medium',
-        avgPriceRange: n.avgPriceRange || '$10-$20',
-        velocityStatus: n.velocityStatus || 'Stable',
-        suitability: n.suitability || 'POD',
-        recommended: n.recommended || false,
-        visualOverlay: n.visualOverlay || 'sticker',
-        growth: n.growth || "+0%",
-        volume: n.volume || "Medium",
-        competition: n.competition || "Medium",
-        potential: n.potential || "High",
-        actionPlan: Array.isArray(n.actionPlan) ? n.actionPlan : ["Research", "Design", "Publish"],
-        sources: [{ uri: "https://trends.google.com", title: "Market Grounding" }]
-      });
+    const mapNiche = (n: any) => ({
+      keyword: n.keyword || n.topic || "Unknown Niche",
+      description: n.description || "No description available.",
+      tags: Array.isArray(n.tags) ? n.tags : ["Market", "Trend"],
+      reason: n.reason || "Market anomaly detected.",
+      demandScore: n.demandScore || 'Medium',
+      competitionLevel: n.competitionLevel || 'Medium',
+      avgPriceRange: n.avgPriceRange || '$10-$20',
+      velocityStatus: n.velocityStatus || 'Stable',
+      suitability: n.suitability || 'POD',
+      recommended: n.recommended || false,
+      visualOverlay: n.visualOverlay || 'sticker',
+      growth: n.growth || "+0%",
+      volume: n.volume || "Medium",
+      competition: n.competition || "Medium",
+      potential: n.potential || "High",
+      actionPlan: Array.isArray(n.actionPlan) ? n.actionPlan : ["Research", "Design", "Publish"],
+      sources: [{ uri: "https://trends.google.com", title: "Market Grounding" }]
+    });
 
-      return {
-        pod: (parsed.pod || []).slice(0, 5).map(mapNiche),
-        kdp: (parsed.kdp || []).slice(0, 5).map(mapNiche)
-      };
-    } catch (e) {
-      return {
-        pod: [
-          { keyword: "Retro Ghost Reading", description: "Emotional support merch.", tags: ["Retro", "Mental Health"], reason: "Nostalgic cross-over niche merging dark academia and seasonal 'cozy' aesthetics.", demandScore: 'High', competitionLevel: 'Medium', avgPriceRange: "$15–$25", velocityStatus: 'Rising', suitability: 'POD', recommended: true, visualOverlay: 'sticker', growth: "+120%", volume: "High", competition: "Medium", potential: "Explosive" },
-          { keyword: "Solarpunk Aesthetic", description: "Pro-climate tech fashion.", tags: ["Eco", "Solarpunk"], reason: "Optimistic sci-fi aesthetic gaining traction in sustainable/eco-conscious design communities.", demandScore: 'Medium', competitionLevel: 'Low', avgPriceRange: "$20–$35", velocityStatus: 'Rising', suitability: 'Hybrid', visualOverlay: 'tee', growth: "+85%", volume: "Medium", competition: "Low", potential: "High" },
-          { keyword: "Brutalist Coffee Club", description: "Bold typography for kitchens.", tags: ["Bauhaus", "Modern"], reason: "Raw industrial typography meeting lifestyle hobbyism. High conversion for art prints.", demandScore: 'High', competitionLevel: 'Low', avgPriceRange: "$18–$30", velocityStatus: 'Rising', suitability: 'POD', recommended: false, visualOverlay: 'poster', growth: "+200%", volume: "Medium", competition: "Low", potential: "High" },
-          { keyword: "Pickleball Grandpa", description: "Mass market appeal gifts.", tags: ["Sport", "Grandpa"], reason: "Mass market appeal with high competition but reliable sales volume.", demandScore: 'High', competitionLevel: 'High', avgPriceRange: "$12–$22", velocityStatus: 'Stable', suitability: 'POD', visualOverlay: 'tee', growth: "+45%", volume: "Very High", competition: "High", potential: "High" },
-          { keyword: "Skeleton Coffee", description: "Viral 'undead/lifestyle' blend.", tags: ["Skeleton", "Mood"], reason: "Viral 'undead/lifestyle' blend popular on TikTok and Pinterest.", demandScore: 'High', competitionLevel: 'Low', avgPriceRange: "$14–$28", velocityStatus: 'Rising', suitability: 'POD', visualOverlay: 'sticker', growth: "+200%", volume: "Medium", competition: "Low", potential: "High" }
-        ],
-        kdp: [
-          { keyword: "Dark Romance Mafia", description: "Consistent evergreen powerhouse.", tags: ["Romance", "Mafia"], reason: "Consistent evergreen powerhouse with high ad-spend requirement.", demandScore: 'High', competitionLevel: 'High', avgPriceRange: "$2.99–$4.99", velocityStatus: 'Stable', suitability: 'KDP', visualOverlay: 'book', growth: "+15%", volume: "Very High", competition: "Very High", potential: "High" },
-          { keyword: "Somatic Exercises", description: "Health and wellness pivot.", tags: ["Healing", "Breathwork"], reason: "Health and wellness pivot toward 'nervous system regulation'. Massive untapped demand.", demandScore: 'High', competitionLevel: 'Low', avgPriceRange: "$9.99–$19.99", velocityStatus: 'Rising', suitability: 'KDP', recommended: true, visualOverlay: 'book', growth: "+400%", volume: "Explosive", competition: "Low", potential: "Explosive" },
-          { keyword: "Cozy Mystery Culinary", description: "Character-driven mysteries.", tags: ["Mystery", "Cozy"], reason: "Steady demand for lighthearted, character-driven mysteries involving food themes.", demandScore: 'Medium', competitionLevel: 'Medium', avgPriceRange: "$3.99–$5.99", velocityStatus: 'Stable', suitability: 'KDP', visualOverlay: 'book', growth: "+30%", volume: "High", competition: "Medium", potential: "High" },
-          { keyword: "Jar Spells for Beginners", description: "Tactile magic guide.", tags: ["Magic", "Witchcraft"], reason: "Growing occult/spirituality niche with focus on actionable, tactile magic.", demandScore: 'Medium', competitionLevel: 'Low', avgPriceRange: "$7.99–$14.99", velocityStatus: 'Rising', suitability: 'KDP', visualOverlay: 'book', growth: "+90%", volume: "Medium", competition: "Low", potential: "High" },
-          { keyword: "Reverse Harem Academy", description: "High read-through niche.", tags: ["Academy", "RH"], reason: "Strong community-driven niche with high read-through rates.", demandScore: 'High', competitionLevel: 'High', avgPriceRange: "$4.99–$6.99", velocityStatus: 'Stable', suitability: 'KDP', visualOverlay: 'book', growth: "Stable", volume: "High", competition: "High", potential: "High" }
-        ]
-      };
-    }
+    return {
+      pod: (parsed.pod || []).slice(0, 5).map(mapNiche),
+      kdp: (parsed.kdp || []).slice(0, 5).map(mapNiche)
+    };
+  } catch(e) {
+    return {
+      pod: [
+        { keyword: "Retro Ghost Reading", description: "Emotional support merch.", tags: ["Retro", "Mental Health"], reason: "Nostalgic cross-over niche merging dark academia and seasonal 'cozy' aesthetics.", demandScore: 'High', competitionLevel: 'Medium', avgPriceRange: "$15–$25", velocityStatus: 'Rising', suitability: 'POD', recommended: true, visualOverlay: 'sticker', growth: "+120%", volume: "High", competition: "Medium", potential: "Explosive" },
+        { keyword: "Solarpunk Aesthetic", description: "Pro-climate tech fashion.", tags: ["Eco", "Solarpunk"], reason: "Optimistic sci-fi aesthetic gaining traction in sustainable/eco-conscious design communities.", demandScore: 'Medium', competitionLevel: 'Low', avgPriceRange: "$20–$35", velocityStatus: 'Rising', suitability: 'Hybrid', visualOverlay: 'tee', growth: "+85%", volume: "Medium", competition: "Low", potential: "High" },
+        { keyword: "Brutalist Coffee Club", description: "Bold typography for kitchens.", tags: ["Bauhaus", "Modern"], reason: "Raw industrial typography meeting lifestyle hobbyism. High conversion for art prints.", demandScore: 'High', competitionLevel: 'Low', avgPriceRange: "$18–$30", velocityStatus: 'Rising', suitability: 'POD', recommended: false, visualOverlay: 'poster', growth: "+200%", volume: "Medium", competition: "Low", potential: "High" },
+        { keyword: "Pickleball Grandpa", description: "Mass market appeal gifts.", tags: ["Sport", "Grandpa"], reason: "Mass market appeal with high competition but reliable sales volume.", demandScore: 'High', competitionLevel: 'High', avgPriceRange: "$12–$22", velocityStatus: 'Stable', suitability: 'POD', visualOverlay: 'tee', growth: "+45%", volume: "Very High", competition: "High", potential: "High" },
+        { keyword: "Skeleton Coffee", description: "Viral 'undead/lifestyle' blend.", tags: ["Skeleton", "Mood"], reason: "Viral 'undead/lifestyle' blend popular on TikTok and Pinterest.", demandScore: 'High', competitionLevel: 'Low', avgPriceRange: "$14–$28", velocityStatus: 'Rising', suitability: 'POD', visualOverlay: 'sticker', growth: "+200%", volume: "Medium", competition: "Low", potential: "High" }
+      ],
+      kdp: [
+        { keyword: "Dark Romance Mafia", description: "Consistent evergreen powerhouse.", tags: ["Romance", "Mafia"], reason: "Consistent evergreen powerhouse with high ad-spend requirement.", demandScore: 'High', competitionLevel: 'High', avgPriceRange: "$2.99–$4.99", velocityStatus: 'Stable', suitability: 'KDP', visualOverlay: 'book', growth: "+15%", volume: "Very High", competition: "Very High", potential: "High" },
+        { keyword: "Somatic Exercises", description: "Health and wellness pivot.", tags: ["Healing", "Breathwork"], reason: "Health and wellness pivot toward 'nervous system regulation'. Massive untapped demand.", demandScore: 'High', competitionLevel: 'Low', avgPriceRange: "$9.99–$19.99", velocityStatus: 'Rising', suitability: 'KDP', recommended: true, visualOverlay: 'book', growth: "+400%", volume: "Explosive", competition: "Low", potential: "Explosive" },
+        { keyword: "Cozy Mystery Culinary", description: "Character-driven mysteries.", tags: ["Mystery", "Cozy"], reason: "Steady demand for lighthearted, character-driven mysteries involving food themes.", demandScore: 'Medium', competitionLevel: 'Medium', avgPriceRange: "$3.99–$5.99", velocityStatus: 'Stable', suitability: 'KDP', visualOverlay: 'book', growth: "+30%", volume: "High", competition: "Medium", potential: "High" },
+        { keyword: "Jar Spells for Beginners", description: "Tactile magic guide.", tags: ["Magic", "Witchcraft"], reason: "Growing occult/spirituality niche with focus on actionable, tactile magic.", demandScore: 'Medium', competitionLevel: 'Low', avgPriceRange: "$7.99–$14.99", velocityStatus: 'Rising', suitability: 'KDP', visualOverlay: 'book', growth: "+90%", volume: "Medium", competition: "Low", potential: "High" },
+        { keyword: "Reverse Harem Academy", description: "High read-through niche.", tags: ["Academy", "RH"], reason: "Strong community-driven niche with high read-through rates.", demandScore: 'High', competitionLevel: 'High', avgPriceRange: "$4.99–$6.99", velocityStatus: 'Stable', suitability: 'KDP', visualOverlay: 'book', growth: "Stable", volume: "High", competition: "High", potential: "High" }
+      ]
+    };
   }
+}
 
 
-  async analyzeBrandDNA(url: string): Promise<BrandDNAReport> {
-    const prompt = `YOU ARE THE "BRAND DOMINANCE ENGINE". 
+  async analyzeBrandDNA(url: string): Promise < BrandDNAReport > {
+  const prompt = `YOU ARE THE "BRAND DOMINANCE ENGINE". 
     Analyze this URL for Design DNA: "${url}"
     
     TASKS:
@@ -2780,66 +2798,66 @@ AVOID: Any imagery that could interfere with barcode scanning`;
       "gapAnalysis": { "vulnerabilities": [], "correctionDesign": "..." }
     }`;
 
-    try {
-      const res = await this.queryAI(prompt, true);
-      return JSON.parse(this.cleanAndRepairJSON(res));
-    } catch {
-      return {
-        brandName: "Industrial Minimalist Co.",
-        archetype: "The Modern Essentialist",
-        palette: ["#020617", "#0891b2", "#6366f1", "#0f172a", "#1e293b"],
-        typography: "Outfit Bold / Inter Tight",
-        voice: "Authoritative & Understated",
-        winningProducts: ["Heavyweight Hoodie", "Industrial Desk Mat", "Matte Sticker"],
-        visualDNA: {
-          movements: ["High-End Bauhaus", "Swiss Grid System"],
-          typography: ["Inter Tight", "Outfit Bold"],
-          textures: ["Matte Finish", "Subtle Noise Overlay"]
-        },
-        chromaticHarvest: ["#020617", "#0891b2", "#6366f1", "#0f172a", "#1e293b"],
-        persona: {
-          demographic: "Urban Tech Professionals (25-40)",
-          painPoints: ["Visual clutter", "Low-quality build"],
-          powerWords: ["Precision", "Architecture", "Essential"]
-        },
-        masterPrompt: "Professional commercial product photography of high-end minimalist stationary, industrial Bauhaus style, high contrast dark cyan and slate palette, matte textures, precision alignment, 8k resolution, global illumination.",
-        exploitationPlan: ["Launch limited black-on-black series", "Focus on technical specifications in ads"],
-        semanticVoice: {
-          tone: "Authoritative & Understated",
-          headlines: ["Built for Precision.", "The Architecture of Workflow."]
-        },
-        gapAnalysis: {
-          vulnerabilities: ["Limited color variety", "High entry price"],
-          correctionDesign: "Vibrant Solarpunk variant of their current minimalist layout."
-        }
-      };
-    }
+  try {
+    const res = await this.queryAI(prompt, true);
+    return JSON.parse(this.cleanAndRepairJSON(res));
+  } catch {
+    return {
+      brandName: "Industrial Minimalist Co.",
+      archetype: "The Modern Essentialist",
+      palette: ["#020617", "#0891b2", "#6366f1", "#0f172a", "#1e293b"],
+      typography: "Outfit Bold / Inter Tight",
+      voice: "Authoritative & Understated",
+      winningProducts: ["Heavyweight Hoodie", "Industrial Desk Mat", "Matte Sticker"],
+      visualDNA: {
+        movements: ["High-End Bauhaus", "Swiss Grid System"],
+        typography: ["Inter Tight", "Outfit Bold"],
+        textures: ["Matte Finish", "Subtle Noise Overlay"]
+      },
+      chromaticHarvest: ["#020617", "#0891b2", "#6366f1", "#0f172a", "#1e293b"],
+      persona: {
+        demographic: "Urban Tech Professionals (25-40)",
+        painPoints: ["Visual clutter", "Low-quality build"],
+        powerWords: ["Precision", "Architecture", "Essential"]
+      },
+      masterPrompt: "Professional commercial product photography of high-end minimalist stationary, industrial Bauhaus style, high contrast dark cyan and slate palette, matte textures, precision alignment, 8k resolution, global illumination.",
+      exploitationPlan: ["Launch limited black-on-black series", "Focus on technical specifications in ads"],
+      semanticVoice: {
+        tone: "Authoritative & Understated",
+        headlines: ["Built for Precision.", "The Architecture of Workflow."]
+      },
+      gapAnalysis: {
+        vulnerabilities: ["Limited color variety", "High entry price"],
+        correctionDesign: "Vibrant Solarpunk variant of their current minimalist layout."
+      }
+    };
   }
+}
 
   private extractTopicFromUrl(url: string): string {
-    try {
-      if (!url.startsWith('http')) return url;
-      const parsed = new URL(url);
-      const segments = parsed.pathname.split('/').filter(Boolean);
-      let target = segments[segments.length - 1] || parsed.hostname;
+  try {
+    if (!url.startsWith('http')) return url;
+    const parsed = new URL(url);
+    const segments = parsed.pathname.split('/').filter(Boolean);
+    let target = segments[segments.length - 1] || parsed.hostname;
 
-      // Clean Redbubble-style slugs
-      if (target.includes('-')) {
-        target = target.split('-').slice(0, 5).join(' ');
-      }
-
-      return target.replace(/[-_]/g, ' ').toUpperCase();
-    } catch {
-      return url;
+    // Clean Redbubble-style slugs
+    if (target.includes('-')) {
+      target = target.split('-').slice(0, 5).join(' ');
     }
+
+    return target.replace(/[-_]/g, ' ').toUpperCase();
+  } catch {
+    return url;
   }
+}
 
-  async analyzeNicheStrategic(niche: string, context?: any): Promise<NicheRadarReport> {
+  async analyzeNicheStrategic(niche: string, context ?: any): Promise < NicheRadarReport > {
 
-    const isUrl = niche.startsWith('http');
-    const cleanTopic = this.extractTopicFromUrl(niche);
+  const isUrl = niche.startsWith('http');
+  const cleanTopic = this.extractTopicFromUrl(niche);
 
-    const prompt = `YOU ARE THE "NICHE RADAR STRATEGIC NERVE CENTER" v2.0.
+  const prompt = `YOU ARE THE "NICHE RADAR STRATEGIC NERVE CENTER" v2.0.
     Target: ${isUrl ? `EXTRAPOLATE TOPIC FROM URL: ${niche}` : `ANALYZE NICHE: "${niche}"`}
     
     CONTEXT:
@@ -2873,59 +2891,59 @@ AVOID: Any imagery that could interfere with barcode scanning`;
       "sources": [{"platform": "...", "url": "..."}]
     }`;
 
-    try {
-      const res = await this.queryAI(prompt, true);
-      const parsed = JSON.parse(this.cleanAndRepairJSON(res));
-      return {
-        ...parsed,
-        niche: parsed.topic || cleanTopic,
-        score: parsed.bteIndex?.score || 50,
-        volume: parsed.financialMatrix?.salesVelocity || 'Medium',
-        competition: parsed.saturationIndex?.level || 'Medium',
-        verdict: parsed.verdict || 'CAUTION',
-        keywords: parsed.keywordGoldmine || [],
-        topic: parsed.topic || cleanTopic,
-        id: `nr_${Date.now()}`,
-        timestamp: Date.now()
-      };
-    } catch {
-      return {
-        niche: cleanTopic,
-        score: 82,
-        volume: "High",
-        competition: "Low",
-        verdict: "GO",
-        why: ["High search-to-listing ratio detected", "Visual vacuum for industrial aesthetics"],
-        nextAction: "Commence POD Design with the Betterment Prompt",
-        bteIndex: { score: 82, label: "Elite", description: "This niche shows significant economic signals for immediate entry." },
-        keywords: [`Premium ${cleanTopic}`, `Industrial ${cleanTopic} Design`, `Ltd Edition ${cleanTopic}`],
-        topic: cleanTopic,
-        saturationIndex: { score: 18, level: 'LOW', description: "High demand with fragmented competition." },
-        trademarkShield: { status: 'SAFE', riskAnalysis: "No direct trademark collisions detected in primary categories.", protectedPhrases: [] },
-        aestheticGap: {
-          currentStyle: "Standard minimalist typography.",
-          gapOpportunity: `Industrial maximalism with metallic accents remains unexplored for ${cleanTopic}.`,
-          evolutionaryTone: "Authoritative & Premium"
-        },
-        financialMatrix: { avgPrice: "$24.99", salesVelocity: "High", roiPotential: "450%", marginPotential: "72%" },
-        demandSignal: 'HIGH',
-        keywordGoldmine: [`Premium ${cleanTopic}`, `Industrial ${cleanTopic} Design`, `Ltd Edition ${cleanTopic}`],
-        bettermentPrompt: `Professional industrial design for ${cleanTopic}, aesthetic maximalism, liquid metallic textures, golden ratio composition, 300DPI commercial print ready, 8K render.`,
-        sources: [
-          { platform: "Amazon", url: "https://amazon.com/s?k=" + encodeURIComponent(cleanTopic) },
-          { platform: "Etsy", url: "https://etsy.com/search?q=" + encodeURIComponent(cleanTopic) }
-        ],
-        id: `nr_${Date.now()}`,
-        timestamp: Date.now()
-      };
-    }
+  try {
+    const res = await this.queryAI(prompt, true);
+    const parsed = JSON.parse(this.cleanAndRepairJSON(res));
+    return {
+      ...parsed,
+      niche: parsed.topic || cleanTopic,
+      score: parsed.bteIndex?.score || 50,
+      volume: parsed.financialMatrix?.salesVelocity || 'Medium',
+      competition: parsed.saturationIndex?.level || 'Medium',
+      verdict: parsed.verdict || 'CAUTION',
+      keywords: parsed.keywordGoldmine || [],
+      topic: parsed.topic || cleanTopic,
+      id: `nr_${Date.now()}`,
+      timestamp: Date.now()
+    };
+  } catch {
+    return {
+      niche: cleanTopic,
+      score: 82,
+      volume: "High",
+      competition: "Low",
+      verdict: "GO",
+      why: ["High search-to-listing ratio detected", "Visual vacuum for industrial aesthetics"],
+      nextAction: "Commence POD Design with the Betterment Prompt",
+      bteIndex: { score: 82, label: "Elite", description: "This niche shows significant economic signals for immediate entry." },
+      keywords: [`Premium ${cleanTopic}`, `Industrial ${cleanTopic} Design`, `Ltd Edition ${cleanTopic}`],
+      topic: cleanTopic,
+      saturationIndex: { score: 18, level: 'LOW', description: "High demand with fragmented competition." },
+      trademarkShield: { status: 'SAFE', riskAnalysis: "No direct trademark collisions detected in primary categories.", protectedPhrases: [] },
+      aestheticGap: {
+        currentStyle: "Standard minimalist typography.",
+        gapOpportunity: `Industrial maximalism with metallic accents remains unexplored for ${cleanTopic}.`,
+        evolutionaryTone: "Authoritative & Premium"
+      },
+      financialMatrix: { avgPrice: "$24.99", salesVelocity: "High", roiPotential: "450%", marginPotential: "72%" },
+      demandSignal: 'HIGH',
+      keywordGoldmine: [`Premium ${cleanTopic}`, `Industrial ${cleanTopic} Design`, `Ltd Edition ${cleanTopic}`],
+      bettermentPrompt: `Professional industrial design for ${cleanTopic}, aesthetic maximalism, liquid metallic textures, golden ratio composition, 300DPI commercial print ready, 8K render.`,
+      sources: [
+        { platform: "Amazon", url: "https://amazon.com/s?k=" + encodeURIComponent(cleanTopic) },
+        { platform: "Etsy", url: "https://etsy.com/search?q=" + encodeURIComponent(cleanTopic) }
+      ],
+      id: `nr_${Date.now()}`,
+      timestamp: Date.now()
+    };
   }
+}
 
-  async generateKDPSeoDossier(topicOrUrl: string, genre: string, coverImageUrl?: string): Promise<KDPSeoDossier> {
-    const isUrl = topicOrUrl.startsWith('http');
-    const topic = isUrl ? this.extractTopicFromUrl(topicOrUrl) : topicOrUrl;
+  async generateKDPSeoDossier(topicOrUrl: string, genre: string, coverImageUrl ?: string): Promise < KDPSeoDossier > {
+  const isUrl = topicOrUrl.startsWith('http');
+  const topic = isUrl ? this.extractTopicFromUrl(topicOrUrl) : topicOrUrl;
 
-    const prompt = `YOU ARE THE "AMAZON SEO ENGINE: INDUSTRIAL KDP LISTING ARCHITECT".
+  const prompt = `YOU ARE THE "AMAZON SEO ENGINE: INDUSTRIAL KDP LISTING ARCHITECT".
     OBJECTIVE: Build a high-conversion Listing Dossier for "${topic}" in the genre "${genre}".
     
     TASKS:
@@ -2966,30 +2984,30 @@ AVOID: Any imagery that could interfere with barcode scanning`;
       "extractionSource": "${isUrl ? topicOrUrl : 'Direct Keyword Engine'}"
     }`;
 
-    try {
-      const res = await this.queryAI(prompt, true);
-      const parsed = JSON.parse(this.cleanAndRepairJSON(res));
-      return { ...parsed, id: `seo_${Date.now()}`, timestamp: Date.now() };
-    } catch {
-      return {
-        topic,
-        hookTitle: `${topic}: The Ultimate ${genre} Command`,
-        primarySubtitle: `Engineered for High-Performance ${genre} Results - Professional Dossier`,
-        sevenBoxMatrix: [
-          `${topic} for industry leaders`,
-          `professional ${genre} frameworks`,
-          `advanced ${topic} optimization guide`,
-          `industrial ${topic} methodology`,
-          `market domination ${topic} book`,
-          `high-conversion ${genre} strategy`,
-          `precision ${topic} engineering`
-        ],
-        categorySniperMap: [
-          { category: "Professional Development", difficulty: "LOW", browseNode: "Professional/Career" },
-          { category: "Industrial Processes", difficulty: "MEDIUM", browseNode: "Business/Industry" },
-          { category: "Strategic Success", difficulty: "LOW", browseNode: "Self-Help/Success" }
-        ],
-        htmlSalesCopy: `<h3>Re-Engineer Your Results with ${topic}</h3>
+  try {
+    const res = await this.queryAI(prompt, true);
+    const parsed = JSON.parse(this.cleanAndRepairJSON(res));
+    return { ...parsed, id: `seo_${Date.now()}`, timestamp: Date.now() };
+  } catch {
+    return {
+      topic,
+      hookTitle: `${topic}: The Ultimate ${genre} Command`,
+      primarySubtitle: `Engineered for High-Performance ${genre} Results - Professional Dossier`,
+      sevenBoxMatrix: [
+        `${topic} for industry leaders`,
+        `professional ${genre} frameworks`,
+        `advanced ${topic} optimization guide`,
+        `industrial ${topic} methodology`,
+        `market domination ${topic} book`,
+        `high-conversion ${genre} strategy`,
+        `precision ${topic} engineering`
+      ],
+      categorySniperMap: [
+        { category: "Professional Development", difficulty: "LOW", browseNode: "Professional/Career" },
+        { category: "Industrial Processes", difficulty: "MEDIUM", browseNode: "Business/Industry" },
+        { category: "Strategic Success", difficulty: "LOW", browseNode: "Self-Help/Success" }
+      ],
+      htmlSalesCopy: `<h3>Re-Engineer Your Results with ${topic}</h3>
 <p>Are you struggling to break through the noise in <b>${genre}</b>? Most people approach <b>${topic}</b> with guess-work. This industrial architect's guide provides the blueprints you've been missing.</p>
 <p><b>The Problem:</b> The market is saturated with shallow information.
 <b>The Agitation:</b> Every day you wait is a day your competitors gain ground. They are using psychological triggers while you are still using basic descriptions.</p>
@@ -3001,29 +3019,29 @@ AVOID: Any imagery that could interfere with barcode scanning`;
 </ul>
 <p>Stop settling for average. <b>Engage the engine today.</b></p>
 <p><i>Revised and Updated for 2026 Industrial Standards.</i></p>`,
-        bookLabInspiration: {
-          basePrompt: `Professional industrial coloring book page for ${topic}, thick black ink details, aesthetic maximalism, white background.`,
-          subNiches: [`Vintage ${topic} tech`, `Abstract ${topic} patterns`, `Industrial ${topic} blueprints`],
-          uniqueSellingPoint: `The first ever collection to combine ${topic} with high-end industrial design aesthetics.`
-        },
-        aPlusContentBlueprint: {
-          modules: [
-            { type: "HEADER", content: `High-Impact Banner: ${topic} Visual Dominance` },
-            { type: "STANDARD_IMAGE_TEXT", content: "Detailed breakdown of the author's proprietary methodology combined with high-fidelity charts." },
-            { type: "COMPARISON_CHART", content: "Comparison vs Standard Competitors: Showing 5x value proposition." }
-          ],
-          brandStory: `Built on the principles of precision and industrial excellence, the ${topic} series redefines what is possible in the ${genre} market.`
-        },
-        banShieldAudit: { status: 'CLEAN', flags: [], trademarkRisk: 'NONE' },
-        extractionSource: isUrl ? topicOrUrl : 'Fallback Engine',
-        id: `seo_${Date.now()}`,
-        timestamp: Date.now()
-      };
-    }
+      bookLabInspiration: {
+        basePrompt: `Professional industrial coloring book page for ${topic}, thick black ink details, aesthetic maximalism, white background.`,
+        subNiches: [`Vintage ${topic} tech`, `Abstract ${topic} patterns`, `Industrial ${topic} blueprints`],
+        uniqueSellingPoint: `The first ever collection to combine ${topic} with high-end industrial design aesthetics.`
+      },
+      aPlusContentBlueprint: {
+        modules: [
+          { type: "HEADER", content: `High-Impact Banner: ${topic} Visual Dominance` },
+          { type: "STANDARD_IMAGE_TEXT", content: "Detailed breakdown of the author's proprietary methodology combined with high-fidelity charts." },
+          { type: "COMPARISON_CHART", content: "Comparison vs Standard Competitors: Showing 5x value proposition." }
+        ],
+        brandStory: `Built on the principles of precision and industrial excellence, the ${topic} series redefines what is possible in the ${genre} market.`
+      },
+      banShieldAudit: { status: 'CLEAN', flags: [], trademarkRisk: 'NONE' },
+      extractionSource: isUrl ? topicOrUrl : 'Fallback Engine',
+      id: `seo_${Date.now()}`,
+      timestamp: Date.now()
+    };
   }
+}
 
-  async upgradeToProductionPrompt(idea: string, selectedStyle?: string): Promise<string> {
-    const prompt = `As an expert AI Art Director, rewrite the following user idea into a high-quality, commercially viable POD (Print-on-Demand) image prompt.
+  async upgradeToProductionPrompt(idea: string, selectedStyle ?: string): Promise < string > {
+  const prompt = `As an expert AI Art Director, rewrite the following user idea into a high-quality, commercially viable POD (Print-on-Demand) image prompt.
     User Idea: "${idea}"
     Target Style: ${selectedStyle || 'Clean Commercial Art'}
 
@@ -3036,25 +3054,25 @@ AVOID: Any imagery that could interfere with barcode scanning`;
     6. IF the User Idea contains quote-marked text (e.g. "HELLO"), ensure the prompt explicitly asks for "accurate spelling of text 'HELLO'".
     7. Output ONLY the raw prompt. No quotes.`;
 
-    try {
-      const enhanced = await this.queryAI(prompt);
+  try {
+    const enhanced = await this.queryAI(prompt);
 
-      // CRITICAL CHECK: If the result contains the instructions again (due to LLM echo), discard it.
-      if (enhanced.includes("As an expert AI Art Director") || enhanced.includes("User Idea:") || enhanced.includes("Guidelines:")) {
-        throw new Error("LLM Echo Error");
-      }
+    // CRITICAL CHECK: If the result contains the instructions again (due to LLM echo), discard it.
+    if(enhanced.includes("As an expert AI Art Director") || enhanced.includes("User Idea:") || enhanced.includes("Guidelines:")) {
+  throw new Error("LLM Echo Error");
+}
 
-      // Add technical specs safely
-      return `${enhanced}, isolated on white, high definition vector style`;
+// Add technical specs safely
+return `${enhanced}, isolated on white, high definition vector style`;
     } catch (e) {
-      // Fallback if LLM fails
-      console.warn("Prompt upgrade failed, using raw idea.");
-      return `${idea}, ${selectedStyle || ''}, professional vector illustration, isolated on white`;
-    }
+  // Fallback if LLM fails
+  console.warn("Prompt upgrade failed, using raw idea.");
+  return `${idea}, ${selectedStyle || ''}, professional vector illustration, isolated on white`;
+}
   }
 
-  async generateProductionDossier(prompt: string, style: string, imageUrl: string): Promise<ProductionDossier> {
-    const seoPrompt = `YOU ARE THE "INDUSTRIAL SKU FACTORY SEO ENGINE".
+  async generateProductionDossier(prompt: string, style: string, imageUrl: string): Promise < ProductionDossier > {
+  const seoPrompt = `YOU ARE THE "INDUSTRIAL SKU FACTORY SEO ENGINE".
     Generate SEO metadata for a POD product based on this design.
     
     Design Prompt: ${prompt}
@@ -3082,95 +3100,95 @@ AVOID: Any imagery that could interfere with barcode scanning`;
       }
     }`;
 
-    try {
-      const res = await this.queryAI(seoPrompt, true);
-      const result = JSON.parse(this.cleanAndRepairJSON(res));
-
-      return {
-        id: `sku_${Date.now()}`,
-        masterAsset: {
-          url: imageUrl,
-          resolution: "4096 x 4096",
-          dpi: 300
-        },
-        marketingDeck: [
-          { mockupUrl: imageUrl, type: 'STANDARD_TEE' },
-          { mockupUrl: imageUrl, type: 'MUG' },
-          { mockupUrl: imageUrl, type: 'PHONE_CASE' }
-        ],
-        listingDossiers: result.listingDossiers,
-        continuityReport: result.continuityReport,
-        timestamp: Date.now()
-      };
-    } catch (e) {
-      console.error("Dossier Engine Failed", e);
-      return {
-        id: `sku_${Date.now()}`,
-        masterAsset: { url: imageUrl, resolution: "4096 x 4096", dpi: 300 },
-        marketingDeck: [{ mockupUrl: imageUrl, type: 'STANDARD_TEE' }],
-        listingDossiers: {
-          "Generic": { title: "Custom POD SKU", description: "High quality custom merchandise.", tags: ["pod", "custom", "merch"], platform: "Generic" }
-        },
-        continuityReport: { score: 100, status: 'MATCH', feedback: 'Manual override active.', chromaticConsistency: 'Consistent' },
-        timestamp: Date.now()
-      };
-    }
-  }
-
-  // ============================================================
-  // 🛡️ KDP PREFLIGHT VALIDATION SYSTEM (Powerhouse Feature)
-  // ============================================================
-
-  validateKDPCompliance(project: any): { valid: boolean; errors: string[]; warnings: string[] } {
-    const errors: string[] = [];
-    const warnings: string[] = [];
-    const genre = project.PROJECT_META?.primary_genre || 'Universal';
-
-    // 1. SPINE WIDTH SAFETY
-    // Approx 250 words per page. Spine text requires 79+ pages (~20k words)
-    const contentChapters = project.INTERIOR_CONTENT || [];
-    const totalWords = contentChapters.reduce((acc: number, ch: any) => acc + (ch.content ? ch.content.split(/\s+/).length : 0), 0);
-    const estimatedPages = Math.max(24, Math.ceil(totalWords / 250)); // Min 24 for KDP
-
-    if (estimatedPages < 79) {
-      warnings.push(`⚠️ Low Page Count (${estimatedPages} pages). Spine text may not print on Paperback. Minimum 79 pages recommended for spine text.`);
-    }
-
-    // 2. PLACEHOLDER DETECTION (Critical Rejection Risk)
-    const fullText = contentChapters.map((ch: any) => ch.content || '').join(' ');
-    const forbiddenPatterns = [
-      /\[INSERT.*?\]/i,
-      /Lorem Ipsum/i,
-      /Title Goes Here/i,
-      /Author Name Here/i,
-      /TK\s/ // Journalist shorthand for "to come"
-    ];
-
-    forbiddenPatterns.forEach(pattern => {
-      if (pattern.test(fullText)) {
-        errors.push(`🚫 Forbidden Placeholder detected: "${pattern}" found in manuscript.`);
-      }
-    });
-
-    // 3. COPYRIGHT RISK (Basic scan)
-    const copyrightTerms = ['Disney', 'Marvel', 'Harry Potter', 'Star Wars', 'Coca-Cola', 'Nike'];
-    copyrightTerms.forEach(term => {
-      if (fullText.includes(term)) {
-        warnings.push(`⚠️ Potential Copyright Risk: "${term}" detected. Ensure Fair Use.`);
-      }
-    });
-
-    // 4. MANGA/COMIC SPECIFIC CHECKS
-    if (genre && genre.toUpperCase().includes('MANGA')) {
-      if (estimatedPages < 40) errors.push('🚫 Manga too short. KDP standard is 40-200 pages.');
-    }
+  try {
+    const res = await this.queryAI(seoPrompt, true);
+    const result = JSON.parse(this.cleanAndRepairJSON(res));
 
     return {
-      valid: errors.length === 0,
-      errors,
-      warnings
+      id: `sku_${Date.now()}`,
+      masterAsset: {
+        url: imageUrl,
+        resolution: "4096 x 4096",
+        dpi: 300
+      },
+      marketingDeck: [
+        { mockupUrl: imageUrl, type: 'STANDARD_TEE' },
+        { mockupUrl: imageUrl, type: 'MUG' },
+        { mockupUrl: imageUrl, type: 'PHONE_CASE' }
+      ],
+      listingDossiers: result.listingDossiers,
+      continuityReport: result.continuityReport,
+      timestamp: Date.now()
+    };
+  } catch(e) {
+    console.error("Dossier Engine Failed", e);
+    return {
+      id: `sku_${Date.now()}`,
+      masterAsset: { url: imageUrl, resolution: "4096 x 4096", dpi: 300 },
+      marketingDeck: [{ mockupUrl: imageUrl, type: 'STANDARD_TEE' }],
+      listingDossiers: {
+        "Generic": { title: "Custom POD SKU", description: "High quality custom merchandise.", tags: ["pod", "custom", "merch"], platform: "Generic" }
+      },
+      continuityReport: { score: 100, status: 'MATCH', feedback: 'Manual override active.', chromaticConsistency: 'Consistent' },
+      timestamp: Date.now()
     };
   }
+}
+
+// ============================================================
+// 🛡️ KDP PREFLIGHT VALIDATION SYSTEM (Powerhouse Feature)
+// ============================================================
+
+validateKDPCompliance(project: any): { valid: boolean; errors: string[]; warnings: string[] } {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const genre = project.PROJECT_META?.primary_genre || 'Universal';
+
+  // 1. SPINE WIDTH SAFETY
+  // Approx 250 words per page. Spine text requires 79+ pages (~20k words)
+  const contentChapters = project.INTERIOR_CONTENT || [];
+  const totalWords = contentChapters.reduce((acc: number, ch: any) => acc + (ch.content ? ch.content.split(/\s+/).length : 0), 0);
+  const estimatedPages = Math.max(24, Math.ceil(totalWords / 250)); // Min 24 for KDP
+
+  if (estimatedPages < 79) {
+    warnings.push(`⚠️ Low Page Count (${estimatedPages} pages). Spine text may not print on Paperback. Minimum 79 pages recommended for spine text.`);
+  }
+
+  // 2. PLACEHOLDER DETECTION (Critical Rejection Risk)
+  const fullText = contentChapters.map((ch: any) => ch.content || '').join(' ');
+  const forbiddenPatterns = [
+    /\[INSERT.*?\]/i,
+    /Lorem Ipsum/i,
+    /Title Goes Here/i,
+    /Author Name Here/i,
+    /TK\s/ // Journalist shorthand for "to come"
+  ];
+
+  forbiddenPatterns.forEach(pattern => {
+    if (pattern.test(fullText)) {
+      errors.push(`🚫 Forbidden Placeholder detected: "${pattern}" found in manuscript.`);
+    }
+  });
+
+  // 3. COPYRIGHT RISK (Basic scan)
+  const copyrightTerms = ['Disney', 'Marvel', 'Harry Potter', 'Star Wars', 'Coca-Cola', 'Nike'];
+  copyrightTerms.forEach(term => {
+    if (fullText.includes(term)) {
+      warnings.push(`⚠️ Potential Copyright Risk: "${term}" detected. Ensure Fair Use.`);
+    }
+  });
+
+  // 4. MANGA/COMIC SPECIFIC CHECKS
+  if (genre && genre.toUpperCase().includes('MANGA')) {
+    if (estimatedPages < 40) errors.push('🚫 Manga too short. KDP standard is 40-200 pages.');
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    warnings
+  };
+}
 }
 
 export const gemini = new GeminiService();
