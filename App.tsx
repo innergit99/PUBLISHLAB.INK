@@ -229,7 +229,15 @@ const App: React.FC = () => {
       ) : showLanding ? (
         <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           <LandingPage
-            onLaunchApp={(prompt) => { setShowLanding(false); setInitialPrompt(prompt || null); }}
+            onLaunchApp={(prompt) => {
+              // BETA GATING: Require auth before entering studio
+              if (!user) {
+                setShowAuthModal(true);
+                return;
+              }
+              setShowLanding(false);
+              setInitialPrompt(prompt || null);
+            }}
             onViewDetail={(type) => setActiveDetail(type)}
             onViewPricing={() => setActiveDetail('pricing')}
           />
