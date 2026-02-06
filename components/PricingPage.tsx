@@ -124,7 +124,13 @@ const EmailCaptureModal: React.FC<{ isOpen: boolean; onClose: () => void; onSubm
     );
 };
 
-export const PricingPage: React.FC<{ onBack?: () => void; onPlanSelected?: () => void }> = ({ onBack, onPlanSelected }) => {
+export interface PricingPageProps {
+    onBack: () => void;
+    onPlanSelected?: (tier: any) => void;
+    onViewTerms?: () => void;
+}
+
+export const PricingPage: React.FC<PricingPageProps> = ({ onBack, onPlanSelected, onViewTerms }) => {
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
     const [selectedTier, setSelectedTier] = useState<typeof TIERS[0] | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -344,7 +350,12 @@ export const PricingPage: React.FC<{ onBack?: () => void; onPlanSelected?: () =>
                             <span className="text-gray-400 font-bold">Fair Use Policy:</span> "Unlimited" plans are optimized for typical creator workflows
                             (Artisan: ~50 manuscripts/month, Master: ~200 manuscripts/month). We'll never block your access, but may temporarily
                             reduce generation quality during exceptionally high usage to maintain speed for all users.
-                            <a href="/terms" className="text-indigo-400 hover:text-indigo-300 ml-1 underline">View full terms</a>
+                            <button
+                                onClick={onViewTerms}
+                                className="text-indigo-400 hover:text-indigo-300 ml-1 underline bg-transparent border-none p-0 cursor-pointer inline"
+                            >
+                                View full terms
+                            </button>
                         </p>
                     </div>
 

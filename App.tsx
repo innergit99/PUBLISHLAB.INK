@@ -9,6 +9,8 @@ import ManuscriptDoctorPage from './components/ManuscriptDoctorPage';
 import CoverFoundryPage from './components/CoverFoundryPage';
 import TrendRadarPage from './components/TrendRadarPage';
 import PricingPage from './components/PricingPage';
+import TermsPage from './components/TermsPage';
+
 import { AuthModal } from './components/AuthModal';
 import { ToolType, GeneratedImage } from './types';
 import { gemini } from './geminiService';
@@ -22,7 +24,8 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ToolType>(ToolType.DASHBOARD);
   const [showLanding, setShowLanding] = useState(true);
   const [viewingInfographics, setViewingInfographics] = useState(false);
-  const [activeDetail, setActiveDetail] = useState<'manuscript' | 'cover' | 'trends' | 'pricing' | null>(null);
+  const [activeDetail, setActiveDetail] = useState<'manuscript' | 'cover' | 'trends' | 'pricing' | 'terms' | null>(null);
+
   const [initialPrompt, setInitialPrompt] = useState<string | null>(null);
   const [gallery, setGallery] = useState<GeneratedImage[]>([]);
   const [needsApiKey, setNeedsApiKey] = useState(false);
@@ -216,7 +219,12 @@ const App: React.FC = () => {
               setActiveDetail(null);
               setShowLanding(false);
             }}
+            onViewTerms={() => setActiveDetail('terms')}
           />
+        </motion.div>
+      ) : activeDetail === 'terms' ? (
+        <motion.div key="terms" initial={{ opacity: 0, scale: 1.1 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}>
+          <TermsPage onBack={() => setActiveDetail('pricing')} />
         </motion.div>
       ) : showLanding ? (
         <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
