@@ -364,7 +364,8 @@ export const PricingPage: React.FC<{ onBack?: () => void; onPlanSelected?: () =>
                     </div>
                 </div>
             </div>
-            );
+        </div>
+    );
 };
 
-            export default PricingPage;
+export default PricingPage;
