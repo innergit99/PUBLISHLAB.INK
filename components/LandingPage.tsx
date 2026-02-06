@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import LegalModal from './LegalModal';
-import { GenerativeBrain, NeuralNetworkBackground } from './GenerativeVisuals';
+import { GenerativeBrain, NeuralNetworkBackground, IndustrialReactorNode } from './GenerativeVisuals';
 import TeaserPlayer from './TeaserPlayer';
 import '../LandingPage.css';
 
@@ -285,7 +285,14 @@ export default function LandingPage({
                                 <li className="flex gap-3"><Check className="text-indigo-400 shrink-0" /> Platform-aware compliance guardrails</li>
                                 <li className="flex gap-3"><Check className="text-indigo-400 shrink-0" /> Predictive market signals (Real-time)</li>
                             </ul>
-                            <img src="/artisan_foundry_solution.png" alt="Artisan Core" className="w-full rounded-lg shadow-2xl border border-indigo-500/20" />
+                            <div className="h-64 mt-4 relative rounded-xl overflow-hidden border border-indigo-500/20 bg-black/40 group-hover:border-indigo-500/50 transition-all duration-700">
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 bg-gradient-to-t from-indigo-500/10 to-transparent" />
+                                <IndustrialReactorNode />
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1 rounded-full bg-black/50 border border-indigo-500/30 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-indigo-400">Core_Reactive_Mode_Active</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

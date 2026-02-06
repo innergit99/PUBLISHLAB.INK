@@ -112,3 +112,103 @@ export const GenerativeBrain: React.FC = () => {
 
     return <Sketch setup={setup} draw={draw} className="w-full h-full" />;
 };
+export const IndustrialReactorNode: React.FC = () => {
+    let t = 0;
+    const particles: { x: number, y: number, speed: number, alpha: number, size: number }[] = [];
+
+    const setup = (p5: p5Types, canvasParentRef: Element) => {
+        p5.createCanvas(500, 400).parent(canvasParentRef);
+        for (let i = 0; i < 40; i++) {
+            particles.push({
+                x: p5.random(-200, 200),
+                y: p5.random(-150, 150),
+                speed: p5.random(0.5, 2),
+                alpha: p5.random(50, 150),
+                size: p5.random(2, 5)
+            });
+        }
+    };
+
+    const draw = (p5: p5Types) => {
+        p5.clear();
+        p5.translate(p5.width / 2, p5.height / 2);
+
+        // Core Glow
+        p5.noStroke();
+        for (let i = 10; i > 0; i--) {
+            p5.fill(79, 70, 229, 10 - i);
+            p5.circle(0, 0, i * 20 + p5.sin(t * 2) * 10);
+        }
+
+        // Rotating Industrial Rings
+        p5.noFill();
+        p5.strokeWeight(1);
+
+        // Inner Ring
+        p5.stroke(99, 102, 241, 150);
+        p5.push();
+        p5.rotate(t);
+        for (let i = 0; i < 4; i++) {
+            p5.rotate(p5.HALF_PI);
+            p5.line(40, 0, 60, 0);
+        }
+        p5.circle(0, 0, 100);
+        p5.pop();
+
+        // Outer Structural Ring
+        p5.stroke(139, 92, 246, 80);
+        p5.push();
+        p5.rotate(-t * 0.5);
+        p5.rectMode(p5.CENTER);
+        p5.rect(0, 0, 150, 150, 20);
+
+        // Mounting brackets
+        for (let i = 0; i < 4; i++) {
+            p5.rotate(p5.HALF_PI);
+            p5.line(75, -10, 85, -10);
+            p5.line(75, 10, 85, 10);
+        }
+        p5.pop();
+
+        // Hexagonal Energy Field
+        p5.stroke(79, 70, 229, 30);
+        p5.push();
+        p5.rotate(t * 0.2);
+        p5.beginShape();
+        for (let i = 0; i < 6; i++) {
+            let angle = p5.TWO_PI / 6 * i;
+            p5.vertex(Math.cos(angle) * 120, Math.sin(angle) * 120);
+        }
+        p5.endShape(p5.CLOSE);
+        p5.pop();
+
+        // Floating Data Particles (Manuscript fragments)
+        p5.rectMode(p5.CORNER);
+        particles.forEach(p => {
+            p.y -= p.speed;
+            if (p.y < -200) p.y = 200;
+
+            p5.fill(129, 140, 248, p.alpha);
+            p5.noStroke();
+            // Look like small glowing rectangles (paper fragments)
+            p5.rect(p.x, p.y, p.size * 2, p.size * 3, 1);
+
+            // Connecting line to core if close
+            let d = Math.sqrt(p.x * p.x + p.y * p.y);
+            if (d < 150) {
+                p5.stroke(99, 102, 241, p5.map(d, 0, 150, 40, 0));
+                p5.line(p.x, p.y, 0, 0);
+            }
+        });
+
+        // Periodic "Sync" Pulse
+        let pulse = (t % 4) / 4;
+        p5.noFill();
+        p5.stroke(139, 92, 246, (1 - pulse) * 100);
+        p5.circle(0, 0, pulse * 400);
+
+        t += 0.02;
+    };
+
+    return <Sketch setup={setup} draw={draw} className="w-full h-full flex items-center justify-center opacity-80" />;
+};
