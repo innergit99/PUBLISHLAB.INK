@@ -61,7 +61,7 @@ export class MarketService {
             return "";
         }
 
-        console.log(`🔥 Firecrawl: Searching for '${query}'...`);
+        console.warn(`🔥 Firecrawl: Searching for '${query}'...`);
 
         try {
             const response = await fetch(`${this.baseUrl}/search`, {
@@ -90,7 +90,7 @@ export class MarketService {
                 return "";
             }
 
-            console.log(`🔥 Firecrawl: Found ${data.data.length} results.`);
+            console.warn(`🔥 Firecrawl: Found ${data.data.length} results.`);
 
             // Combine snippets into a context blob
             return data.data.map((item: any) => `[${item.title}]: ${item.description}`).join('\n\n');
