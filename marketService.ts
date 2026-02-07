@@ -15,7 +15,7 @@ export interface NicheAnalysis {
 
 export class MarketService {
     private apiKey: string;
-    private baseUrl = 'https://api.firecrawl.dev/v0';
+    private baseUrl = 'https://api.firecrawl.dev/v1';
 
     constructor() {
         this.apiKey = import.meta.env.VITE_FIRECRAWL_API_KEY || '';

@@ -507,7 +507,7 @@ No explanations. No quotes.`;
             generationConfig: {
               temperature: 0.7,
               maxOutputTokens: 8192,
-              ...(jsonMode && { responseMimeType: "application/json" })
+              ...(jsonMode && { response_mime_type: "application/json" })
             }
           })
         }
@@ -1488,7 +1488,7 @@ HUMAN PROTOCOL: Use interiority, fragmented rhythm, and human subtext. Ban AI-st
       // to ensure it complies with the Genre Matrix rules.
       try {
         console.log('🩺 [Humanity Pro] Running Deep Manuscript Analysis...');
-        const deepAnalysis = manuscriptDoctorService.analyzeContext(finalContent, genre);
+        const deepAnalysis = await manuscriptDoctorService.analyzeContext(finalContent, genre);
 
         auditMetrics = {
           ...auditMetrics,
