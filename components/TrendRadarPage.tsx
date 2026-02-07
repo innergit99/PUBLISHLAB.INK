@@ -3,8 +3,9 @@ import { TrendingUp, BarChart3, Search, Target, ArrowRight, Zap, Globe, Cpu, Loa
 import { motion, AnimatePresence } from 'framer-motion';
 import { NeuralNetworkBackground } from './GenerativeVisuals';
 import { marketService, NicheAnalysis } from '../marketService';
+import { ToolType } from '../types';
 
-const TrendRadarPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+const TrendRadarPage: React.FC<{ onBack: () => void; onNavigate: (tool: ToolType) => void }> = ({ onBack, onNavigate }) => {
     const [keyword, setKeyword] = useState('');
     const [mode, setMode] = useState<'KDP' | 'POD'>('KDP');
     const [loading, setLoading] = useState(false);
@@ -256,8 +257,8 @@ const TrendRadarPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
                                     <button
                                         onClick={() => {
-                                            // Future: Redirect to specific tool
-                                            alert(`Launching ${mode === 'KDP' ? 'Manuscript Doctor' : 'POD Designer'} for: ` + opp.title);
+                                            const realTarget = mode === 'KDP' ? ToolType.MANUSCRIPT_DOCTOR : ToolType.POD_MERCH;
+                                            onNavigate(realTarget);
                                         }}
                                         className="w-full py-3 bg-white/5 hover:bg-emerald-600 transition-all rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 group-hover:scale-105"
                                     >

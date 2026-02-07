@@ -197,6 +197,7 @@ const App: React.FC = () => {
       return (
         <TrendRadarPage
           onBack={() => setActiveTab(ToolType.DASHBOARD)}
+          onNavigate={(tool) => setActiveTab(tool)}
         />
       );
     }
