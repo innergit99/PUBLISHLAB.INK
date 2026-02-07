@@ -39,6 +39,7 @@
 20. **[KDP] Export Validator Created**: New `kdpExportValidator.ts` with 25+ blocker patterns. Blocks export if placeholder content detected.
 21. **[KDP] Gemini API Endpoint Fixed**: Updated `diagnostics.ts` from `v1beta` to `v1` endpoint.
 22. **[KDP] Premium Textures**: Added 3-color gradients and film grain to `coverGenerator.ts`.
+43. **[RADAR] Real-Time Intelligence**: Activated `marketService.ts` with Firecrawl API. `TrendRadarPage.tsx` now performs live cross-platform niche analysis using Gemini 1.5 Flash.
 
 ### 📝 Previous Changes (2026-02-03)
 1.  **[SYSTEM] Free Tier Switch (Critical)**: Disabled `GEMINI_API_KEY` to stop billing. Refactored `geminiService.ts` to strictly block Google API calls and enforce a fallback chain.
@@ -49,6 +50,7 @@
 6.  **[LEGAL] Fair Use Refactor**: Replaced brand references with functional descriptions.
 
 ## Critical Context
+-   **Auth Redirection**: The Password Reset link is currently pending a URL update in the Supabase Dashboard (Site URL needs to be `https://www.publishlab.ink/`).
 -   **AI Economy**: The system behaves DIFFERENTLY in "Free Mode". Generative text may be slower (HuggingFace) or static (Fallback).
 -   **Gemini Service**: Despite the name `geminiService.ts`, this file is now the central "AI Orchestrator". It handles ALL providers.
 -   **Genre Engines**: The `GENRE_ENGINES` constant in `geminiService.ts` is the "Brain" of the procedural generation.
@@ -60,8 +62,8 @@
 ## Key Files Modified Today
 | File | Purpose |
 |------|---------|
-| `App.tsx` | Beta gating on studio launch |
-| `AuthModal.tsx` | Login/Signup/Forgot Password UI |
+| `App.tsx` | Beta gating + Password Recovery listener |
+| `AuthModal.tsx` | Login/Signup/Forgot Password UI, Added `update_password` mode (Set New Password) |
 | `downloadService.ts` | Removed placeholders, added validation gate |
 | `geminiService.ts` | Throws error instead of returning placeholder |
 | `kdpExportValidator.ts` | NEW - Export blocker with 25+ patterns |
