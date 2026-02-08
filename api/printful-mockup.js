@@ -37,29 +37,9 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        variant_ids: [variantId],
-        format,
-        width,
-        product_template_id: null,
-        option_groups: {
-          [placement]: {
-            orientation: 'any',
-            technique: placement === 'front' || placement === 'back' ? 'dtg' : 'sublimation',
-            placement
-          }
-        },
-        files: [{
-          placement,
-          image_url: imageUrl,
-          position: {
-            area_width: 1200,
-            area_height: 1200,
-            width: 1000,
-            height: 1000,
-            top: 100,
-            left: 100
-          }
-        }]
+        variant_ids: [parseInt(variantId)],
+        format: format || 'jpg',
+        width: width || 1000
       })
     });
 
