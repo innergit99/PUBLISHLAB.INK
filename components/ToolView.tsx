@@ -19,7 +19,7 @@ import { complianceService } from '../complianceService';
 import { NicheRadarView } from './NicheRadarView';
 import { CharacterVault } from './CharacterVault';
 import { PODStyleCard } from './PODStyleCard';
-import { canvasMockupService } from '../canvasMockupService';
+import { holographicMockupService } from '../holographicMockupService';
 import {
   ChevronLeft, Sparkles, Download, Loader2, ImageIcon, X, Rocket, Upload,
   Search, Copy, CheckCircle, ZoomIn, ZoomOut, Move, Palette, Edit3,
@@ -1080,16 +1080,17 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
         tags: mockDossier.listingDossiers['Amazon/Etsy'].tags
       });
 
-      // 4. Generate Canvas Mockups (Free, no API limits)
+      // 4. Generate Professional Canvas Mockups (Photographic quality)
       try {
-        console.log('🎨 Final asset for mockup:', finalAsset?.substring(0, 50));
+        const { canvasMockupService } = await import('../canvasMockupService');
+        console.log('🎨 Final asset for canvas mockup:', finalAsset?.substring(0, 50));
         const mockupResult = await canvasMockupService.generateMockup({
           designUrl: finalAsset,
           productType: activeMockup
         });
         setPrintfulMockups(prev => ({ ...prev, [activeMockup]: mockupResult.url }));
       } catch (mockupError) {
-        console.warn('Printful mockup failed:', mockupError);
+        console.warn('Canvas mockup failed:', mockupError);
       }
 
       setIsGeneratingMockups(false);

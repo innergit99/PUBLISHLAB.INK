@@ -41,122 +41,66 @@ const MOCKUP_TEMPLATES: Record<string, {
   shadows?: boolean;
 }> = {
   'STANDARD_TEE': {
-    baseImage: 'https://placehold.co/800x1000/ffffff/ffffff?text=TeeBase',
+    baseImage: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=1200',
     width: 800,
     height: 1000,
-    designArea: { x: 250, y: 300, width: 300, height: 400, rotation: 0 },
+    designArea: { x: 280, y: 350, width: 240, height: 320, rotation: 0 },
     shadows: true
   },
   'PREMIUM_TEE': {
-    baseImage: 'https://placehold.co/800x1000/1a1a1a/1a1a1a?text=BlackTee',
+    baseImage: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=1200',
     width: 800,
     height: 1000,
-    designArea: { x: 250, y: 300, width: 300, height: 400, rotation: 0 },
-    shadows: true
-  },
-  'V_NECK': {
-    baseImage: 'https://placehold.co/800x1000/f5f5f5/f5f5f5?text=VNeck',
-    width: 800,
-    height: 1000,
-    designArea: { x: 250, y: 320, width: 300, height: 380, rotation: 0 },
-    shadows: true
-  },
-  'CREW_NECK': {
-    baseImage: 'https://placehold.co/800x1000/e8e8e8/e8e8e8?text=CrewNeck',
-    width: 800,
-    height: 1000,
-    designArea: { x: 250, y: 300, width: 300, height: 400, rotation: 0 },
-    shadows: true
-  },
-  'TANK_TOP': {
-    baseImage: 'https://placehold.co/700x900/f0f0f0/f0f0f0?text=Tank',
-    width: 700,
-    height: 900,
-    designArea: { x: 200, y: 250, width: 300, height: 400, rotation: 0 },
-    shadows: true
-  },
-  'LONG_SLEEVE': {
-    baseImage: 'https://placehold.co/800x1000/f8f8f8/f8f8f8?text=LongSleeve',
-    width: 800,
-    height: 1000,
-    designArea: { x: 220, y: 280, width: 360, height: 440, rotation: 0 },
+    designArea: { x: 280, y: 320, width: 240, height: 320, rotation: 0 },
     shadows: true
   },
   'HOODIE': {
-    baseImage: 'https://placehold.co/900x1100/2a2a2a/2a2a2a?text=Hoodie',
+    baseImage: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=1200',
     width: 900,
     height: 1100,
-    designArea: { x: 280, y: 350, width: 340, height: 400, rotation: 0 },
-    shadows: true
-  },
-  'SWEATSHIRT': {
-    baseImage: 'https://placehold.co/900x1100/333333/333333?text=Sweatshirt',
-    width: 900,
-    height: 1100,
-    designArea: { x: 280, y: 340, width: 340, height: 420, rotation: 0 },
-    shadows: true
-  },
-  'BASEBALL_TEE': {
-    baseImage: 'https://placehold.co/800x1000/ffffff/ffffff?text=Baseball',
-    width: 800,
-    height: 1000,
-    designArea: { x: 250, y: 300, width: 300, height: 400, rotation: 0 },
-    shadows: true
-  },
-  'KIDS_TEE': {
-    baseImage: 'https://placehold.co/600x750/fff5f5/fff5f5?text=KidsTee',
-    width: 600,
-    height: 750,
-    designArea: { x: 180, y: 220, width: 240, height: 310, rotation: 0 },
+    designArea: { x: 300, y: 400, width: 300, height: 350, rotation: 0 },
     shadows: true
   },
   'MUG': {
-    baseImage: 'https://placehold.co/600x500/f5f5f5/f5f5f5?text=Mug',
+    baseImage: 'https://images.unsplash.com/photo-1514228742587-6b1558fbed20?auto=format&fit=crop&q=80&w=1200',
     width: 600,
     height: 500,
-    designArea: { x: 150, y: 100, width: 300, height: 300, rotation: 0, perspective: true },
-    shadows: true
-  },
-  'TOTE_BAG': {
-    baseImage: 'https://placehold.co/700x800/f0f0f0/f0f0f0?text=Tote',
-    width: 700,
-    height: 800,
-    designArea: { x: 175, y: 200, width: 350, height: 400, rotation: 0 },
+    designArea: { x: 180, y: 150, width: 200, height: 220, rotation: 0, perspective: true },
     shadows: true
   },
   'PHONE_CASE': {
-    baseImage: 'https://placehold.co/400x800/1a1a1a/1a1a1a?text=Phone',
+    baseImage: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=1200',
     width: 400,
     height: 800,
-    designArea: { x: 50, y: 100, width: 300, height: 600, rotation: 0 },
+    designArea: { x: 80, y: 150, width: 240, height: 480, rotation: 0 },
     shadows: false
   },
-  'PILLOW': {
-    baseImage: 'https://placehold.co/800x800/fafafa/fafafa?text=Pillow',
-    width: 800,
+  'TOTE_BAG': {
+    baseImage: 'https://images.unsplash.com/photo-1597484662317-9bd773efdf58?auto=format&fit=crop&q=80&w=1200',
+    width: 700,
     height: 800,
-    designArea: { x: 150, y: 150, width: 500, height: 500, rotation: 0 },
+    designArea: { x: 200, y: 250, width: 300, height: 350, rotation: 0 },
     shadows: true
   },
   'POSTER': {
-    baseImage: 'https://placehold.co/600x800/ffffff/ffffff?text=Poster',
+    baseImage: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=1200',
     width: 600,
     height: 800,
     designArea: { x: 50, y: 50, width: 500, height: 700, rotation: 0 },
     shadows: true
   },
-  'CANVAS_PRINT': {
-    baseImage: 'https://placehold.co/800x600/fff/fff?text=Canvas',
-    width: 800,
-    height: 600,
-    designArea: { x: 100, y: 50, width: 600, height: 500, rotation: 0 },
-    shadows: true
-  },
   'STICKER': {
-    baseImage: 'https://placehold.co/500x500/ffffff/ffffff?text=Sticker',
+    baseImage: 'https://images.unsplash.com/photo-1572375927902-1c716d520298?auto=format&fit=crop&q=80&w=1200',
     width: 500,
     height: 500,
     designArea: { x: 100, y: 100, width: 300, height: 300, rotation: 0 },
+    shadows: true
+  },
+  'HAT': {
+    baseImage: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200',
+    width: 800,
+    height: 1000,
+    designArea: { x: 300, y: 450, width: 200, height: 120, rotation: 0 },
     shadows: true
   }
 };
@@ -181,7 +125,7 @@ export class CanvasMockupService {
     console.log('🎨 Canvas Mockup:', { productType, designUrlLength: designUrl?.length });
 
     const template = MOCKUP_TEMPLATES[productType];
-    
+
     if (!template) {
       console.warn('⚠️ No template for', productType, '- using STANDARD_TEE');
       return this.generateMockup({ ...options, productType: 'STANDARD_TEE' });
@@ -195,33 +139,22 @@ export class CanvasMockupService {
     this.canvas.width = template.width;
     this.canvas.height = template.height;
 
-    // Clear canvas
-    this.ctx.clearRect(0, 0, template.width, template.height);
-
     // Load images
     const [baseImage, designImage] = await Promise.all([
       this.loadImage(template.baseImage),
       this.loadImage(designUrl)
     ]);
 
-    // Draw base product
-    this.ctx.drawImage(baseImage, 0, 0, template.width, template.height);
+    // Draw base background (filled with white)
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(0, 0, template.width, template.height);
 
     // Calculate design position
     const pos = designPosition || template.designArea;
 
-    // Apply shadow if enabled
-    if (template.shadows) {
-      this.ctx.save();
-      this.ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
-      this.ctx.shadowBlur = 20;
-      this.ctx.shadowOffsetX = 5;
-      this.ctx.shadowOffsetY = 5;
-    }
-
     // Apply rotation and draw design
     this.ctx.save();
-    
+
     if (pos.rotation) {
       const centerX = pos.x + pos.width / 2;
       const centerY = pos.y + pos.height / 2;
@@ -245,6 +178,12 @@ export class CanvasMockupService {
     }
 
     this.ctx.restore();
+
+    // Now overlay the product template with MULTIPLY blend mode
+    // This captures the shadows, folds, and highlights from the photography
+    this.ctx.globalCompositeOperation = 'multiply';
+    this.ctx.drawImage(baseImage, 0, 0, template.width, template.height);
+    this.ctx.globalCompositeOperation = 'source-over';
 
     // Add lighting effects
     this.addLightingEffects(template);
@@ -289,7 +228,7 @@ export class CanvasMockupService {
     for (let i = 0; i < steps; i++) {
       const y = pos.y + i * sliceHeight;
       const offset = Math.sin((i / steps) * Math.PI) * pos.width * curve;
-      
+
       const sourceY = (i / steps) * img.height;
       const sourceHeight = img.height / steps;
 
@@ -333,7 +272,7 @@ export class CanvasMockupService {
     productTypes: string[]
   ): Promise<MockupResult[]> {
     const results: MockupResult[] = [];
-    
+
     for (const productType of productTypes) {
       try {
         const mockup = await this.generateMockup({ designUrl, productType });

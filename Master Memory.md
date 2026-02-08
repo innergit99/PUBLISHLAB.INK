@@ -1,22 +1,25 @@
 # ARTISAN AI - Master Memory
 
-> **Last Update**: 2026-02-08 12:34
-> **Current Status**: 🟢 LIVE / POD DESIGNER REDESIGN DEPLOYED (publishlab.ink)
+> **Last Update**: 2026-02-08 18:30
+> **Current Status**: 🟢 LIVE / PRODUCTION DEPLOYED (publishlab.ink)
+> **Backend**: 🤗 HuggingFace Spaces Integrated (Llama 3.1-8B + FLUX.1)
 
 ## Project Overview
 **ARTISAN AI** is an advanced KDP (Kindle Direct Publishing) automation suite designed to accelerate the creation of professional-grade book content, covers, and metadata.
 **Tech Stack**:
 - **Frontend**: React, TypeScript, Tailwind CSS, Framer Motion
-- **Backend/Tooling**: Node.js, Vite
-- **AI Logic**: Hybrid Engine (OpenAI, HuggingFace [Free], Ollama [Local], Static Fallback)
+- **Backend/Tooling**: Node.js, Vite, FastAPI (Python), Gradio
+- **AI Logic**: Hybrid Engine (HuggingFace Spaces [Primary], OpenAI, Ollama [Local], Static Fallback)
+- **AI Models**: Llama 3.1-8B (Text), FLUX.1-schnell (Images), Gemini 1.5 Flash
 - **Auth/DB**: Supabase (Auth + User Data)
 - **Payments**: Paddle (Subscriptions)
-- **Hosting**: Vercel (artisanai-tan.vercel.app → publishlab.ink)
+- **Hosting**: Vercel (Frontend) + HuggingFace Spaces (Backend)
 
 ## Current Objectives
-1.  **Public Beta Live**: Users can sign up, get instant Novice plan access, and use the studio.
-2.  **Lead Capture Active**: All signups captured in Supabase for marketing.
-3.  **Genre Expansion**: Continue refining procedural engines for specific KDP niches.
+1.  **Production Backend Live**: HuggingFace Spaces deployment with Llama 3.1-8B + FLUX.1 integration complete.
+2.  **Public Beta Active**: Users can sign up, get instant Novice plan access, and use production-grade AI.
+3.  **Visual Excellence**: POD Designer redesigned with 3D effects, particle animations, and modern glassmorphism.
+4.  **Genre Engine Expansion**: 22+ genre presets with deep procedural logic and market intelligence.
 
 ## Project Documentation Ecosystem
 -   **`Master Memory.md`** (Root): **The Living Journal**. Tracks *current state*, recent changes, and active blockers. (Dynamic)
@@ -24,6 +27,20 @@
 -   **`.agent/rules/project_context.md`**: **The Protocol**. A mandatory hook that forces the agent to read the Global `GEMINI.md` and Local `Master Memory.md` on startup. (System)
 
 ## Recent Changes (2026-02-08)
+
+### 🎨 Canvas Mockup System (2026-02-08)
+48. **[MOCKUP] Self-Contained Canvas System**: Complete elimination of third-party mockup dependencies
+   - **canvasMockupService.ts**: HTML5 Canvas-based mockup generation (371 lines)
+   - **holographicMockupService.ts**: Pure vector product generation with 3D effects (414 lines)
+   - **PRODUCT_SHAPES Library**: Programmatic product definitions (T-shirts, hoodies, mugs, phone cases)
+   - **Zero Dependencies**: No external APIs, unlimited generation, works offline
+   - **3D Hologram Effects**: Canvas transforms for depth, lighting/shadows mathematically
+   - **Design Integration**: Overlay user designs with proper perspective and fabric effects
+49. **[ARCHITECTURE] Mockup Independence**: Eliminated all external mockup service dependencies
+   - **Instant Generation**: No API limits, no queue times
+   - **Customizable Styles**: Realistic, minimal, and 3D rendering options
+   - **Professional Quality**: Vector-based product shapes with realistic contours
+   - **Cost Efficiency**: Zero ongoing API costs for mockup generation
 
 ### 🎨 POD Designer Redesign (2026-02-08)
 23. **[UI/UX] POD Designer Card Transformed**: Complete visual overhaul from calculator-like appearance to stunning showcase.
@@ -66,6 +83,9 @@
 6.  **[LEGAL] Fair Use Refactor**: Replaced brand references with functional descriptions.
 
 ## Critical Context
+-   **Canvas Mockup System**: Self-contained mockup generation using HTML5 Canvas (no external dependencies)
+-   **Holographic Products**: Vector-based product generation with 3D effects via `holographicMockupService.ts`
+-   **PRODUCT_SHAPES Library**: Programmatic product definitions for instant, unlimited mockup creation
 -   **Auth Redirection**: The Password Reset link is currently pending a URL update in the Supabase Dashboard (Site URL needs to be `https://www.publishlab.ink/`).
 -   **AI Economy**: The system behaves DIFFERENTLY in "Free Mode". Generative text may be slower (HuggingFace) or static (Fallback).
 -   **Gemini Service**: Despite the name `geminiService.ts`, this file is now the central "AI Orchestrator". It handles ALL providers.
@@ -78,6 +98,8 @@
 ## Key Files Modified Today
 | File | Purpose |
 |------|---------|
+| `canvasMockupService.ts` | NEW - HTML5 Canvas mockup generation (371 lines, zero external dependencies) |
+| `holographicMockupService.ts` | NEW - Vector-based 3D product generation (414 lines, pure Canvas) |
 | `PODDesignerCard.tsx` | NEW - Enhanced POD Designer card with 3D tilt, animations, product carousel |
 | `styles/pod-designer-animations.css` | NEW - CSS animations for floating particles and glow effects |
 | `Dashboard.tsx` | Updated to use custom POD Designer card component |

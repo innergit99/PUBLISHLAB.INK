@@ -542,7 +542,7 @@ No explanations. No quotes.`;
 
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -551,9 +551,9 @@ No explanations. No quotes.`;
             contents: [{
               parts: [{ text: prompt }]
             }],
-            generationConfig: {
+            generation_config: {
               temperature: 0.7,
-              maxOutputTokens: 8192,
+              max_output_tokens: 8192,
               ...(jsonMode && { response_mime_type: "application/json" })
             }
           })
