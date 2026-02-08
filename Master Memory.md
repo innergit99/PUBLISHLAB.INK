@@ -1,7 +1,7 @@
 # ARTISAN AI - Master Memory
 
-> **Last Update**: 2026-02-08 10:10
-> **Current Status**: 🟢 LIVE / GENRE-ENGINE VERIFIED (publishlab.ink)
+> **Last Update**: 2026-02-08 12:34
+> **Current Status**: 🟢 LIVE / POD DESIGNER REDESIGN DEPLOYED (publishlab.ink)
 
 ## Project Overview
 **ARTISAN AI** is an advanced KDP (Kindle Direct Publishing) automation suite designed to accelerate the creation of professional-grade book content, covers, and metadata.
@@ -23,9 +23,23 @@
 -   **`.agent/rules/artisan.md`**: **The Constitution**. Defines static *Quality Gates*, Tech Stack rules (React/Tailwind), and "Humanity Pro" writing standards. (Static)
 -   **`.agent/rules/project_context.md`**: **The Protocol**. A mandatory hook that forces the agent to read the Global `GEMINI.md` and Local `Master Memory.md` on startup. (System)
 
-## Recent Changes (2026-02-06)
+## Recent Changes (2026-02-08)
 
-### 🔐 Authentication & Gating
+### 🎨 POD Designer Redesign (2026-02-08)
+23. **[UI/UX] POD Designer Card Transformed**: Complete visual overhaul from calculator-like appearance to stunning showcase.
+   - **3D Tilt Effect**: Mouse-tracking perspective rotation
+   - **Animated Gradient Mesh**: Pink/purple gradient orbs with hover expansion
+   - **Floating Particles**: 6 animated drifting particles
+   - **Dynamic Product Showcase**: Glassmorphic panel cycling through 6 product types (T-Shirts, Mugs, Posters, Phone Cases, Tote Bags, Hoodies)
+   - **Animated Progress Bars**: Visual product type indicators
+   - **Glowing Icon Effect**: Pink-to-rose gradient with hover glow
+   - **Style Chips**: Floating design style indicators (3D Text, Neon, Retro, Graffiti)
+   - **Live Preview Badge**: Pulsing emerald indicator
+   - **Corner Arrow**: Rotating hover animation
+24. **[ARCH] New Components**: Created `PODDesignerCard.tsx` and `styles/pod-designer-animations.css`
+25. **[DEPLOY] Vercel Auto-Deploy**: Git push triggered automatic deployment to publishlab.ink
+
+### 🔐 Authentication & Gating (2026-02-06)
 12. **[AUTH] Beta Gating Fixed**: Added auth check to `onLaunchApp` callback in `App.tsx`. Users must now sign up/login before accessing the studio.
 13. **[AUTH] Email Confirmation Disabled**: Toggled OFF "Confirm email" in Supabase → Users get instant access without email verification.
 14. **[AUTH] Forgot Password Added**: Enhanced `AuthModal.tsx` with 3-mode UI (login/signup/forgot). Uses Supabase `resetPasswordForEmail` API.
@@ -64,6 +78,10 @@
 ## Key Files Modified Today
 | File | Purpose |
 |------|---------|
+| `PODDesignerCard.tsx` | NEW - Enhanced POD Designer card with 3D tilt, animations, product carousel |
+| `styles/pod-designer-animations.css` | NEW - CSS animations for floating particles and glow effects |
+| `Dashboard.tsx` | Updated to use custom POD Designer card component |
+| `index.css` | Added POD Designer animation keyframes |
 | `App.tsx` | Beta gating + Password Recovery listener |
 | `AuthModal.tsx` | Login/Signup/Forgot Password UI, Added `update_password` mode (Set New Password) |
 | `downloadService.ts` | Removed placeholders, added validation gate |
