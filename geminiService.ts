@@ -109,13 +109,19 @@ const GENRE_ENGINES: Record<string, GenreLogic> = {
     flow: ['Ordinary Weakness', 'Dream / Goal Declaration', 'Training or Struggle Phase', 'Rival or Antagonist Appears', 'Failure or Near-Defeat', 'Inner Resolve Awakens', 'Power Breakthrough', 'Victory with New Threat Foreshadowed'],
     engines: ['Underdog Logic', 'Rivalry Logic', 'Mentor Logic', 'Team Bond Logic', 'Sacrifice Logic'],
     override: 'Invent a new growth mechanism that expresses perseverance without breaking internal power rules.',
-    visuals: ['Large interactions panels', 'Speed lines for momentum', 'Silent panels for impact']
+    visuals: ['Large interactions panels', 'Speed lines for momentum', 'Silent panels for impact', 'Right-to-Left flow indicators']
   },
   'COMIC': {
     flow: ['Status Quo', 'Threat Emergence', 'Moral Dilemma', 'Confrontation Attempt', 'Failure or Cost', 'Inner Choice', 'Climactic Battle', 'Consequences / Setup for Future'],
     engines: ['Hero vs Self Logic', 'Public Perception Logic', 'Power Responsibility Logic', 'Anti-Hero Conflict Logic', 'Legacy / Symbol Logic'],
     override: 'Redefine heroism through consequence rather than spectacle.',
-    visuals: ['Splash pages for turning points', 'Minimal narration boxes', 'Visual storytelling > dialogue']
+    visuals: ['Splash pages for turning points', 'Minimal narration boxes', 'Visual storytelling > dialogue', 'Action-oriented framing']
+  },
+  'CARTOON': {
+    flow: ['Whimsical Setup', 'Playful Conflict', 'Visual Gag Sequence', 'Escalation of Absurdity', 'Creative Resolution', 'Happy / Moral Ending'],
+    engines: ['Slapstick Logic', 'Exaggerated Emotion Logic', 'Friendship Power Logic', 'Mystery Solving Logic', 'Transformation Logic'],
+    override: 'Focus on visual absurdity and high-energy pacing that appeals to all ages.',
+    visuals: ['Vibrant flat colors', 'Thick clean vector lines', 'Exaggerated facial expressions', 'Playful background elements']
   },
   'KIDS_COLORING': { // Using simplified key
     flow: ['Theme Introduction', 'Simple Familiar Object', 'Pattern Repetition', 'Gradual Detail Increase', 'Rewarding Final Pages'],
@@ -127,7 +133,7 @@ const GENRE_ENGINES: Record<string, GenreLogic> = {
     flow: ['Theme Definition', 'Simple Entry Pages', 'Complex Pattern Growth', 'High-Detail Centerpieces', 'Symmetry & Completion'],
     engines: ['Mandala Logic', 'Nature Patterns Logic', 'Abstract Geometry Logic', 'Mythic Symbolism Logic', 'Mindfulness Motifs Logic'],
     override: 'Create new visual meditation experiences without visual clutter.',
-    visuals: ['Black & white interior only', 'High contrast', 'No copyrighted patterns']
+    visuals: ['Black & white interior only', 'High contrast', 'No copyrighted patterns', 'Symmetrical balance']
   }
 };
 
@@ -495,7 +501,7 @@ No explanations. No quotes.`;
 
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1331,6 +1337,15 @@ CRITICAL WRITING RULES (STRICTLY ENFORCE):
    - NO soft philosophical musings
    - Give readers a reason to turn the page
 
+${['MANGA', 'COMIC', 'CARTOON'].includes(genreKey) ? `8. VISUAL STORYTELLING (MANDATORY FOR ${genreKey}):
+   - Use a "Graphic Script" format instead of pure prose.
+   - For each scene, describe the PANEL framing and then the dialogue/action.
+   - Example: 
+     PANEL 1 [Extreme Close-up]: The hero's eyes widen.
+     DIALOGUE: "I won't give up!"
+   - Focus on visual impact, dynamic angles, and facial expressions.
+   - Explicitly mention the following visual hooks: ${GENRE_ENGINES[genreKey]?.visuals?.join(', ')}` : ''}
+
 TASK & IDENTITY (APX ACTIVE):
 You are "${persona.title}".
 CORE PHILOSOPHY: ${persona.core}
@@ -2150,13 +2165,15 @@ AVOID: Any imagery that could interfere with barcode scanning`;
       'LITERARY': `Artistic literary fiction illustration for "${chapterTitle}": Sophisticated symbolic imagery, contemplative atmospheric mood, abstract or suggestive composition, muted refined color palette, thematic visual metaphor, thoughtful artistic interpretation, professional literary book interior art, Story context: ${summaryHints}`,
       'HISTORICAL': `Period historical illustration for "${chapterTitle}": Era-authentic setting and details, vintage atmospheric lighting, period-appropriate costume and architecture, nostalgic sepia-toned mood or vintage style, dramatic historical moment capture, textural aged quality, professional historical fiction interior art, Story context: ${summaryHints}`,
 
-      'MANGA': `Manga style panel illustration for "${chapterTitle}": High-contrast black and white ink, dynamic action lines, shonen jump style art, dramatic perspective, clear character emotion, professional manga background detail, screentone shading, Story context: ${summaryHints}`,
+      'MANGA': `Manga style panel illustration for "${chapterTitle}": High-contrast black and white ink, dynamic action lines, shonen jump style art, dramatic perspective, clear character emotion, professional manga background detail, screentone shading, ${GENRE_ENGINES['MANGA']?.visuals?.join(', ')}, Story context: ${summaryHints}`,
 
-      'COMIC': `Western comic book panel for "${chapterTitle}": Dynamic superhero style art, bold ink lines, dramatic composition, deep shadows, cinematic framing, detailed background, professional graphic novel art, Story context: ${summaryHints}`,
+      'COMIC': `Western comic book panel for "${chapterTitle}": Dynamic superhero style art, bold ink lines, dramatic composition, deep shadows, cinematic framing, detailed background, professional graphic novel art, ${GENRE_ENGINES['COMIC']?.visuals?.join(', ')}, Story context: ${summaryHints}`,
 
-      'KIDS_COLORING': `Children's coloring page for "${chapterTitle}": Thick bold outlines, simple friendly shapes, no shading, no greyscale, high contrast line art, white background, cute style, suitable for crayons, clear distinct areas, Story context: ${summaryHints}`,
+      'CARTOON': `Vibrant vector cartoon for "${chapterTitle}": Clean thick lines, bold flat colors, exaggerated expressive characters, playful background, modern commercial animation style, high energy, ${GENRE_ENGINES['CARTOON']?.visuals?.join(', ')}, Story context: ${summaryHints}`,
 
-      'ADULT_COLORING': `Intricate adult coloring page for "${chapterTitle}": Detailed mandala or zentangle style line art, complex patterns, nature or architectural motifs, thin precise lines, no shading, white background, high contrast, stress-relief style, Story context: ${summaryHints}`
+      'KIDS_COLORING': `Children's coloring page for "${chapterTitle}": Thick bold outlines, simple friendly shapes, no shading, no greyscale, high contrast line art, white background, cute style, suitable for crayons, clear distinct areas, ${GENRE_ENGINES['KIDS_COLORING']?.visuals?.join(', ')}, Story context: ${summaryHints}`,
+
+      'ADULT_COLORING': `Intricate adult coloring page for "${chapterTitle}": Detailed mandala or zentangle style line art, complex patterns, nature or architectural motifs, thin precise lines, no shading, white background, high contrast, stress-relief style, ${GENRE_ENGINES['ADULT_COLORING']?.visuals?.join(', ')}, Story context: ${summaryHints}`
     };
 
     const formulaKey = Object.keys(genrePrompts).find(k => genreUpper.includes(k));
@@ -2281,13 +2298,11 @@ AVOID: Any imagery that could interfere with barcode scanning`;
   }
 
   public generateFallbackCover(prompt: string, width: number, height: number): string {
-    // PREMIUM GENRE-SPECIFIC SVG FALLBACK COVERS
-    // Extract title from prompt (usually in quotes)
+    // PREMIUM GENRE-SPECIFIC SVG FALLBACK COVERS (INDUSTRIAL CREATIVITY UPGRADE)
     const titleMatch = prompt.match(/"([^"]+)"/);
     const title = titleMatch ? titleMatch[1] : 'Untitled';
     const cleanTitle = title.toUpperCase().substring(0, 40);
 
-    // Split title into multiple lines for better readability at large sizes
     const words = cleanTitle.split(' ');
     let line1 = '', line2 = '';
     const maxChars = 15;
@@ -2299,29 +2314,96 @@ AVOID: Any imagery that could interfere with barcode scanning`;
       }
     }
 
-    // Detect genre from prompt keywords
+    // Detect genre and extract visual tokens
     let genre = 'general';
-    if (/mystery|detective|thriller|crime|suspense/i.test(prompt)) genre = 'mystery';
-    else if (/romance|love|passion/i.test(prompt)) genre = 'romance';
-    else if (/fantasy|magic|epic|dragon/i.test(prompt)) genre = 'fantasy';
-    else if (/sci-fi|scifi|science fiction|space|tech/i.test(prompt)) genre = 'scifi';
+    let designToken = ''; // Creative symbols
+    let patternType = ''; // Background patterns
 
-    const svg = `< svg width = "${width}" height = "${height}" xmlns = "http://www.w3.org/2000/svg" >
+    if (/mystery|detective|thriller|crime|suspense/i.test(prompt)) {
+      genre = 'mystery';
+      designToken = `<path d="M ${width * 0.5} ${height * 0.7} L ${width * 0.5} ${height * 0.8} M ${width * 0.5} ${height * 0.85} L ${width * 0.5} ${height * 0.86}" stroke="white" stroke-width="8" opacity="0.6"/>`; // Question/Search
+      patternType = `<pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.5" fill="white" opacity="0.1"/></pattern>`;
+    } else if (/romance|love|passion/i.test(prompt)) {
+      genre = 'romance';
+      designToken = `<path d="M ${width * 0.5} ${height * 0.8} Q ${width * 0.3} ${height * 0.6} ${width * 0.5} ${height * 0.7} Q ${width * 0.7} ${height * 0.6} ${width * 0.5} ${height * 0.8}" fill="#f43f5e" opacity="0.3"/>`; // Heart
+      patternType = `<pattern id="waves" width="100" height="20" patternUnits="userSpaceOnUse"><path d="M 0 10 Q 25 0 50 10 T 100 10" stroke="white" fill="none" opacity="0.1"/></pattern>`;
+    } else if (/fantasy|magic|epic|dragon/i.test(prompt)) {
+      genre = 'fantasy';
+      designToken = `<path d="M ${width * 0.4} ${height * 0.75} L ${width * 0.5} ${height * 0.65} L ${width * 0.6} ${height * 0.75} Z" fill="#fbbf24" opacity="0.3"/>`; // Mountain/Sword
+      patternType = `<pattern id="scales" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 0 20 Q 10 0 20 20 T 40 20" stroke="white" fill="none" opacity="0.1"/></pattern>`;
+    } else if (/sci-fi|scifi|science fiction|space|tech/i.test(prompt)) {
+      genre = 'scifi';
+      designToken = `<rect x="${width * 0.4}" y="${height * 0.7}" width="${width * 0.2}" height="${width * 0.2}" stroke="#22d3ee" stroke-width="2" fill="none" opacity="0.4" transform="rotate(45 ${width * 0.5} ${height * 0.8})"/>`; // Tech diamond
+      patternType = `<pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M 30 0 L 0 0 0 30" stroke="white" fill="none" stroke-width="0.5" opacity="0.1"/></pattern>`;
+    } else if (/manga|comic|cartoon/i.test(prompt)) {
+      genre = 'visual';
+      designToken = `<path d="M ${width * 0.1} ${height * 0.1} L ${width * 0.3} ${height * 0.2} L ${width * 0.15} ${height * 0.25} Z" fill="white" opacity="0.2"/>`; // Speed lines start
+      patternType = `<pattern id="halftone" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="white" opacity="0.2"/></pattern>`;
+    }
+
+    const colorMap: Record<string, string> = {
+      mystery: '#0f172a', // Slate 900
+      romance: '#4c0519',  // Rose 950
+      fantasy: '#1e1b4b',  // Indigo 950
+      scifi: '#082f49',    // Cyan 950
+      visual: '#18181b',   // Zinc 950
+      general: '#111827'   // Gray 900
+    };
+
+    const accentMap: Record<string, string> = {
+      mystery: '#3b82f6',
+      romance: '#fb7185',
+      fantasy: '#8b5cf6',
+      scifi: '#06b6d4',
+      visual: '#ffffff',
+      general: '#6366f1'
+    };
+
+    const bg = colorMap[genre];
+    const accent = accentMap[genre];
+
+    const svg = `
+<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
   <defs>
-  <linearGradient id="bg" x1 = "0%" y1 = "0%" x2 = "100%" y2 = "100%" >
-    <stop offset="0%" style = "stop-color:#0f172a;stop-opacity:1" />
-      <stop offset="100%" style = "stop-color:#1e293b;stop-opacity:1" />
-        </linearGradient>
-        </defs>
-        < rect width = "100%" height = "100%" fill = "url(#bg)" />
-          <circle cx="${width * 0.2}" cy = "${height * 0.2}" r = "${width * 0.25}" fill = "#3b82f6" opacity = "0.1" />
-            <circle cx="${width * 0.8}" cy = "${height * 0.8}" r = "${width * 0.2}" fill = "#3b82f6" opacity = "0.1" />
-              <rect x="10%" y = "${height * 0.2}" width = "80%" height = "2" fill = "#3b82f6" opacity = "0.5" />
-                <text x="50%" y = "${height * 0.45}" font - family="Georgia,serif" font - size="${width * 0.085}" font - weight="bold" fill = "white" text - anchor="middle" > ${line1} </text>
-  ${line2 ? `<text x="50%" y="${height * 0.55}" font-family="Georgia,serif" font-size="${width * 0.085}" font-weight="bold" fill="white" text-anchor="middle">${line2}</text>` : ''}
-<text x="50%" y = "${height * 0.85}" font - family="Arial,sans-serif" font - size="${width * 0.04}" fill = "white" text - anchor="middle" opacity = "0.8" > BY[AUTHOR NAME]</text>
-  < rect x = "10%" y = "${height * 0.75}" width = "80%" height = "2" fill = "#3b82f6" opacity = "0.5" />
-    </svg>`;
+    ${patternType}
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:${bg};stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Layer -->
+  <rect width="100%" height="100%" fill="url(#grad)" />
+  <rect width="100%" height="100%" fill="url(#${patternType ? patternType.match(/id="([^"]+)"/)?.[1] : 'none'})" />
+  
+  <!-- Artistic Accents -->
+  <circle cx="${width * 0.2}" cy="${height * 0.2}" r="${width * 0.3}" fill="${accent}" opacity="0.05" />
+  <circle cx="${width * 0.8}" cy="${height * 0.8}" r="${width * 0.25}" fill="${accent}" opacity="0.05" />
+  
+  <!-- Content Divider -->
+  <rect x="15%" y="${height * 0.25}" width="70%" height="1" fill="${accent}" opacity="0.3" />
+  
+  <!-- Creative Tokens -->
+  ${designToken}
+  
+  <!-- Main Title -->
+  <text x="50%" y="${height * 0.42}" font-family="Verdana, sans-serif" font-size="${width * 0.09}" font-weight="900" fill="white" text-anchor="middle" letter-spacing="2">
+    ${line1}
+  </text>
+  ${line2 ? `<text x="50%" y="${height * 0.54}" font-family="Verdana, sans-serif" font-size="${width * 0.09}" font-weight="900" fill="white" text-anchor="middle" letter-spacing="2">${line2}</text>` : ''}
+  
+  <!-- Author Section -->
+  <rect x="35%" y="${height * 0.82}" width="30%" height="2" fill="${accent}" opacity="0.6" />
+  <text x="50%" y="${height * 0.88}" font-family="Arial, sans-serif" font-size="${width * 0.035}" font-weight="bold" fill="white" text-anchor="middle" opacity="0.9" letter-spacing="4">
+    PUBLISH LAB PREMIUM
+  </text>
+  
+  <!-- Genre Tag -->
+  <rect x="${width * 0.4}" y="${height * 0.15}" width="${width * 0.2}" height="30" rx="15" fill="${accent}" opacity="0.2" />
+  <text x="50%" y="${height * 0.15 + 20}" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">
+    ${genre.toUpperCase()} EDITION
+  </text>
+</svg>`;
 
     return `data:image/svg+xml;base64,${btoa(svg)}`;
   }
