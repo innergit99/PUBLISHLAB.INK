@@ -54,20 +54,22 @@ export class StorageService {
         const shapeForDb = {
           id: image.id,
           user_id: user.id,
-          image_url: image.url, // Corrected from imageUrl
-          prompt: image.prompt,
-          tool_used: image.tool, // Corrected from toolType
+          type: image.tool, // Mapping ToolType to simple type string
           created_at: new Date(image.timestamp).toISOString(),
-          metadata: {
-            seo: image.seo,
-            mockupUrl: image.mockupUrl,
-            kdpBlueprint: image.kdpBlueprint,
-            productionDossier: image.productionDossier
+          data: {
+            url: image.url,
+            prompt: image.prompt,
+            metadata: {
+              seo: image.seo,
+              mockupUrl: image.mockupUrl,
+              kdpBlueprint: image.kdpBlueprint,
+              productionDossier: image.productionDossier
+            }
           }
         };
 
         const { error } = await supabase
-          .from('creations')
+          .from('content')
           .upsert(shapeForDb);
 
         if (error) console.error('Cloud Sync Error:', error.message);
@@ -84,7 +86,7 @@ export class StorageService {
       const user = await getCurrentUser();
       if (user) {
         const { data, error } = await supabase
-          .from('creations')
+          .from('content')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
@@ -93,15 +95,14 @@ export class StorageService {
           // Map back to app format
           return data.map(item => ({
             id: item.id,
-            url: item.image_url, // Corrected from imageUrl
-            prompt: item.prompt,
-            tool: item.tool_used, // Corrected from toolType
+            url: item.data?.url || '',
+            prompt: item.data?.prompt || '',
+            tool: item.type,
             timestamp: new Date(item.created_at).getTime(),
-            // Unpack metadata if it exists
-            seo: item.metadata?.seo,
-            mockupUrl: item.metadata?.mockupUrl,
-            kdpBlueprint: item.metadata?.kdpBlueprint,
-            productionDossier: item.metadata?.productionDossier
+            seo: item.data?.metadata?.seo,
+            mockupUrl: item.data?.metadata?.mockupUrl,
+            kdpBlueprint: item.data?.metadata?.kdpBlueprint,
+            productionDossier: item.data?.metadata?.productionDossier
           }));
         }
       }
@@ -142,7 +143,7 @@ export class StorageService {
     try {
       const user = await getCurrentUser();
       if (user) {
-        await supabase.from('creations').delete().eq('id', id);
+        await supabase.from('content').delete().eq('id', id);
       }
     } catch (e) {
       console.error('Cloud delete failed', e);
@@ -195,19 +196,21 @@ export class StorageService {
         const shapeForDb = {
           id: id,
           user_id: user.id,
-          image_url: 'PROJECT_STATE',
-          prompt: `Project: ${project.title || 'Untitled'}`,
-          tool_used: tool,
+          type: tool,
           created_at: new Date().toISOString(),
-          metadata: {
-            kdpProject: project,
-            kdpBlueprint: blueprint,
-            isProjectState: true
+          data: {
+            url: 'PROJECT_STATE',
+            prompt: `Project: ${project.title || 'Untitled'}`,
+            metadata: {
+              kdpProject: project,
+              kdpBlueprint: blueprint,
+              isProjectState: true
+            }
           }
         };
 
         const { error } = await supabase
-          .from('creations')
+          .from('content')
           .upsert(shapeForDb);
 
         if (error) console.error('Cloud Project Sync Error:', error.message);
@@ -225,18 +228,18 @@ export class StorageService {
       const user = await getCurrentUser();
       if (user) {
         const { data, error } = await supabase
-          .from('creations')
-          .select('metadata')
+          .from('content')
+          .select('data')
           .eq('user_id', user.id)
-          .eq('tool_used', tool)
-          .eq('metadata->isProjectState', true)
+          .eq('type', tool)
+          .eq('data->metadata->isProjectState', true)
           .order('created_at', { ascending: false })
           .limit(1);
 
         if (data && data.length > 0 && !error) {
           return {
-            project: data[0].metadata.kdpProject,
-            blueprint: data[0].metadata.kdpBlueprint
+            project: data[0].data.metadata.kdpProject,
+            blueprint: data[0].data.metadata.kdpBlueprint
           };
         }
       }
