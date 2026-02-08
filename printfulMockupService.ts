@@ -138,38 +138,19 @@ class PrintfulMockupService {
     console.log('📋 Using template:', { variantId: template.variantId, placement: template.placement });
     
     try {
-      // Create mockup generation task
-      console.log('🚀 Calling Printful API...');
-      const response = await fetch(`${this.baseUrl}/mockup-generator/create-task`, {
+      // Use API proxy to avoid CORS
+      console.log('🚀 Calling API proxy...');
+      const response = await fetch('/api/printful-mockup', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          variant_ids: [template.variantId],
+          variantId: template.variantId,
+          placement: template.placement,
+          imageUrl: designUrl,
           format: 'jpg',
-          width: 1000,
-          product_template_id: null,
-          option_groups: {
-            [template.placement]: {
-              orientation: 'any',
-              technique: 'dtg',
-              placement: template.placement
-            }
-          },
-          files: [{
-            placement: template.placement,
-            image_url: designUrl,
-            position: {
-              area_width: 1200,
-              area_height: 1200,
-              width: 1000,
-              height: 1000,
-              top: 100,
-              left: 100
-            }
-          }]
+          width: 1000
         })
       });
 
@@ -180,16 +161,16 @@ class PrintfulMockupService {
       }
 
       const data = await response.json();
-      console.log('✅ Printful task created:', data);
-      const taskKey = data.result.task_key;
-
-      // Poll for mockup completion
-      console.log('⏳ Polling for mockup...');
-      const mockupUrl = await this.pollForMockup(taskKey);
-      console.log('🎉 Mockup ready:', mockupUrl);
+      console.log('✅ Mockup generated via proxy:', data);
+      
+      if (!data.success || !data.mockupUrl) {
+        throw new Error(data.error || 'No mockup URL returned');
+      }
+      
+      console.log('🎉 Mockup ready:', data.mockupUrl);
       
       return {
-        url: mockupUrl,
+        url: data.mockupUrl,
         productType,
         width: 1000,
         height: 1000

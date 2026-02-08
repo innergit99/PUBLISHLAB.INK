@@ -1082,8 +1082,9 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
 
       // 4. Generate Professional Printful Mockups
       try {
+        console.log('🎨 Final asset for mockup:', finalAsset?.substring(0, 50));
         const mockupResult = await printfulMockupService.generateMockup({
-          designUrl: result,
+          designUrl: finalAsset,
           productType: activeMockup
         });
         setPrintfulMockups(prev => ({ ...prev, [activeMockup]: mockupResult.url }));
