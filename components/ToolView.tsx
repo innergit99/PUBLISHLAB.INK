@@ -4129,16 +4129,16 @@ h1, h2, h3 { page -break-after: avoid; }
                         }}
                       >
                         <img src={result} className={`
-                              ${activeMockup.includes('TEE') || activeMockup.includes('HOODIE') ? 'w-[45%]' : activeMockup === 'PHONE_CASE' ? 'w-[28%]' : activeMockup === 'MUG' ? 'w-[22%]' : 'w-[50%]'}
+                               ${activeMockup.includes('TEE') || activeMockup.includes('HOODIE') ? 'w-[45%]' : activeMockup === 'PHONE_CASE' ? 'w-[28%]' : activeMockup === 'MUG' ? 'w-[22%]' : 'w-[50%]'}
 drop-shadow-2xl pointer-events-none
   `} />
                       </div>
 
                       {/* PRODUCT BASE LAYER (Always visible behind design) */}
-                      <div className="absolute inset-0 z-10">
+                      <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/5 transition-colors duration-500">
                         <img
-                          src={MOCKUP_ASSETS[activeMockup] || printfulMockups[`base_${activeMockup}`] || printfulMockups[activeMockup]}
-                          className="w-full h-full object-contain p-4 select-none pointer-events-none transition-all duration-300"
+                          src={printfulMockups[`base_${activeMockup}`] || printfulMockups[activeMockup] || MOCKUP_ASSETS[activeMockup]}
+                          className="w-full h-full object-contain p-8 select-none pointer-events-none transition-all duration-300"
                           alt="Product Base"
                         />
                       </div>
