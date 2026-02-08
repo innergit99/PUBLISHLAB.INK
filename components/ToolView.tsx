@@ -562,7 +562,9 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
         const drawings: Record<string, string> = {};
         for (const type of Object.keys(MOCKUP_LABELS)) {
           try {
-            drawings[type] = await canvasMockupService.generateBaseProduct(type, '#ffffff');
+            const baseURL = await canvasMockupService.generateBaseProduct(type, '#ffffff');
+            drawings[type] = baseURL;
+            drawings[`base_${type}`] = baseURL;
           } catch (e) { }
         }
         setPrintfulMockups(prev => ({ ...prev, ...drawings }));
@@ -1064,17 +1066,26 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
         tags: mockDossier.listingDossiers['Amazon/Etsy'].tags
       });
 
-      // 4. Generate Professional Canvas Mockups (Photographic quality)
+      // 4. Generate Professional Canvas Mockups for ALL products
       try {
         const { canvasMockupService } = await import('../canvasMockupService');
-        console.log('🎨 Final asset for canvas mockup:', finalAsset?.substring(0, 50));
-        const mockupResult = await canvasMockupService.generateMockup({
-          designUrl: finalAsset,
-          productType: activeMockup
+        console.log('🎨 Finalizing ALL mockups for gallery...');
+
+        const mockupPromises = (Object.keys(MOCKUP_LABELS) as MockupType[]).map(async (type) => {
+          const result = await canvasMockupService.generateMockup({
+            designUrl: finalAsset,
+            productType: type
+          });
+          return { type, url: result.url };
         });
-        setPrintfulMockups(prev => ({ ...prev, [activeMockup]: mockupResult.url }));
+
+        const results = await Promise.all(mockupPromises);
+        const newMockups: Record<string, string> = {};
+        results.forEach(res => { newMockups[res.type] = res.url; });
+
+        setPrintfulMockups(prev => ({ ...prev, ...newMockups }));
       } catch (mockupError) {
-        console.warn('Canvas mockup failed:', mockupError);
+        console.warn('Batch mockup generation failed:', mockupError);
       }
 
       setIsGeneratingMockups(false);
@@ -4112,10 +4123,9 @@ h1, h2, h3 { page -break-after: avoid; }
                         </div>
                       )}
                       <div
-                        className="absolute inset-0 pointer-events-none flex items-center justify-center"
+                        className="absolute inset-0 pointer-events-none flex items-center justify-center z-20"
                         style={{
                           transform: `translate(${mockupPosX}px, ${mockupPosY}px) scale(${mockupScale})`,
-                          opacity: printfulMockups[activeMockup] && !isGeneratingMockups ? 0 : 1 // Hide overlay if canvas mockup is active
                         }}
                       >
                         <img src={result} className={`
@@ -4124,19 +4134,14 @@ drop-shadow-2xl pointer-events-none
   `} />
                       </div>
 
-                      {printfulMockups[activeMockup] ? (
+                      {/* PRODUCT BASE LAYER (Always visible behind design) */}
+                      <div className="absolute inset-0 z-10">
                         <img
-                          src={printfulMockups[activeMockup]}
-                          className="w-full h-full object-cover select-none pointer-events-none transition-all duration-300"
-                          alt="Printful Mockup"
+                          src={MOCKUP_ASSETS[activeMockup] || printfulMockups[`base_${activeMockup}`] || printfulMockups[activeMockup]}
+                          className="w-full h-full object-contain p-4 select-none pointer-events-none transition-all duration-300"
+                          alt="Product Base"
                         />
-                      ) : (
-                        <img
-                          src={MOCKUP_ASSETS[activeMockup]}
-                          className="w-full h-full object-cover select-none pointer-events-none transition-all duration-300"
-                          style={{ mixBlendMode: 'multiply' }}
-                        />
-                      )}
+                      </div>
                     </div>
 
                     <div className="mt-6 bg-slate-900/95 backdrop-blur-2xl px-12 py-5 rounded-[2.5rem] border border-slate-700 flex items-center justify-between shadow-2xl">
