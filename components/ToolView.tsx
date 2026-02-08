@@ -19,6 +19,7 @@ import { complianceService } from '../complianceService';
 import { NicheRadarView } from './NicheRadarView';
 import { CharacterVault } from './CharacterVault';
 import { PODStyleCard } from './PODStyleCard';
+import { printfulMockupService } from '../printfulMockupService';
 import {
   ChevronLeft, Sparkles, Download, Loader2, ImageIcon, X, Rocket, Upload,
   Search, Copy, CheckCircle, ZoomIn, ZoomOut, Move, Palette, Edit3,
@@ -522,6 +523,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   const [activePlatform, setActivePlatform] = useState<string>('Amazon/Etsy');
   const [isPromptBettering, setIsPromptBettering] = useState(false);
   const [isGeneratingMockups, setIsGeneratingMockups] = useState(false);
+  const [printfulMockups, setPrintfulMockups] = useState<Record<string, string>>({});
   const [showUploadCopilot, setShowUploadCopilot] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
 
@@ -1067,7 +1069,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
       mockDossier = gemini.generateFallbackSEO(prompt);
     }
 
-    setTimeout(() => {
+    setTimeout(async () => {
       setProductionDossier(mockDossier);
 
       // Initialize SEO Data view with default platform
@@ -1077,6 +1079,17 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
         story: mockDossier.listingDossiers['Amazon/Etsy'].story, // Use specific story
         tags: mockDossier.listingDossiers['Amazon/Etsy'].tags
       });
+
+      // 4. Generate Professional Printful Mockups
+      try {
+        const mockupResult = await printfulMockupService.generateMockup({
+          designUrl: result,
+          productType: activeMockup
+        });
+        setPrintfulMockups(prev => ({ ...prev, [activeMockup]: mockupResult.url }));
+      } catch (mockupError) {
+        console.warn('Printful mockup failed:', mockupError);
+      }
 
       setIsGeneratingMockups(false);
     }, 1500);
@@ -4124,11 +4137,19 @@ drop-shadow-2xl pointer-events-none
   `} />
                       </div>
 
-                      <img
-                        src={MOCKUP_ASSETS[activeMockup]}
-                        className="w-full h-full object-cover select-none pointer-events-none transition-all duration-300"
-                        style={{ mixBlendMode: 'multiply' }}
-                      />
+                      {printfulMockups[activeMockup] ? (
+                        <img
+                          src={printfulMockups[activeMockup]}
+                          className="w-full h-full object-cover select-none pointer-events-none transition-all duration-300"
+                          alt="Printful Mockup"
+                        />
+                      ) : (
+                        <img
+                          src={MOCKUP_ASSETS[activeMockup]}
+                          className="w-full h-full object-cover select-none pointer-events-none transition-all duration-300"
+                          style={{ mixBlendMode: 'multiply' }}
+                        />
+                      )}
                     </div>
 
                     <div className="mt-6 bg-slate-900/95 backdrop-blur-2xl px-12 py-5 rounded-[2.5rem] border border-slate-700 flex items-center justify-between shadow-2xl">
