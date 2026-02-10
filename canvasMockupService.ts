@@ -696,6 +696,250 @@ const PRODUCT_SHAPES: Record<string, any> = {
       ctx.fill();
     },
     designArea: { x: 250, y: 250, width: 300, height: 300 }
+  },
+
+  // --- NEW V4 SHAPES (Requested by User) ---
+
+  'BASEBALL_CAP': {
+    width: 1000,
+    height: 800,
+    draw: (ctx: CanvasRenderingContext2D, color: string) => {
+      addDropShadow(ctx, 15, 25);
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#222';
+      ctx.lineWidth = 2;
+
+      // Main Dome (Panels)
+      ctx.beginPath();
+      ctx.moveTo(300, 450);
+      ctx.quadraticCurveTo(300, 150, 500, 150);
+      ctx.quadraticCurveTo(700, 150, 700, 450);
+      ctx.fill();
+      ctx.stroke();
+
+      // Panel Lines
+      ctx.beginPath();
+      ctx.moveTo(500, 150);
+      ctx.lineTo(500, 450); // Center line
+      ctx.moveTo(500, 150);
+      ctx.quadraticCurveTo(400, 200, 320, 400); // Left panel
+      ctx.moveTo(500, 150);
+      ctx.quadraticCurveTo(600, 200, 680, 400); // Right panel
+      ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+      ctx.stroke();
+
+      // Top Button
+      ctx.fillStyle = shadeColor(color, -20);
+      ctx.beginPath();
+      ctx.arc(500, 155, 15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Curved Brim
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#222';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(300, 450);
+      ctx.quadraticCurveTo(500, 550, 700, 450); // Brim top
+      ctx.quadraticCurveTo(850, 550, 750, 650); // Brim R
+      ctx.quadraticCurveTo(500, 700, 250, 650); // Brim Bottom
+      ctx.quadraticCurveTo(150, 550, 300, 450); // Brim L
+      ctx.fill();
+      resetShadow(ctx);
+      ctx.stroke();
+    },
+    designArea: { x: 400, y: 250, width: 200, height: 120 }
+  },
+
+  'SOCKS': {
+    width: 800,
+    height: 1000,
+    draw: (ctx: CanvasRenderingContext2D, color: string) => {
+      addDropShadow(ctx, 10, 20);
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#444';
+      ctx.lineWidth = 1;
+
+      // Sock Shape (Vertical L)
+      ctx.beginPath();
+      // Cuff
+      ctx.roundRect(300, 100, 200, 40, 5);
+      // Leg
+      ctx.moveTo(300, 140);
+      ctx.lineTo(300, 600);
+      // Heel curve
+      ctx.quadraticCurveTo(300, 750, 450, 750);
+      // Foot
+      ctx.lineTo(650, 750);
+      // Toe curve
+      ctx.quadraticCurveTo(750, 750, 750, 650);
+      ctx.quadraticCurveTo(750, 600, 650, 600);
+      // Top of foot
+      ctx.lineTo(500, 600);
+      // Inner ankle
+      ctx.lineTo(500, 140);
+      ctx.fill();
+      resetShadow(ctx);
+      ctx.stroke();
+
+      // Heel/Toe accents
+      ctx.fillStyle = 'rgba(0,0,0,0.1)';
+      // Heel
+      ctx.beginPath(); ctx.arc(350, 700, 50, Math.PI, Math.PI * 1.5); ctx.fill();
+      // Toe
+      ctx.beginPath(); ctx.arc(700, 675, 75, 0, Math.PI * 0.5); ctx.fill();
+    },
+    designArea: { x: 320, y: 200, width: 160, height: 350 }
+  },
+
+  'APRON': {
+    width: 900,
+    height: 1000,
+    draw: (ctx: CanvasRenderingContext2D, color: string) => {
+      addDropShadow(ctx, 15, 25);
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2;
+
+      ctx.beginPath();
+      // Top Bib
+      ctx.moveTo(350, 150);
+      ctx.lineTo(550, 150);
+      // Arm cutouts
+      ctx.quadraticCurveTo(600, 300, 750, 350);
+      // Body R
+      ctx.lineTo(750, 850);
+      // Bottom
+      ctx.lineTo(150, 850);
+      // Body L
+      ctx.lineTo(150, 350);
+      // Arm cutout L
+      ctx.quadraticCurveTo(300, 300, 350, 150);
+      ctx.fill();
+      resetShadow(ctx);
+      ctx.stroke();
+
+      // Straps
+      ctx.strokeStyle = '#111';
+      ctx.lineWidth = 15;
+      // Neck loop
+      ctx.beginPath();
+      ctx.arc(450, 150, 100, Math.PI, 0);
+      ctx.stroke();
+      // Waist ties hints
+      ctx.lineWidth = 8;
+      ctx.beginPath(); ctx.moveTo(750, 400); ctx.lineTo(850, 450); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(150, 400); ctx.lineTo(50, 450); ctx.stroke();
+    },
+    designArea: { x: 300, y: 350, width: 300, height: 350 }
+  },
+
+  'A_LINE_DRESS': {
+    width: 1000,
+    height: 1100,
+    draw: (ctx: CanvasRenderingContext2D, color: string) => {
+      addDropShadow(ctx, 15, 30);
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#444';
+      ctx.lineWidth = 1;
+
+      ctx.beginPath();
+      // Neckline
+      ctx.moveTo(420, 100);
+      ctx.quadraticCurveTo(500, 130, 580, 100);
+      // Shoulders/Armholes
+      ctx.lineTo(650, 150);
+      ctx.quadraticCurveTo(620, 250, 620, 350);
+      // Waist (Tapered)
+      ctx.quadraticCurveTo(500, 380, 380, 350);
+      // Flared Skirt
+      ctx.lineTo(150, 950);
+      ctx.quadraticCurveTo(500, 1000, 850, 950);
+      ctx.lineTo(620, 350); // Connect back to waist
+
+      // Rectify path for left side
+      ctx.moveTo(380, 350);
+      ctx.quadraticCurveTo(380, 250, 350, 150);
+      ctx.lineTo(420, 100);
+
+      ctx.fill();
+      resetShadow(ctx);
+      ctx.stroke();
+
+      // Movement folds
+      drawWrinkle(ctx, 500, 400, 300, 900, 400, 650, 0.05);
+      drawWrinkle(ctx, 500, 400, 700, 900, 600, 650, 0.05);
+    },
+    designArea: { x: 350, y: 200, width: 300, height: 400 }
+  },
+
+  'ACCESSORY_POUCH': {
+    width: 800,
+    height: 600,
+    draw: (ctx: CanvasRenderingContext2D, color: string) => {
+      addDropShadow(ctx, 10, 20);
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2;
+
+      // Pouch Rectangle (Slightly puffed)
+      ctx.beginPath();
+      ctx.moveTo(200, 150);
+      ctx.quadraticCurveTo(400, 140, 600, 150); // Top
+      ctx.lineTo(620, 450); // R
+      ctx.quadraticCurveTo(400, 470, 180, 450); // Bottom
+      ctx.lineTo(200, 150); // L
+      ctx.fill();
+      resetShadow(ctx);
+      ctx.stroke();
+
+      // Zipper
+      ctx.strokeStyle = '#111';
+      ctx.lineWidth = 10;
+      ctx.beginPath();
+      ctx.moveTo(200, 160);
+      ctx.lineTo(600, 160);
+      ctx.stroke();
+
+      // Zipper Pull
+      ctx.fillStyle = '#999';
+      ctx.fillRect(180, 150, 20, 30);
+    },
+    designArea: { x: 250, y: 200, width: 300, height: 200 }
+  },
+
+  'GREETING_CARD': {
+    width: 800,
+    height: 1000,
+    draw: (ctx: CanvasRenderingContext2D, color: string) => {
+      addDropShadow(ctx, 10, 20);
+      ctx.fillStyle = '#fff'; // Usually white base
+      ctx.strokeStyle = '#ddd';
+      ctx.lineWidth = 1;
+
+      // Card Front
+      ctx.beginPath();
+      ctx.rect(150, 150, 500, 700);
+      ctx.fill();
+      resetShadow(ctx);
+      ctx.stroke();
+
+      // Center fold line
+      ctx.strokeStyle = 'rgba(0,0,0,0.05)';
+      ctx.beginPath();
+      ctx.moveTo(150, 500);
+      ctx.lineTo(650, 500);
+      ctx.stroke();
+
+      // Paper grain hint
+      ctx.globalAlpha = 0.05;
+      for (let i = 0; i < 200; i++) {
+        ctx.fillRect(150 + Math.random() * 500, 150 + Math.random() * 700, 1, 1);
+      }
+      ctx.globalAlpha = 1.0;
+    },
+    designArea: { x: 200, y: 200, width: 400, height: 600 }
   }
 };
 
@@ -743,6 +987,14 @@ function getTemplate(type: string): any {
   if (lower.includes('case') || lower.includes('skin')) return PRODUCT_SHAPES['PHONE_CASE'];
   if (lower.includes('pillow')) return PRODUCT_SHAPES['PILLOW'];
   if (lower.includes('poster') || lower.includes('canvas') || lower.includes('print')) return PRODUCT_SHAPES['POSTER'];
+
+  // V4 Mappings
+  if (lower.includes('socks')) return PRODUCT_SHAPES['SOCKS'];
+  if (lower.includes('apron')) return PRODUCT_SHAPES['APRON'];
+  if (lower.includes('dress')) return PRODUCT_SHAPES['A_LINE_DRESS'];
+  if (lower.includes('pouch')) return PRODUCT_SHAPES['ACCESSORY_POUCH'];
+  if (lower.includes('greeting') || lower.includes('card')) return PRODUCT_SHAPES['GREETING_CARD'];
+  if (lower.includes('cap') || lower.includes('baseball')) return PRODUCT_SHAPES['BASEBALL_CAP'];
 
   return DEFAULT_RECTANGLE;
 }

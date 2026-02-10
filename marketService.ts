@@ -118,8 +118,8 @@ export class MarketService {
      * Uses Gemini to analyze the SERP data and output structured JSON
      */
     private async synthesizeMarketData(keyword: string, serpData: string, mode: 'KDP' | 'POD'): Promise<NicheAnalysis> {
-        const geminiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
-        if (!geminiKey) throw new Error("Gemini API Key missing");
+        const geminiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+        if (!geminiKey) throw new Error("Gemini API Key missing (VITE_GEMINI_API_KEY)");
 
         const contextInstruction = mode === 'KDP'
             ? "Focus on Book Titles, Subtitles, and Series ideas."
@@ -162,9 +162,17 @@ export class MarketService {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { responseMimeType: "application/json" }
+                generationConfig: {
+                    temperature: 0.7,
+                    responseMimeType: "application/json"
+                }
             })
         });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(`Market Radar Synth Error (${response.status}): ${err.error?.message || response.statusText}`);
+        }
 
         const json = await response.json();
         const rawText = json.candidates?.[0]?.content?.parts?.[0]?.text;

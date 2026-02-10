@@ -71,7 +71,7 @@ export class ImageService {
     private async generateWithPollinations(options: ImageGenerationOptions): Promise<string> {
         const { prompt, width = 1024, height = 1024 } = options;
 
-        // 1. Construct URL
+        // 1. Construct URL with FLUX model for industrial quality
         const encodedPrompt = encodeURIComponent(prompt);
         // Random seed to prevent caching the same image
         const seed = Math.floor(Math.random() * 1000000);

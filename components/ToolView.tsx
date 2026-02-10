@@ -70,7 +70,8 @@ const MOCKUP_LABELS: Record<MockupType, string> = {
   PUZZLE: 'Jigsaw Puzzle',
   SOCKS: 'Crew Socks',
   BACKPACK: 'Backpack',
-  DUFFLE_BAG: 'Duffle Bag'
+  DUFFLE_BAG: 'Duffle Bag',
+  BASEBALL_CAP: 'Baseball Cap'
 };
 
 const COLOR_SWATCHES = [
@@ -323,6 +324,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   const [seoData, setSeoData] = useState<SEOMetadata | null>(null);
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
   const [baseColor, setBaseColor] = useState('#ffffff');
+  const [productBaseUrl, setProductBaseUrl] = useState<string>('');
 
   // Advanced Creative Controls
   const [aspectRatio, setAspectRatio] = useState("1:1");
@@ -636,7 +638,22 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     const estimatedPages = Math.max(72, Math.ceil(totalWords / 300) + (kdpBlueprint.INTERIOR_CONTENT.length * 2));
     const thickness = kdpProject.interiorColor === 'B&W' ? 0.002252 : 0.002347; // Inches per page
     return (estimatedPages * thickness).toFixed(3);
-  };
+  };  // --- PRODUCT COLORWAY SYNC ---
+  useEffect(() => {
+    const updateProductBase = async () => {
+      try {
+        const result = await mockupService.generateMockup({
+          designUrl: '', // Plain base
+          productType: activeMockup,
+          color: baseColor
+        });
+        setProductBaseUrl(result.url);
+      } catch (e) {
+        console.error("Failed to generate product base:", e);
+      }
+    };
+    updateProductBase();
+  }, [activeMockup, baseColor]);
 
   const fetchKDPTitleIdeas = async () => {
     if (!selectedGenre) return;
@@ -4132,7 +4149,6 @@ h1, h2, h3 { page -break-after: avoid; }
                   <div className="relative group rounded-[4rem] overflow-hidden">
                     <div
                       className="aspect-[4/3] relative flex items-center justify-center cursor-move border-[15px] border-slate-900 rounded-[4rem] overflow-hidden shadow-2xl transition-all duration-500"
-                      style={{ backgroundColor: baseColor }}
                       onMouseDown={handleDragStart}
                       onMouseMove={handleDragMove}
                       onMouseUp={handleDragEnd}
@@ -4162,7 +4178,7 @@ drop-shadow-2xl pointer-events-none
                       {/* PRODUCT BASE LAYER (Always visible behind design) */}
                       <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/5 transition-colors duration-500">
                         <img
-                          src={printfulMockups[`base_${activeMockup}`] || printfulMockups[activeMockup] || MOCKUP_ASSETS[activeMockup]}
+                          src={productBaseUrl || printfulMockups[`base_${activeMockup}`] || printfulMockups[activeMockup] || MOCKUP_ASSETS[activeMockup]}
                           className="w-full h-full object-contain p-8 select-none pointer-events-none transition-all duration-300"
                           alt="Product Base"
                         />

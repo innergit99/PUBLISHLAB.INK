@@ -534,37 +534,37 @@ No explanations. No quotes.`;
   }
 
   private async queryGeminiFlash(prompt: string, jsonMode: boolean = false): Promise<string> {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error("Gemini API Key missing");
+    const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error("Gemini API Key missing (VITE_GEMINI_API_KEY)");
+
+    // Use v1beta for latest features including JSON mode
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          signal: controller.signal,
-          body: JSON.stringify({
-            contents: [{
-              parts: [{ text: prompt }]
-            }],
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 8192,
-              ...(jsonMode && { responseMimeType: "application/json" })
-            }
-          })
-        }
-      );
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: prompt }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 8192,
+            ...(jsonMode && { responseMimeType: "application/json" })
+          }
+        })
+      });
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
         const err = await response.json();
-        throw new Error(`Gemini Error: ${err.error?.message || response.statusText}`);
+        throw new Error(`Gemini Error (${response.status}): ${err.error?.message || response.statusText}`);
       }
 
       const data = await response.json();
@@ -580,7 +580,7 @@ No explanations. No quotes.`;
   }
 
   private async queryGroqDirectly(prompt: string, jsonMode: boolean = false): Promise<string> {
-    const apiKey = import.meta.env.VITE_GROQ_API_KEY || process.env.GROQ_API_KEY;
+    const apiKey = (import.meta as any).env?.VITE_GROQ_API_KEY || process.env.VITE_GROQ_API_KEY || process.env.GROQ_API_KEY;
     if (!apiKey) throw new Error("Groq API Key missing");
 
     const controller = new AbortController();
