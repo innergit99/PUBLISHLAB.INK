@@ -538,7 +538,7 @@ No explanations. No quotes.`;
     if (!apiKey) throw new Error("Gemini API Key missing (VITE_GEMINI_API_KEY)");
 
     // Use v1beta for latest features including JSON mode
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=${apiKey}`;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);

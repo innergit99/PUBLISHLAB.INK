@@ -642,7 +642,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   useEffect(() => {
     const updateProductBase = async () => {
       try {
-        const result = await mockupService.generateMockup({
+        const result = await canvasMockupService.generateMockup({
           designUrl: '', // Plain base
           productType: activeMockup,
           color: baseColor
