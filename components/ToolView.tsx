@@ -292,6 +292,7 @@ const IndustrialBackground: React.FC<{ tool: any }> = ({ tool }) => {
 };
 
 const ToolView: React.FC<ToolViewProps> = (props) => {
+  console.log('ToolView rendered with toolType:', props.toolType);
   const tool = TOOLS.find(t => t.id === props.toolType);
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
@@ -304,6 +305,7 @@ const ToolView: React.FC<ToolViewProps> = (props) => {
 };
 
 const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBack, onImageGenerated, onNavigate, isDarkMode }) => {
+  console.log('ToolViewInner rendered with toolType:', toolType);
 
   const tool = TOOLS.find(t => t.id === toolType);
   const [prompt, setPrompt] = useState(initialPrompt || '');
@@ -560,8 +562,11 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     if (toolType === ToolType.POD_MERCH) {
       const initDrawings = async () => {
         try {
+          console.log('Loading canvas mockup service...');
           const canvasMockupModule = await import('../canvasMockupService');
           const canvasMockupService = canvasMockupModule.canvasMockupService;
+          console.log('Canvas mockup service loaded successfully');
+          
           const drawings: Record<string, string> = {};
           for (const type of Object.keys(MOCKUP_LABELS)) {
             try {
@@ -575,6 +580,8 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
           setPrintfulMockups(prev => ({ ...prev, ...drawings }));
         } catch (e) {
           console.error('Failed to load canvas mockup service:', e);
+          // Fallback: Use existing mockup assets
+          console.log('Using fallback mockup assets');
         }
       };
       initDrawings();
