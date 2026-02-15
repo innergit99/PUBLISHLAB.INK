@@ -19,8 +19,6 @@ import { complianceService } from '../complianceService';
 import { NicheRadarView } from './NicheRadarView';
 import { CharacterVault } from './CharacterVault';
 import { PODStyleCard } from './PODStyleCard';
-import { holographicMockupService } from '../holographicMockupService';
-import { canvasMockupService } from '../canvasMockupService';
 import {
   ChevronLeft, Sparkles, Download, Loader2, ImageIcon, X, Rocket, Upload,
   Search, Copy, CheckCircle, ZoomIn, ZoomOut, Move, Palette, Edit3,
@@ -561,16 +559,23 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   useEffect(() => {
     if (toolType === ToolType.POD_MERCH) {
       const initDrawings = async () => {
-        const { canvasMockupService } = await import('../canvasMockupService');
-        const drawings: Record<string, string> = {};
-        for (const type of Object.keys(MOCKUP_LABELS)) {
-          try {
-            const baseURL = await canvasMockupService.generateBaseProduct(type, '#ffffff');
-            drawings[type] = baseURL;
-            drawings[`base_${type}`] = baseURL;
-          } catch (e) { }
+        try {
+          const canvasMockupModule = await import('../canvasMockupService');
+          const canvasMockupService = canvasMockupModule.canvasMockupService;
+          const drawings: Record<string, string> = {};
+          for (const type of Object.keys(MOCKUP_LABELS)) {
+            try {
+              const baseURL = await canvasMockupService.generateBaseProduct(type, '#ffffff');
+              drawings[type] = baseURL;
+              drawings[`base_${type}`] = baseURL;
+            } catch (e) { 
+              console.warn(`Failed to generate mockup for ${type}:`, e);
+            }
+          }
+          setPrintfulMockups(prev => ({ ...prev, ...drawings }));
+        } catch (e) {
+          console.error('Failed to load canvas mockup service:', e);
         }
-        setPrintfulMockups(prev => ({ ...prev, ...drawings }));
       };
       initDrawings();
     }

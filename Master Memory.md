@@ -1,6 +1,6 @@
 # ARTISAN AI - Master Memory
 
-> **Last Update**: 2026-02-10 18:30
+> **Last Update**: 2026-02-11 18:20
 > **Current Status**: 🟢 LIVE / PRODUCTION DEPLOYED (publishlab.ink)
 > **Backend**: 🤗 HuggingFace Spaces Integrated (Llama 3.1-8B + FLUX.1)
 
@@ -10,7 +10,7 @@
 - **Frontend**: React, TypeScript, Tailwind CSS, Framer Motion
 - **Backend/Tooling**: Node.js, Vite, FastAPI (Python), Gradio
 - **AI Logic**: Hybrid Engine (HuggingFace Spaces [Primary], OpenAI, Ollama [Local], Static Fallback)
-- **AI Models**: Llama 3.1-8B (Text), FLUX.1-schnell (Images), Gemini 1.5 Flash
+- **AI Models**: Llama 3.1-8B (Text), FLUX.1-schnell (Images), Gemini 3.x/2.5/2.0 (Gemini 1.x RETIRED)
 - **Auth/DB**: Supabase (Auth + User Data)
 - **Payments**: Paddle (Subscriptions)
 - **Hosting**: Vercel (Frontend) + HuggingFace Spaces (Backend)
@@ -27,7 +27,20 @@
 -   **`.agent/rules/artisan.md`**: **The Constitution**. Defines static *Quality Gates*, Tech Stack rules (React/Tailwind), and "Humanity Pro" writing standards. (Static)
 -   **`.agent/rules/project_context.md`**: **The Protocol**. A mandatory hook that forces the agent to read the Global `GEMINI.md` and Local `Master Memory.md` on startup. (System)
 
-## Recent Changes (2026-02-08)
+## Recent Changes (2026-02-11)
+
+### 🔧 Critical AI Provider Fixes (2026-02-11)
+53. **[AI] Gemini Models Updated**: All Gemini 1.0 and 1.5 models are RETIRED (return 404 errors).
+    - **New Model List**: `gemini-3-flash-preview`, `gemini-3-pro-preview`, `gemini-2.5-flash-lite`, `gemini-2.0-flash`, `gemini-2.0-flash-lite`
+    - **Removed**: `gemini-1.5-flash`, `gemini-1.5-pro`, `gemini-pro`, `gemini-1.0-pro` (all 404)
+    - **Fallback Optimized**: Reduced from 20 attempts (10 models × 2 API versions) to 5 models with v1beta only
+54. **[AI] Pollinations Rate Limit Handling**: Added automatic Canvas fallback when rate limited.
+    - **Detection**: HTTP 429/503 status codes + small image size check (<5KB placeholder)
+    - **Fallback**: Graceful switch to Canvas generation instead of throwing errors
+    - **Timeout**: Added 30s timeout to prevent hanging requests
+55. **[AI] Improved Diagnostics**: Gemini diagnostics now filters and shows only working 2.0+/2.5+/3.x models.
+56. **[DOCS] AGENTS.md Created**: Added Warp guidance file for AI agent context.
+57. **[DEPLOY] Vercel Push**: Commit `7fd2366` deployed with all AI provider fixes.
 
 ### 💳 Live Billing & Industrialization (2026-02-10)
 50. **[BILLING] Live Paddle Integration**: Switched from Sandbox to Production node.
@@ -98,6 +111,8 @@
 -   **Auth Redirection**: The Password Reset link is currently pending a URL update in the Supabase Dashboard (Site URL needs to be `https://www.publishlab.ink/`).
 -   **AI Economy**: The system behaves DIFFERENTLY in "Free Mode". Generative text may be slower (HuggingFace) or static (Fallback).
 -   **Gemini Service**: Despite the name `geminiService.ts`, this file is now the central "AI Orchestrator". It handles ALL providers.
+-   **Gemini Model Status (Feb 2026)**: Gemini 1.x and 1.5 models are RETIRED. Only use gemini-3-*, gemini-2.5-*, gemini-2.0-* models.
+-   **Image Generation Fallback**: Pollinations → Canvas (automatic on rate limit). Fal.ai if API key configured.
 -   **Genre Engines**: The `GENRE_ENGINES` constant in `geminiService.ts` is the "Brain" of the procedural generation.
 -   **KDP Export Validator**: `kdpExportValidator.ts` MUST validate all exports. It blocks placeholder leaks.
 -   **Supabase Project ID**: `mctmtdjbjynzlunfictm` - Auth settings at supabase.com/dashboard
@@ -121,3 +136,15 @@
 | `verify_genre_matrix.ts` | NEW - Automated genre specification auditor |
 | `GENRE_VERIFICATION_REPORT.md` | NEW - Final pass/fail results for 21 genres |
 | `walkthrough.md` | Updated with full Genre Engine deployment results |
+| `AGENTS.md` | NEW - Warp AI agent guidance file with architecture overview |
+
+## AI Provider Status (Feb 2026)
+| Provider | Status | Models/Notes |
+|----------|--------|--------------|
+| Gemini | ✅ Working | `gemini-3-flash-preview`, `gemini-3-pro-preview`, `gemini-2.5-flash-lite`, `gemini-2.0-flash` |
+| Gemini (Legacy) | ❌ RETIRED | `gemini-1.5-*`, `gemini-1.0-*`, `gemini-pro` (all return 404) |
+| Groq | ✅ Working | `llama-3.3-70b-versatile` (fallback for Gemini) |
+| HuggingFace | ✅ Working | Llama 3.1-8B on ZeroGPU Spaces |
+| Ollama | ✅ Local | `llama3.2:3b` (for local dev mode) |
+| Pollinations | ⚠️ Rate Limited | Free tier, falls back to Canvas when limited |
+| Fal.ai | ✅ If Key Set | Flux Schnell/Dev (requires VITE_FAL_API_KEY) |
