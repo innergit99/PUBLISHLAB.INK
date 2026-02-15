@@ -1275,6 +1275,9 @@ export class CoverGenerator {
      * Each chapter gets a completely unique design based on content, mood, and position
      */
     async generateChapterIllustration(chapterTitle: string, chapterContent: string, genre: string, chapterIndex: number, totalChapters: number): Promise<string> {
+        console.log('🎨 [COVER GENERATOR] generateChapterIllustration called!');
+        console.log('📖 [DEBUG] Chapter:', chapterTitle, 'Genre:', genre, 'Index:', chapterIndex);
+        
         const width = 1200;
         const height = 900;
         this.canvas.width = width;

@@ -56,13 +56,16 @@ export class ImageService {
         try {
             // Specialized Canvas generation for book interiors
             if (module === 'KDP_INTERIOR') {
-                console.log('📖 Generating creative chapter illustration...');
+                console.log('📖 [ENHANCED] Generating creative chapter illustration...');
+                console.log('🎨 [DEBUG] Module:', module, 'Title:', title, 'Genre:', genre);
                 // Use our new enhanced chapter illustration method
                 // Extract chapter number from prompt or title
                 const chapterMatch = prompt.match(/chapter\s*(\d+)/i) || title?.match(/chapter\s*(\d+)/i);
                 const chapterIndex = chapterMatch ? parseInt(chapterMatch[1]) - 1 : 0;
                 const totalChapters = 10; // Default estimate
                 const chapterTitle = title || 'Chapter ' + (chapterIndex + 1);
+                
+                console.log('🔢 [DEBUG] Chapter Index:', chapterIndex, 'Chapter Title:', chapterTitle);
                 
                 return await coverGenerator.generateChapterIllustration(
                     chapterTitle,
