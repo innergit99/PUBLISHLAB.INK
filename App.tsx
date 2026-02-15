@@ -200,7 +200,7 @@ const App: React.FC = () => {
       );
     }
 
-    return <ToolView toolType={activeTab} initialPrompt={initialPrompt} onBack={() => setActiveTab(ToolType.DASHBOARD)} onImageGenerated={addToGallery} onNavigate={handleNavigate} isDarkMode={isDarkMode} />;
+    return <ToolRouter toolType={activeTab} initialPrompt={initialPrompt} onBack={() => setActiveTab(ToolType.DASHBOARD)} onImageGenerated={addToGallery} onNavigate={handleNavigate} isDarkMode={isDarkMode} />;
   };
 
   return (
