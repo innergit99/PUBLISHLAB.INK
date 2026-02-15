@@ -4198,24 +4198,30 @@ h1, h2, h3 { page -break-after: avoid; }
                       )}
                       <div
                         className="absolute inset-0 pointer-events-none flex items-center justify-center z-20"
-                        style={{
-                          transform: `translate(${mockupPosX}px, ${mockupPosY}px) scale(${mockupScale})`,
-                        }}
                       >
-                        <img src={result} className={`
-                               ${activeMockup.includes('TEE') || activeMockup.includes('HOODIE') ? 'w-[45%]' : activeMockup === 'PHONE_CASE' ? 'w-[28%]' : activeMockup === 'MUG' ? 'w-[22%]' : 'w-[50%]'}
-drop-shadow-2xl pointer-events-none
-  `} />
+                        <div className="relative">
+                          <img src={result} className={` ${activeMockup.includes('TEE') || activeMockup.includes('HOODIE') ? 'w-[45%]' : activeMockup === 'PHONE_CASE' ? 'w-[28%]' : activeMockup === 'MUG' ? 'w-[22%]' : 'w-[50%]'} drop-shadow-2xl pointer-events-none `} />
+                          <div className="absolute -top-12 -right-12 flex flex-col gap-2 bg-slate-900/90 backdrop-blur-lg p-2 rounded-xl border border-slate-700">
+                            <button onClick={() => setMockupScale(s => Math.min(3, s + 0.1))} className="text-slate-400 hover:text-white"><ZoomIn size={16} /></button>
+                            <button onClick={() => setMockupScale(s => Math.max(0.5, s - 0.1))} className="text-slate-400 hover:text-white"><ZoomOut size={16} /></button>
+                            <button onClick={() => { setMockupPosX(0); setMockupPosY(0); setMockupScale(1); }} className="text-slate-400 hover:text-white"><AlignCenter size={16} /></button>
+                            <div className="text-[8px] text-slate-400 text-center mt-1">
+                              {Math.round(mockupScale * 100)}%
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
-                      {/* PRODUCT BASE LAYER (Always visible behind design) */}
-                      <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/5 transition-colors duration-500">
-                        <img
-                          src={productBaseUrl || printfulMockups[`base_${activeMockup}`] || printfulMockups[activeMockup] || MOCKUP_ASSETS[activeMockup]}
-                          className="w-full h-full object-contain p-8 select-none pointer-events-none transition-all duration-300"
-                          alt="Product Base"
-                        />
-                      </div>
+                      {/* PRODUCT BASE LAYER (Only visible when NO design is applied) */}
+                      {!result && (
+                        <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/5 transition-colors duration-500">
+                          <img
+                            src={productBaseUrl || printfulMockups[`base_${activeMockup}`] || MOCKUP_ASSETS[activeMockup]}
+                            className="w-full h-full object-contain p-8 select-none pointer-events-none transition-all duration-300"
+                            alt="Product Base"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div className="mt-6 bg-slate-900/95 backdrop-blur-2xl px-12 py-5 rounded-[2.5rem] border border-slate-700 flex items-center justify-between shadow-2xl">
@@ -4269,11 +4275,7 @@ drop-shadow-2xl pointer-events-none
                               {MOCKUP_LABELS[mockupType]}
                             </span>
                           </div>
-                          {activeMockup === mockupType && (
-                            <div className="absolute top-2 right-2">
-                              <CheckCircle2 size={16} className="text-indigo-400 drop-shadow-lg" />
-                            </div>
-                          )}
+                          {/* Don't show checkmark for current mockup - it's confusing with main design visible */}
                         </button>
                       ))}
                     </div>
@@ -4296,7 +4298,7 @@ drop-shadow-2xl pointer-events-none
                         )}
                         <div className="flex-1">
                           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Master Asset</p>
-                          <p className="text-xs font-bold text-slate-100">2048px Transparent (300DPI)</p>
+                          <p className="text-xs font-bold text-slate-100">2048px × 2048px • 300 DPI • PNG • Transparent Background</p>
                         </div>
                         <button
                           onClick={async () => {
