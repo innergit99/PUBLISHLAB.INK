@@ -6,16 +6,18 @@
  * Production uses paid APIs (Gemini, Fal.ai) for industrial-grade quality.
  */
 
+/// <reference types="vite/client" />
+
 export const ENV_CONFIG = {
     // Environment Detection
-    isDev: import.meta.env.DEV,
-    isProd: import.meta.env.PROD,
+    isDev: process.env.NODE_ENV === 'development',
+    isProd: process.env.NODE_ENV === 'production',
     isVercel: typeof window !== 'undefined' && window.location.hostname.includes('vercel.app'),
     isCustomDomain: typeof window !== 'undefined' && window.location.hostname === 'publishlab.ink',
 
     // Force Flags (for testing)
-    forceLocalMode: import.meta.env.VITE_FORCE_LOCAL_MODE === 'true',
-    forceProductionMode: import.meta.env.VITE_FORCE_PRODUCTION_MODE === 'true',
+    forceLocalMode: process.env.VITE_FORCE_LOCAL_MODE === 'true',
+    forceProductionMode: process.env.VITE_FORCE_PRODUCTION_MODE === 'true',
 } as const;
 
 /**
@@ -68,7 +70,7 @@ export function getResourceProvider(service: keyof typeof RESOURCE_CONFIG): stri
 
     // Special Logic for Images: Check for Fal Key
     if (service === 'images' && mode === 'production') {
-        const hasFalKey = (import.meta.env.VITE_FAL_API_KEY || process.env.FAL_API_KEY)?.length > 10;
+        const hasFalKey = (process.env.VITE_FAL_API_KEY)?.length > 10;
         if (!hasFalKey) return 'pollinations'; // Auto-fallback if no key
     }
 

@@ -16,7 +16,7 @@ export interface ImageGenerationOptions {
     model?: 'schnell' | 'dev' | 'pro'; // Fal.ai Flux variants
     numInferenceSteps?: number;
     guidanceScale?: number;
-    module?: 'POD' | 'KDP' | 'MOCKUP' | 'KDP_INTERIOR';
+    module?: 'POD' | 'KDP' | 'MOCKUP' | 'KDP_INTERIOR' | 'KDP_COVER';
     title?: string;
     author?: string;
     genre?: string;
@@ -35,7 +35,7 @@ export class ImageService {
             return this.generateWithCanvas(options);
         }
 
-        const apiKey = import.meta.env.VITE_FAL_API_KEY || process.env.FAL_API_KEY;
+        const apiKey = process.env.VITE_FAL_API_KEY;
         // If we have a valid key, try Fal first
         if (apiKey && !apiKey.includes('PLACEHOLDER')) {
             console.log('🚀 PRODUCTION MODE: Using Fal.ai Flux');
@@ -56,15 +56,36 @@ export class ImageService {
         try {
             // Specialized Canvas generation for book interiors
             if (module === 'KDP_INTERIOR') {
-                console.log('📖 Generating industrial interior placeholder...');
-                return await coverGenerator.generateInteriorImage(
-                    prompt,
-                    title || 'Untitled',
-                    genre || 'Fiction'
+                console.log('📖 Generating creative chapter illustration...');
+                // Use our new enhanced chapter illustration method
+                // Extract chapter number from prompt or title
+                const chapterMatch = prompt.match(/chapter\s*(\d+)/i) || title?.match(/chapter\s*(\d+)/i);
+                const chapterIndex = chapterMatch ? parseInt(chapterMatch[1]) - 1 : 0;
+                const totalChapters = 10; // Default estimate
+                const chapterTitle = title || 'Chapter ' + (chapterIndex + 1);
+                
+                return await coverGenerator.generateChapterIllustration(
+                    chapterTitle,
+                    prompt, // Use prompt as content
+                    genre || 'Fiction',
+                    chapterIndex,
+                    totalChapters
                 );
             }
 
-            // Use the existing Canvas generator for generic placeholders
+            // Specialized Canvas generation for book covers
+            if (module === 'KDP_COVER') {
+                console.log('📚 Generating creative cover design...');
+                return await coverGenerator.generateCover({
+                    title: title || 'Untitled Book',
+                    author: 'Author Name',
+                    genre: genre || 'Fiction',
+                    width,
+                    height
+                });
+            }
+
+            // Use existing Canvas generator for generic placeholders
             const dataUrl = await coverGenerator.generateGenericPlaceholder(
                 prompt,
                 width,
@@ -177,7 +198,7 @@ export class ImageService {
             guidanceScale = 3.5
         } = options;
 
-        const apiKey = import.meta.env.VITE_FAL_API_KEY || process.env.FAL_API_KEY;
+        const apiKey = process.env.VITE_FAL_API_KEY;
 
         const modelMap = {
             'schnell': 'fal-ai/flux/schnell',
