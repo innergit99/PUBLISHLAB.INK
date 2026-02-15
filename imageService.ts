@@ -51,7 +51,7 @@ export class ImageService {
      * LOCAL MODE: Canvas-based generation
      */
     private async generateWithCanvas(options: ImageGenerationOptions): Promise<string> {
-        const { prompt, width = 1024, height = 1024, module, title, genre } = options;
+        const { prompt, width = 5400, height = 5000, module, title, genre } = options; // DEFAULT to minimum 5400×5000px
 
         try {
             // Specialized Canvas generation for book interiors
@@ -301,8 +301,8 @@ export class ImageService {
         try {
             return await this.generateImage({
                 prompt: `${fullPrompt}, ultra high quality, 300 DPI, print-ready, professional, isolated on white background`,
-                width: 2048,
-                height: 2048,
+                width: 5400, // MINIMUM: 5400px for production downloads
+                height: 5000, // MINIMUM: 5000px for production downloads
                 model: 'dev', // Higher quality for print
                 numInferenceSteps: 28, // More steps = better quality
                 guidanceScale: 7.5 // Higher guidance for better prompt adherence
@@ -311,8 +311,8 @@ export class ImageService {
             console.error('❌ Production generation failed:', error.message);
             return this.generateWithCanvas({
                 prompt: `${fullPrompt}, ultra high quality`,
-                width: 2048,
-                height: 2048
+                width: 5400, // MINIMUM: 5400px for production downloads
+                height: 5000, // MINIMUM: 5000px for production downloads
             });
         }
     }
