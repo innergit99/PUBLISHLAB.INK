@@ -1416,7 +1416,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
                   <div className="space-y-6">
                     <div className="p-6 bg-slate-950 rounded-3xl border border-white/5 space-y-3">
                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Market Context</span>
-                      <p className="text-sm font-bold text-slate-300 italic italic leading-relaxed">"Verified buyer intent detected on {activeTrendTab} nodes. High sentiment correlation with existing '{selectedTrend.keyword}' velocity."</p>
+                      <p className="text-sm font-bold text-slate-300 italic leading-relaxed">"Verified buyer intent detected on {activeTrendTab} nodes. High sentiment correlation with existing '{selectedTrend.keyword}' velocity."</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -1432,7 +1432,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
                   </div>
                 </div>
 
-                <div className="p-16 bg-gradient-to-br from-indigo-900/20 to-transparent flex flex-col justify-center space-y-8">
+                <div className="p-16 bg-linear-to-br from-indigo-900/20 to-transparent flex flex-col justify-center space-y-8">
                   <h3 className="text-xl font-black uppercase italic tracking-tighter text-white">Engage Production Mode:</h3>
                   <div className="space-y-4">
                     <button
@@ -1539,12 +1539,12 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
                 placeholder="PROPOSED TITLE OR BOOK URL"
                 value={seoTopic}
                 onChange={(e) => setSeoTopic(e.target.value)}
-                className={`w-full py-6 px-10 rounded-[2rem] border-2 focus: border-indigo - 500 outline - none transition-all font-black uppercase italic tracking - widest text-sm shadow-2xl ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'} `}
+                className={`w-full py-6 px-10 rounded-4xl border-2 focus: border-indigo - 500 outline - none transition-all font-black uppercase italic tracking - widest text-sm shadow-2xl ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'} `}
               />
               <select
                 value={seoGenre}
                 onChange={(e) => setSeoGenre(e.target.value)}
-                className={`w-full py-6 px-10 rounded-[2rem] border-2 focus: border-indigo - 500 outline - none transition-all font-black uppercase italic tracking - widest text-sm shadow-2xl appearance - none ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'} `}
+                className={`w-full py-6 px-10 rounded-4xl border-2 focus: border-indigo - 500 outline - none transition-all font-black uppercase italic tracking - widest text-sm shadow-2xl appearance - none ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'} `}
               >
                 <option value="">SELECT CORE GENRE</option>
                 {KDP_GENRES.map(g => <option key={g.id} value={g.label}>{g.label}</option>)}
@@ -1561,7 +1561,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
             </button>
 
             {isSeoLoading && (
-              <div className={`w-full max - w-lg p-8 rounded-[2.5rem] border font - mono text-[10px] text-left space-y - 1 shadow-inner ${isDarkMode ? 'bg-black/40 border-slate-800 text-indigo-400' : 'bg-slate-50 border-slate-100 text-indigo-600'} `}>
+              <div className={`w-full max-w-lg p-8 rounded-[2.5rem] border font-mono text-[10px] text-left space-y-1 shadow-inner ${isDarkMode ? 'bg-black/40 border-slate-800 text-indigo-400' : 'bg-slate-50 border-slate-100 text-indigo-600'} `}>
                 {seoLogs.map((log, i) => (
                   <div key={i} className="flex gap-4">
                     <span className="opacity-40">[{new Date().toLocaleTimeString()}]</span>
@@ -1600,7 +1600,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
 
                 <div className="space-y-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className={`p-8 rounded-[2rem] border relative group transition-all ${isDarkMode ? 'bg-black/20 border-white/5 hover:border-indigo-500/30' : 'bg-slate-50 border-slate-100 hover:border-indigo-500'} `}>
+                    <div className={`p-8 rounded-4xl border relative group transition-all ${isDarkMode ? 'bg-black/20 border-white/5 hover:border-indigo-500/30' : 'bg-slate-50 border-slate-100 hover:border-indigo-500'} `}>
                       <div className="flex justify-between items-center mb-4">
                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">The Hook Title</span>
                         <button onClick={() => handleCopy(seoDossier.hookTitle, 'hook')} className={`p-2 rounded-lg transition-all ${isDarkMode ? 'hover:bg-white/10' : 'hover:bg-black/5'} `}>
@@ -1610,7 +1610,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
                       <p className={`text-lg font-black italic ${isDarkMode ? 'text-white' : 'text-slate-900'} `}>{seoDossier.hookTitle}</p>
                     </div>
 
-                    <div className={`p-8 rounded-[2rem] border relative group transition-all ${isDarkMode ? 'bg-black/20 border-white/5 hover:border-indigo-500/30' : 'bg-slate-50 border-slate-100 hover:border-indigo-500'} `}>
+                    <div className={`p-8 rounded-4xl border relative group transition-all ${isDarkMode ? 'bg-black/20 border-white/5 hover:border-indigo-500/30' : 'bg-slate-50 border-slate-100 hover:border-indigo-500'} `}>
                       <div className="flex justify-between items-center mb-4">
                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Primary Subtitle</span>
                         <button onClick={() => handleCopy(seoDossier.primarySubtitle, 'subtitle')} className={`p-2 rounded-lg transition-all ${isDarkMode ? 'hover:bg-white/10' : 'hover:bg-black/5'} `}>
@@ -1660,7 +1660,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
                     {copyStatus === 'copy-html' ? "Copied HTML" : "Copy Full HTML"}
                   </button>
                 </div>
-                <div className={`p-8 rounded-[2rem] border min - h-[400px] max - h-[600px] overflow-y - auto font - serif text-sm leading - relaxed prose prose - invert custom - scrollbar ${isDarkMode ? 'bg-black/40 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'} `}>
+                <div className={`p-8 rounded-4xl border min-h-[400px] max-h-[600px] overflow-y-auto font-serif text-sm leading-relaxed prose prose-invert custom-scrollbar ${isDarkMode ? 'bg-black/40 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'} `}>
                   <div dangerouslySetInnerHTML={{ __html: seoDossier.htmlSalesCopy }} />
                 </div>
               </div>
@@ -1687,13 +1687,13 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
                     <div className="flex flex-col gap-3">
                       <button
                         onClick={() => onNavigate(ToolType.COLORING_PAGES, seoDossier.bookLabInspiration.basePrompt)}
-                        className="w-full py-5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-[2rem] font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 shadow-xl active:scale-95 transition-all"
+                        className="w-full py-5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-4xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 shadow-xl active:scale-95 transition-all"
                       >
                         <BookOpen size={18} /> Commence Book Lab
                       </button>
                       <button
                         onClick={() => onNavigate(ToolType.POD_MERCH, seoDossier.topic)}
-                        className="w-full py-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-[2rem] font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 shadow-xl active:scale-95 transition-all"
+                        className="w-full py-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-4xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 shadow-xl active:scale-95 transition-all"
                       >
                         <Shirt size={18} /> Commence SKU Factory
                       </button>
@@ -1815,7 +1815,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
             </div>
 
             <div className="w-full max-w-3xl relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-indigo-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+              <div className="absolute -inset-1 bg-linear-to-r from-cyan-500 to-indigo-600 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
               <div className="relative flex items-center bg-slate-950 border border-slate-800 rounded-[3rem] p-3 shadow-2xl">
                 <div className="pl-8 text-slate-500"><Globe size={24} /></div>
                 <input
@@ -1982,7 +1982,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
             {/* RIGHT COLUMN: THE EXPLOITATION HUB */}
             <div className="lg:col-span-12 xl:col-span-7 space-y-12">
               <div className="relative group/box">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-indigo-600 rounded-[4rem] blur opacity-10 group-hover/box:opacity-20 transition" />
+                <div className="absolute -inset-0.5 bg-linear-to-r from-cyan-500 to-indigo-600 rounded-[4rem] blur opacity-10 group-hover/box:opacity-20 transition" />
                 <div className="relative bg-slate-900 border border-slate-800 p-12 rounded-[4rem] space-y-8">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -1997,7 +1997,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
                       <span>{copyStatus === 'master-prompt' ? "DNA Copied" : "Copy DNA"}</span>
                     </button>
                   </div>
-                  <div className="bg-slate-950 border border-slate-900 p-8 rounded-[2rem] font-mono text-sm text-cyan-500/80 leading-relaxed max-h-[250px] overflow-y-auto italic">
+                  <div className="bg-slate-950 border border-slate-900 p-8 rounded-4xl font-mono text-sm text-cyan-500/80 leading-relaxed max-h-[250px] overflow-y-auto italic">
                     {brandReport.masterPrompt}
                   </div>
 
@@ -2249,10 +2249,10 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
               )}
             </div>
             <div className="flex gap-4">
-              <button onClick={() => setSourceImage(null)} className="flex-1 py-5 bg-slate-900 border border-slate-800 rounded-[2rem] font-black uppercase tracking-widest text-xs text-slate-500 hover:text-white">New Asset</button>
-              {!isolatedImage && <button onClick={runIsolation} disabled={isIsolating} className="flex-[2] py-5 bg-indigo-600 hover:bg-indigo-500 rounded-[2rem] font-black uppercase tracking-widest text-xs text-white shadow-xl">Run Industrial Isolation</button>}
+              <button onClick={() => setSourceImage(null)} className="flex-1 py-5 bg-slate-900 border border-slate-800 rounded-4xl font-black uppercase tracking-widest text-xs text-slate-500 hover:text-white">New Asset</button>
+              {!isolatedImage && <button onClick={runIsolation} disabled={isIsolating} className="flex-2 py-5 bg-indigo-600 hover:bg-indigo-500 rounded-4xl font-black uppercase tracking-widest text-xs text-white shadow-xl">Run Industrial Isolation</button>}
               {isolatedImage && (
-                <button onClick={() => downloadService.downloadImage(isolatedImage, 'isolated_asset')} className="flex-[2] py-5 bg-emerald-600 hover:bg-emerald-500 rounded-[2rem] font-black uppercase tracking-widest text-xs text-white shadow-xl flex items-center justify-center gap-3">
+                <button onClick={() => downloadService.downloadImage(isolatedImage, 'isolated_asset')} className="flex-2 py-5 bg-emerald-600 hover:bg-emerald-500 rounded-4xl font-black uppercase tracking-widest text-xs text-white shadow-xl flex items-center justify-center gap-3">
                   <Download size={16} /> Download PNG
                 </button>
               )}
@@ -2331,8 +2331,8 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
               </div>
             ) : (
               <div className="flex gap-4">
-                <button onClick={() => setUpSource(null)} className="flex-1 py-5 bg-slate-900 border border-slate-800 rounded-[2rem] font-black uppercase tracking-widest text-xs text-slate-500 hover:text-white">Discharge File</button>
-                <button onClick={runUpscale} disabled={isUpscaling} className="flex-[2] py-5 bg-blue-600 hover:bg-blue-500 rounded-[2rem] font-black uppercase tracking-widest text-xs text-white shadow-xl">Engage 300DPI Restore</button>
+                <button onClick={() => setUpSource(null)} className="flex-1 py-5 bg-slate-900 border border-slate-800 rounded-4xl font-black uppercase tracking-widest text-xs text-slate-500 hover:text-white">Discharge File</button>
+                <button onClick={runUpscale} disabled={isUpscaling} className="flex-2 py-5 bg-blue-600 hover:bg-blue-500 rounded-4xl font-black uppercase tracking-widest text-xs text-white shadow-xl">Engage 300DPI Restore</button>
               </div>
             )}
           </div>
@@ -2363,7 +2363,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
         </div>
 
         <div className="w-full relative group">
-          <div className={`absolute -inset-1 bg-gradient-to-r ${banResult?.status === 'FLAGGED' ? 'from-rose-500 to-rose-600' : 'from-indigo-500 to-cyan-500'} rounded-[3rem] blur opacity-10 transition duration-500`} />
+          <div className={`absolute -inset-1 bg-linear-to-r ${banResult?.status === 'FLAGGED' ? 'from-rose-500 to-rose-600' : 'from-indigo-500 to-cyan-500'} rounded-[3rem] blur opacity-10 transition duration-500`} />
           <textarea
             value={banText} onChange={e => setBanText(e.target.value)}
             placeholder="Paste Listing Description, Subtitle, or Chapter Hooks for policy audit..."
@@ -2374,7 +2374,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
         <button
           onClick={runAudit}
           disabled={isAnalyzing || !banText}
-          className="w-full bg-rose-600 hover:bg-rose-500 disabled:bg-slate-900 py-8 rounded-[3rem] text-white font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 transition-all shadow-2xl active:scale-95 border-b-[12px] border-rose-900"
+          className="w-full bg-rose-600 hover:bg-rose-500 disabled:bg-slate-900 py-8 rounded-[3rem] text-white font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 transition-all shadow-2xl active:scale-95 border-b-12 border-rose-900"
         >
           {isAnalyzing ? <Loader2 className="animate-spin" /> : <ShieldAlert size={24} />}
           <span>{isAnalyzing ? "Scanning Policy Database..." : "Deploy Industrial Scan"}</span>
@@ -2454,7 +2454,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
               </div>
             </div>
 
-            <button onClick={runEst} className="w-full bg-emerald-600 hover:bg-emerald-500 py-8 rounded-[3rem] text-white font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 transition-all shadow-[0_0_50px_rgba(16,185,129,0.2)] border-b-[12px] border-emerald-900 active:translate-y-1">
+            <button onClick={runEst} className="w-full bg-emerald-600 hover:bg-emerald-500 py-8 rounded-[3rem] text-white font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 transition-all shadow-[0_0_50px_rgba(16,185,129,0.2)] border-b-12 border-emerald-900 active:translate-y-1">
               {isAnalyzing ? <Loader2 className="animate-spin" /> : <Activity size={24} />}
               <span>{isGenerating ? "Calculating..." : "Model Royalties"}</span>
             </button>
@@ -2622,7 +2622,7 @@ h1, h2, h3 { page -break-after: avoid; }
 
         {showAiDeck && (
           <div className="mb-12 animate-in zoom-in-95 duration-300">
-            <div className="bg-gradient-to-br from-indigo-950/40 via-slate-900/40 to-indigo-950/40 border border-indigo-500/20 rounded-[3.5rem] p-12 backdrop-blur-3xl shadow-[0_0_50px_rgba(99,102,241,0.1)] relative overflow-hidden">
+            <div className="bg-linear-to-br from-indigo-950/40 via-slate-900/40 to-indigo-950/40 border border-indigo-500/20 rounded-[3.5rem] p-12 backdrop-blur-3xl shadow-[0_0_50px_rgba(99,102,241,0.1)] relative overflow-hidden">
               <div className="absolute top-0 right-0 p-8 opacity-10"><Cpu size={120} /></div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 relative z-10">
@@ -2725,7 +2725,7 @@ h1, h2, h3 { page -break-after: avoid; }
                   className="group relative p-1 pb-1.5 bg-indigo-500 rounded-[4rem] transition-all hover:scale-[1.02] active:scale-95 shadow-2xl"
                 >
                   <div className="bg-slate-900 border border-slate-800 p-12 rounded-[3.8rem] text-left space-y-8 h-full">
-                    <div className="w-20 h-20 bg-indigo-500/10 rounded-[2rem] flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
+                    <div className="w-20 h-20 bg-indigo-500/10 rounded-4xl flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
                       <Sparkles size={40} />
                     </div>
                     <div className="space-y-4">
@@ -2746,7 +2746,7 @@ h1, h2, h3 { page -break-after: avoid; }
                   <label className="block cursor-pointer h-full">
                     <input type="file" accept=".txt,.pdf,.docx" onChange={handleManuscriptUpload} className="hidden" />
                     <div className="bg-slate-900 border border-slate-800 p-12 rounded-[3.8rem] text-left space-y-8 h-full">
-                      <div className="w-20 h-20 bg-emerald-500/10 rounded-[2rem] flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-500">
+                      <div className="w-20 h-20 bg-emerald-500/10 rounded-4xl flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-500">
                         <PenTool size={40} />
                       </div>
                       <div className="space-y-4">
@@ -2765,7 +2765,7 @@ h1, h2, h3 { page -break-after: avoid; }
               </div>
 
               {isDoctoring && (
-                <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-12">
+                <div className="fixed inset-0 z-200 bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-12">
                   <div className="max-w-md w-full bg-slate-900 border border-slate-800 p-12 rounded-[4rem] shadow-2xl text-center space-y-8">
                     <div className="w-24 h-24 bg-indigo-500/10 rounded-[2.5rem] flex items-center justify-center mx-auto text-indigo-500">
                       <Loader2 className="animate-spin" size={48} />
@@ -2955,14 +2955,14 @@ h1, h2, h3 { page -break-after: avoid; }
                     </button>
                   </div>
 
-                  <button onClick={handleGenerateKDP} disabled={isGenerating || !kdpProject.title} className="w-full bg-indigo-600 hover:bg-indigo-500 py-8 rounded-[3rem] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 shadow-2xl transition-all border-b-[12px] border-indigo-900 active:translate-y-1">
+                  <button onClick={handleGenerateKDP} disabled={isGenerating || !kdpProject.title} className="w-full bg-indigo-600 hover:bg-indigo-500 py-8 rounded-[3rem] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 shadow-2xl transition-all border-b-12 border-indigo-900 active:translate-y-1">
                     {isGenerating ? <Loader2 className="animate-spin" size={24} /> : <Rocket size={24} />}
                     <span>{isGenerating ? 'Industrial Engine Active...' : 'Initialize Book Run'}</span>
                   </button>
 
                   {/* LOKI VARIATION PICKER */}
                   {lokiVariations.length > 0 && (
-                    <div className="fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-8 overflow-y-auto">
+                    <div className="fixed inset-0 z-200 bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-8 overflow-y-auto">
                       <div className="max-w-6xl w-full space-y-12 py-12">
                         <div className="text-center space-y-4">
                           <h2 className="text-5xl font-black uppercase italic tracking-tighter text-white">Choose Your Timeline</h2>
@@ -3069,7 +3069,7 @@ h1, h2, h3 { page -break-after: avoid; }
                       {previewTarget === 'PRINT' && (
                         <div className="mb-24 page-break">
                           <h4 className="text-[10px] font-black uppercase text-slate-400 mb-4 font-sans text-center">Industrial Single-Wrap Cover [Back | Spine | Front]</h4>
-                          <div className="aspect-[2/1] border-2 border-slate-300 bg-slate-100 relative flex overflow-hidden shadow-2xl">
+                          <div className="aspect-2/1 border-2 border-slate-300 bg-slate-100 relative flex overflow-hidden shadow-2xl">
                             {/* BACK COVER PREVIEW */}
                             <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-white">
                               {kdpBlueprint.COVER_SPEC.back_cover_url ? (
@@ -3112,7 +3112,7 @@ h1, h2, h3 { page -break-after: avoid; }
                             {kdpBlueprint.COVER_SPEC.ebook_url ? (
                               <img src={kdpBlueprint.COVER_SPEC.ebook_url} className="w-full h-auto" />
                             ) : (
-                              <div className="aspect-[2/3] bg-slate-100 flex items-center justify-center p-8 text-center">
+                              <div className="aspect-2/3 bg-slate-100 flex items-center justify-center p-8 text-center">
                                 <h2 className="text-2xl font-black uppercase text-slate-400">Cover Art Pending</h2>
                               </div>
                             )}
@@ -3232,7 +3232,7 @@ h1, h2, h3 { page -break-after: avoid; }
 
               {/* MANUSCRIPT DECK */}
               <div className="col-span-12 xl:col-span-8 space-y-12">
-                <div className="flex bg-slate-900 p-2 rounded-[2rem] border border-slate-800 w-fit">
+                <div className="flex bg-slate-900 p-2 rounded-4xl border border-slate-800 w-fit">
                   <button onClick={() => setKdpSubStep('MANUSCRIPT')} className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${kdpSubStep === 'MANUSCRIPT' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>1. Manuscript Engine</button>
                   <button onClick={() => setKdpSubStep('MARKETING')} className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${kdpSubStep === 'MARKETING' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>2. A+ Marketing</button>
                 </div>
@@ -3552,7 +3552,7 @@ h1, h2, h3 { page -break-after: avoid; }
                                         </div>
                                       )}
 
-                                      <p className="text-slate-200 font-medium leading-relaxed line-clamp-[15] text-justify whitespace-pre-wrap">
+                                      <p className="text-slate-200 font-medium leading-relaxed line-clamp-15 text-justify whitespace-pre-wrap">
                                         {ch.content || `Click Industrial Expand to write this chapter (${kdpWordTarget.toLocaleString()} words goal).`}
                                       </p>
                                     </div>
@@ -3622,7 +3622,7 @@ h1, h2, h3 { page -break-after: avoid; }
                                 {mod.generatedImageUrl ? (
                                   <img src={mod.generatedImageUrl} className="w-full h-full object-cover aspect-video md:aspect-auto" />
                                 ) : (
-                                  <div className="w-full h-full flex flex-col items-center justify-center p-12 text-slate-700 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-800/20 to-transparent">
+                                  <div className="w-full h-full flex flex-col items-center justify-center p-12 text-slate-700 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-slate-800/20 to-transparent">
                                     <ImageIcon size={64} strokeWidth={1} className="mb-4 opacity-20" />
                                     <span className="text-[10px] font-black uppercase tracking-widest text-center">Visual Required</span>
                                   </div>
@@ -3757,7 +3757,7 @@ h1, h2, h3 { page -break-after: avoid; }
 
                           {/* Progress Bar */}
                           <div className="h-4 w-full bg-slate-800 rounded-full overflow-hidden mb-5 border border-slate-700">
-                            <div className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-1000 ease-out relative" style={{ width: `${scoreData.total}%` }}>
+                            <div className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-1000 ease-out relative" style={{ width: `${scoreData.total}%` }}>
                               <div className="absolute inset-0 bg-white/20 animate-pulse" />
                             </div>
                           </div>
@@ -3911,7 +3911,7 @@ h1, h2, h3 { page -break-after: avoid; }
                       )}
 
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="aspect-[3/4] bg-slate-950 rounded-2xl border border-slate-800 relative overflow-hidden group">
+                        <div className="aspect-3/4 bg-slate-950 rounded-2xl border border-slate-800 relative overflow-hidden group">
                           {kdpBlueprint.COVER_SPEC.ebook_url ? (
                             <>
                               <img src={kdpBlueprint.COVER_SPEC.ebook_url} className="w-full h-full object-cover" />
@@ -3919,7 +3919,7 @@ h1, h2, h3 { page -break-after: avoid; }
                             </>
                           ) : <div className="absolute inset-0 flex items-center justify-center text-[8px] font-black text-slate-700 uppercase">Front Cover</div>}
                         </div>
-                        <div className="aspect-[3/4] bg-slate-950 rounded-2xl border border-slate-800 relative overflow-hidden group">
+                        <div className="aspect-3/4 bg-slate-950 rounded-2xl border border-slate-800 relative overflow-hidden group">
                           {kdpBlueprint.COVER_SPEC.back_cover_url ? (
                             <>
                               <img src={kdpBlueprint.COVER_SPEC.back_cover_url} className="w-full h-full object-cover" />
@@ -3980,7 +3980,7 @@ h1, h2, h3 { page -break-after: avoid; }
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-4 space-y-8">
           <div className="flex items-center gap-6">
-            <div className={`w-16 h-16 rounded-3xl bg-gradient-to-br ${tool.gradient} flex items-center justify-center shadow-2xl`}>
+            <div className={`w-16 h-16 rounded-3xl bg-linear-to-br ${tool.gradient} flex items-center justify-center shadow-2xl`}>
               <ImageIcon size={32} className="text-white" />
             </div>
             <div>
