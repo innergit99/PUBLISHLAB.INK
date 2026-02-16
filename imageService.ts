@@ -180,7 +180,10 @@ export class ImageService {
             return await this.generateWithCanvas({
                 prompt,
                 width,
-                height
+                height,
+                module: options.module,
+                title: options.title,
+                genre: options.genre
             });
         } catch (canvasError: any) {
             console.error('❌ Canvas fallback also failed:', canvasError.message);

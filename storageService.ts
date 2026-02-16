@@ -311,9 +311,27 @@ export class StorageService {
         resolve([]);
       };
       // Set a timeout to prevent hanging
+      let transactionCompleted = false;
+      const originalCommit = transaction.commit;
+      const originalAbort = transaction.abort;
+      
+      transaction.commit = () => {
+        transactionCompleted = true;
+        originalCommit.call(transaction);
+      };
+      
+      transaction.abort = () => {
+        transactionCompleted = true;
+        originalAbort.call(transaction);
+      };
+      
       setTimeout(() => {
-        if (transaction) {
-          transaction.abort();
+        if (!transactionCompleted) {
+          try {
+            transaction.abort();
+          } catch (e) {
+            // Transaction might already be finished
+          }
           resolve([]);
         }
       }, 5000); // 5 second timeout
@@ -335,9 +353,27 @@ export class StorageService {
         reject(request.error);
       };
       // Set a timeout to prevent hanging
+      let transactionCompleted = false;
+      const originalCommit = transaction.commit;
+      const originalAbort = transaction.abort;
+      
+      transaction.commit = () => {
+        transactionCompleted = true;
+        originalCommit.call(transaction);
+      };
+      
+      transaction.abort = () => {
+        transactionCompleted = true;
+        originalAbort.call(transaction);
+      };
+      
       setTimeout(() => {
-        if (transaction) {
-          transaction.abort();
+        if (!transactionCompleted) {
+          try {
+            transaction.abort();
+          } catch (e) {
+            // Transaction might already be finished
+          }
           resolve();
         }
       }, 3000); // 3 second timeout
