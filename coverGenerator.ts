@@ -922,6 +922,60 @@ export class CoverGenerator {
                 dark: { primary: '#78350f', secondary: '#92400e', accent: '#fbbf24', text: '#fef3c7' },
                 minimal: { primary: '#fffbeb', secondary: '#fef3c7', accent: '#d97706', text: '#78350f' },
                 elegant: { primary: '#451a03', secondary: '#78350f', accent: '#fcd34d', text: '#fef9c3' }
+            },
+            'HISTORICAL': {
+                vibrant: { primary: '#92400e', secondary: '#b45309', accent: '#d97706', text: '#ffffff' },
+                dark: { primary: '#451a03', secondary: '#78350f', accent: '#f59e0b', text: '#fef3c7' },
+                minimal: { primary: '#fef3c7', secondary: '#fed7aa', accent: '#92400e', text: '#451a03' },
+                elegant: { primary: '#7c2d12', secondary: '#9a3412', accent: '#fbbf24', text: '#fffbeb' }
+            },
+            'LITERARY': {
+                vibrant: { primary: '#475569', secondary: '#64748b', accent: '#94a3b8', text: '#ffffff' },
+                dark: { primary: '#1e293b', secondary: '#334155', accent: '#475569', text: '#f1f5f9' },
+                minimal: { primary: '#f8fafc', secondary: '#f1f5f9', accent: '#475569', text: '#1e293b' },
+                elegant: { primary: '#0f172a', secondary: '#1e293b', accent: '#cbd5e1', text: '#f8fafc' }
+            },
+            'CONTEMPORARY': {
+                vibrant: { primary: '#0f766e', secondary: '#0d9488', accent: '#14b8a6', text: '#ffffff' },
+                dark: { primary: '#134e4a', secondary: '#115e59', accent: '#0f766e', text: '#f0fdfa' },
+                minimal: { primary: '#f0fdfa', secondary: '#ccfbf1', accent: '#0f766e', text: '#134e4a' },
+                elegant: { primary: '#042f2e', secondary: '#134e4a', accent: '#5eead4', text: '#f0fdfa' }
+            },
+            'WOMEN': {
+                vibrant: { primary: '#ec4899', secondary: '#f472b6', accent: '#f9a8d4', text: '#ffffff' },
+                dark: { primary: '#831843', secondary: '#9f1239', accent: '#ec4899', text: '#fdf2f8' },
+                minimal: { primary: '#fdf2f8', secondary: '#fce7f3', accent: '#831843', text: '#831843' },
+                elegant: { primary: '#500724', secondary: '#701a75', accent: '#fbcfe8', text: '#fdf2f8' }
+            },
+            'LGBTQ': {
+                vibrant: { primary: '#e879f9', secondary: '#d946ef', accent: '#c026d3', text: '#ffffff' },
+                dark: { primary: '#701a75', secondary: '#86198f', accent: '#a21caf', text: '#faf5ff' },
+                minimal: { primary: '#faf5ff', secondary: '#f3e8ff', accent: '#701a75', text: '#581c87' },
+                elegant: { primary: '#4a044e', secondary: '#701a75', accent: '#e879f9', text: '#faf5ff' }
+            },
+            'DYSTOPIAN': {
+                vibrant: { primary: '#dc2626', secondary: '#b91c1c', accent: '#ef4444', text: '#ffffff' },
+                dark: { primary: '#450a0a', secondary: '#7f1d1d', accent: '#991b1b', text: '#fef2f2' },
+                minimal: { primary: '#fef2f2', secondary: '#fee2e2', accent: '#dc2626', text: '#450a0a' },
+                elegant: { primary: '#291515', secondary: '#450a0a', accent: '#fca5a5', text: '#fef2f2' }
+            },
+            'URBAN': {
+                vibrant: { primary: '#6b7280', secondary: '#4b5563', accent: '#9ca3af', text: '#ffffff' },
+                dark: { primary: '#111827', secondary: '#1f2937', accent: '#374151', text: '#f9fafb' },
+                minimal: { primary: '#f9fafb', secondary: '#f3f4f6', accent: '#6b7280', text: '#111827' },
+                elegant: { primary: '#030712', secondary: '#111827', accent: '#d1d5db', text: '#f9fafb' }
+            },
+            'ADVENTURE': {
+                vibrant: { primary: '#059669', secondary: '#047857', accent: '#10b981', text: '#ffffff' },
+                dark: { primary: '#064e3b', secondary: '#065f46', accent: '#047857', text: '#ecfdf5' },
+                minimal: { primary: '#ecfdf5', secondary: '#d1fae5', accent: '#059669', text: '#064e3b' },
+                elegant: { primary: '#022c22', secondary: '#064e3b', accent: '#34d399', text: '#ecfdf5' }
+            },
+            'SUSPENSE': {
+                vibrant: { primary: '#7c3aed', secondary: '#6d28d9', accent: '#8b5cf6', text: '#ffffff' },
+                dark: { primary: '#312e81', secondary: '#4c1d95', accent: '#6d28d9', text: '#ede9fe' },
+                minimal: { primary: '#ede9fe', secondary: '#ddd6fe', accent: '#7c3aed', text: '#312e81' },
+                elegant: { primary: '#1e1b4b', secondary: '#312e81', accent: '#a78bfa', text: '#ede9fe' }
             }
         };
 
@@ -1014,6 +1068,130 @@ export class CoverGenerator {
                 this.ctx.beginPath();
                 this.ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 3, 0, Math.PI * 2);
                 this.ctx.fill();
+            }
+        }
+        else if (g.includes('HISTORICAL')) {
+            // HISTORICAL: Aged paper texture / Vintage elements
+            this.ctx.fillStyle = palette.primary;
+            this.ctx.globalAlpha = 0.1;
+            this.ctx.fillRect(0, 0, width, height);
+            
+            // Vintage texture
+            for (let i = 0; i < 50; i++) {
+                this.ctx.strokeStyle = palette.accent;
+                this.ctx.globalAlpha = Math.random() * 0.1;
+                this.ctx.lineWidth = 1;
+                this.ctx.beginPath();
+                this.ctx.moveTo(Math.random() * width, Math.random() * height);
+                this.ctx.lineTo(Math.random() * width, Math.random() * height);
+                this.ctx.stroke();
+            }
+        }
+        else if (g.includes('LITERARY')) {
+            // LITERARY: Subtle typography / Book pages
+            this.ctx.fillStyle = palette.primary;
+            this.ctx.globalAlpha = 0.05;
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const lineHeight = 15;
+                for (let j = 0; j < 10; j++) {
+                    this.ctx.fillRect(x, y + j * lineHeight, Math.random() * 100, 2);
+                }
+            }
+        }
+        else if (g.includes('CONTEMPORARY')) {
+            // CONTEMPORARY: Clean geometric shapes / Modern
+            this.ctx.fillStyle = palette.accent;
+            this.ctx.globalAlpha = 0.1;
+            for (let i = 0; i < 15; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = Math.random() * 100 + 50;
+                this.ctx.fillRect(x, y, size, size);
+            }
+        }
+        else if (g.includes('WOMEN')) {
+            // WOMEN: Soft flowing curves / Elegant
+            this.ctx.strokeStyle = palette.accent;
+            this.ctx.globalAlpha = 0.2;
+            this.ctx.lineWidth = 3;
+            for (let i = 0; i < 10; i++) {
+                this.ctx.beginPath();
+                const startX = Math.random() * width;
+                const startY = Math.random() * height;
+                this.ctx.moveTo(startX, startY);
+                for (let j = 0; j < 3; j++) {
+                    const cpX = Math.random() * width;
+                    const cpY = Math.random() * height;
+                    const endX = Math.random() * width;
+                    const endY = Math.random() * height;
+                    this.ctx.quadraticCurveTo(cpX, cpY, endX, endY);
+                }
+                this.ctx.stroke();
+            }
+        }
+        else if (g.includes('LGBTQ')) {
+            // LGBTQ: Rainbow gradient / Pride colors
+            const colors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'];
+            const stripeHeight = height / colors.length;
+            colors.forEach((color, i) => {
+                this.ctx.fillStyle = color;
+                this.ctx.globalAlpha = 0.1;
+                this.ctx.fillRect(0, i * stripeHeight, width, stripeHeight);
+            });
+        }
+        else if (g.includes('DYSTOPIAN') || g.includes('POST-APOCALYPTIC')) {
+            // DYSTOPIAN: Dark oppressive atmosphere / Broken elements
+            this.ctx.fillStyle = '#000';
+            this.ctx.globalAlpha = 0.3;
+            this.ctx.fillRect(0, 0, width, height);
+            
+            // Broken grid pattern
+            this.ctx.strokeStyle = palette.accent;
+            this.ctx.globalAlpha = 0.1;
+            this.ctx.lineWidth = 1;
+            for (let i = 0; i < width; i += 30) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(i, 0);
+                this.ctx.lineTo(i + Math.random() * 20 - 10, height);
+                this.ctx.stroke();
+            }
+        }
+        else if (g.includes('URBAN')) {
+            // URBAN: Cityscape / Grid patterns
+            this.ctx.fillStyle = palette.primary;
+            this.ctx.globalAlpha = 0.1;
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * width;
+                const buildingHeight = Math.random() * height * 0.7;
+                this.ctx.fillRect(x, height - buildingHeight, 30, buildingHeight);
+            }
+        }
+        else if (g.includes('ADVENTURE')) {
+            // ADVENTURE: Dynamic movement / Exploration
+            this.ctx.strokeStyle = palette.accent;
+            this.ctx.globalAlpha = 0.2;
+            this.ctx.lineWidth = 2;
+            for (let i = 0; i < 15; i++) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(Math.random() * width, Math.random() * height);
+                for (let j = 0; j < 5; j++) {
+                    this.ctx.lineTo(Math.random() * width, Math.random() * height);
+                }
+                this.ctx.stroke();
+            }
+        }
+        else if (g.includes('SUSPENSE')) {
+            // SUSPENSE: Tension lines / Dramatic angles
+            this.ctx.strokeStyle = palette.accent;
+            this.ctx.globalAlpha = 0.15;
+            this.ctx.lineWidth = 1;
+            for (let i = 0; i < 30; i++) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, Math.random() * height);
+                this.ctx.lineTo(width, Math.random() * height);
+                this.ctx.stroke();
             }
         }
         else {
@@ -1127,6 +1305,15 @@ export class CoverGenerator {
         if (genre.includes('SCI-FI')) { symbol = "🚀"; color = "#22d3ee"; }
         if (genre.includes('HORROR')) { symbol = "👁"; color = "#ef4444"; }
         if (genre.includes('CHILDREN')) { symbol = "🎨"; color = "#facc15"; }
+        if (genre.includes('HISTORICAL')) { symbol = "📜"; color = "#92400e"; }
+        if (genre.includes('LITERARY')) { symbol = "📖"; color = "#475569"; }
+        if (genre.includes('CONTEMPORARY')) { symbol = "🏙️"; color = "#0f766e"; }
+        if (genre.includes('WOMEN')) { symbol = "💐"; color = "#ec4899"; }
+        if (genre.includes('LGBTQ')) { symbol = "🌈"; color = "#e879f9"; }
+        if (genre.includes('DYSTOPIAN') || genre.includes('POST-APOCALYPTIC')) { symbol = "⚠️"; color = "#dc2626"; }
+        if (genre.includes('URBAN')) { symbol = "🏙️"; color = "#6b7280"; }
+        if (genre.includes('ADVENTURE')) { symbol = "🗺️"; color = "#059669"; }
+        if (genre.includes('SUSPENSE')) { symbol = "❓"; color = "#7c3aed"; }
 
         this.ctx.font = `bold ${width / 2}px Arial`;
         this.ctx.fillStyle = color;
@@ -1176,6 +1363,15 @@ export class CoverGenerator {
         if (g.includes('FANTASY')) { symbol = "🐉"; color = "#4c1d95"; }
         if (g.includes('HORROR')) { symbol = "💀"; color = "#450a0a"; }
         if (g.includes('CHILDREN')) { symbol = "🧸"; color = "#b45309"; }
+        if (g.includes('HISTORICAL')) { symbol = "⚜️"; color = "#92400e"; }
+        if (g.includes('LITERARY')) { symbol = "📚"; color = "#475569"; }
+        if (g.includes('CONTEMPORARY')) { symbol = "🌆"; color = "#0f766e"; }
+        if (g.includes('WOMEN')) { symbol = "🌸"; color = "#831843"; }
+        if (g.includes('LGBTQ')) { symbol = "🏳️‍🌈"; color = "#701a75"; }
+        if (g.includes('DYSTOPIAN') || g.includes('POST-APOCALYPTIC')) { symbol = "⛓️"; color = "#450a0a"; }
+        if (g.includes('URBAN')) { symbol = "🏢"; color = "#111827"; }
+        if (g.includes('ADVENTURE')) { symbol = "🧭"; color = "#064e3b"; }
+        if (g.includes('SUSPENSE')) { symbol = "🔎"; color = "#312e81"; }
 
         // Draw shadow/glow
         this.ctx.font = `200px serif`;
