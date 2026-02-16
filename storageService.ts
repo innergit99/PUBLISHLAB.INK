@@ -298,12 +298,25 @@ export class StorageService {
 
   async getAllCharacters(): Promise<any[]> {
     if (!this.db) await this.init();
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(['characters'], 'readonly');
       const store = transaction.objectStore('characters');
       const request = store.getAll();
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => resolve([]);
+      request.onsuccess = () => {
+        resolve(request.result);
+        transaction.commit(); // Explicitly commit the transaction
+      };
+      request.onerror = () => {
+        transaction.abort(); // Abort on error
+        resolve([]);
+      };
+      // Set a timeout to prevent hanging
+      setTimeout(() => {
+        if (transaction) {
+          transaction.abort();
+          resolve([]);
+        }
+      }, 5000); // 5 second timeout
     });
   }
 
@@ -313,8 +326,21 @@ export class StorageService {
       const transaction = this.db!.transaction(['characters'], 'readwrite');
       const store = transaction.objectStore('characters');
       const request = store.delete(id);
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        transaction.commit(); // Explicitly commit the transaction
+        resolve();
+      };
+      request.onerror = () => {
+        transaction.abort(); // Abort on error
+        reject(request.error);
+      };
+      // Set a timeout to prevent hanging
+      setTimeout(() => {
+        if (transaction) {
+          transaction.abort();
+          resolve();
+        }
+      }, 3000); // 3 second timeout
     });
 
     try {

@@ -764,7 +764,9 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     const ch = kdpBlueprint.INTERIOR_CONTENT[idx];
     try {
       const url = await gemini.generateImageForModule(ch.visualPrompt, 'KDP_INTERIOR', {
-        colorMode: kdpProject.interiorColor
+        colorMode: kdpProject.interiorColor,
+        title: ch.chapterTitle || `Chapter ${idx + 1}`,
+        genre: kdpProject.genre
       });
       const n = [...kdpBlueprint.INTERIOR_CONTENT];
       n[idx].generatedImageUrl = url;
