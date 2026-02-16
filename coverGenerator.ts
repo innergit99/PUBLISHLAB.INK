@@ -979,7 +979,14 @@ export class CoverGenerator {
             }
         };
 
-        const genreKey = Object.keys(palettes).find(k => genre.toUpperCase().includes(k)) || 'FICTION';
+        const genreKey = Object.keys(palettes).find(k => {
+            const upperGenre = genre.toUpperCase();
+            const upperKey = k.toUpperCase();
+            // More specific matching - prioritize longer, more specific genre names
+            if (upperKey === 'ROMANCE' && upperGenre.includes('ROMANCE')) return true;
+            if (upperKey === 'FICTION' && !upperGenre.includes('ROMANCE') && !upperGenre.includes('MYSTERY') && !upperGenre.includes('FANTASY') && !upperGenre.includes('SCI-FI') && !upperGenre.includes('HORROR') && !upperGenre.includes('CHILDREN') && !upperGenre.includes('HISTORICAL') && !upperGenre.includes('LITERARY') && !upperGenre.includes('CONTEMPORARY') && !upperGenre.includes('WOMEN') && !upperGenre.includes('LGBTQ') && !upperGenre.includes('DYSTOPIAN') && !upperGenre.includes('URBAN') && !upperGenre.includes('ADVENTURE') && !upperGenre.includes('SUSPENSE')) return true;
+            return upperGenre.includes(upperKey);
+        }) || 'FICTION';
         return palettes[genreKey][scheme] || palettes['FICTION']['vibrant'];
     }
 
