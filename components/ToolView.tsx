@@ -834,7 +834,8 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
           title: kdpBlueprint.PROJECT_META.title_working,
           author: kdpBlueprint.PROJECT_META.suggestedAuthor,
           genre: kdpBlueprint.PROJECT_META.primary_genre,
-          colorScheme: 'dark'
+          colorScheme: 'dark',
+          blurb: kdpBlueprint.BACK_COVER_SPEC?.blurb_text
         });
       }
 

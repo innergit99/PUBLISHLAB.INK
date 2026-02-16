@@ -10,6 +10,7 @@ interface CoverOptions {
     width?: number;
     height?: number;
     colorScheme?: 'vibrant' | 'dark' | 'minimal' | 'elegant';
+    blurb?: string;
 }
 
 export interface KDPWrapOptions extends CoverOptions {
