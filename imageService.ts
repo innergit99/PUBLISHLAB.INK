@@ -67,25 +67,39 @@ export class ImageService {
                 
                 console.log('🔢 [DEBUG] Chapter Index:', chapterIndex, 'Chapter Title:', chapterTitle);
                 
-                return await coverGenerator.generateChapterIllustration(
-                    chapterTitle,
-                    prompt, // Use prompt as content
-                    genre || 'Fiction',
-                    chapterIndex,
-                    totalChapters
-                );
+                try {
+                    const result = await coverGenerator.generateChapterIllustration(
+                        chapterTitle,
+                        prompt, // Use prompt as content
+                        genre || 'Fiction',
+                        chapterIndex,
+                        totalChapters
+                    );
+                    console.log('✅ Enhanced chapter illustration generated successfully');
+                    return result;
+                } catch (enhancedError) {
+                    console.warn('⚠️ Enhanced chapter method failed, falling back to generic:', enhancedError.message);
+                    // Fall back to generic placeholder
+                }
             }
 
             // Specialized Canvas generation for book covers
             if (module === 'KDP_COVER') {
                 console.log('📚 Generating creative cover design...');
-                return await coverGenerator.generateCover({
-                    title: title || 'Untitled Book',
-                    author: 'Author Name',
-                    genre: genre || 'Fiction',
-                    width,
-                    height
-                });
+                try {
+                    const result = await coverGenerator.generateCover({
+                        title: title || 'Untitled Book',
+                        author: 'Author Name',
+                        genre: genre || 'Fiction',
+                        width,
+                        height
+                    });
+                    console.log('✅ Enhanced cover generated successfully');
+                    return result;
+                } catch (coverError) {
+                    console.warn('⚠️ Enhanced cover method failed, falling back to generic:', coverError.message);
+                    // Fall back to generic placeholder
+                }
             }
 
             // Use existing Canvas generator for generic placeholders
