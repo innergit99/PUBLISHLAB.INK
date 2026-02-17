@@ -362,52 +362,52 @@ const PRODUCT_SHAPES: Record<string, any> = {
 };
 
 export class ProductMockupEngine {
-    private canvas: HTMLCanvasElement | null = null;
-    private ctx: CanvasRenderingContext2D | null = null;
-
-    constructor() {
-        if (typeof window !== 'undefined') {
-            this.canvas = document.createElement('canvas');
-            this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
-        }
-    }
+    // Stateless Engine due to parallel generation requirements
 
     async generateMockup(options: MockupOptions): Promise<MockupResult> {
         const { designUrl, productType, color = '#f2f2f2', style = 'realistic' } = options;
         const template = this.getTemplate(productType);
 
-        if (!this.canvas || !this.ctx) throw new Error('Canvas unavailable');
+        if (typeof window === 'undefined') {
+            throw new Error("Window not defined");
+        }
 
-        this.canvas.width = template.width;
-        this.canvas.height = template.height;
+        // Create FRESH canvas for every call to avoid Race Conditions in Promise.all
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+        if (!canvas || !ctx) throw new Error('Canvas unavailable');
+
+        canvas.width = template.width;
+        canvas.height = template.height;
 
         // 1. Clear & Background
-        this.ctx.clearRect(0, 0, template.width, template.height);
+        ctx.clearRect(0, 0, template.width, template.height);
         if (style === '3d') {
-            this.drawBackground(template.width, template.height);
+            this.drawBackground(ctx, template.width, template.height);
         }
 
         // 2. Draw Product Base
-        template.draw(this.ctx, color);
+        template.draw(ctx, color);
 
         // 3. Load Design
         let designImg;
         try {
             designImg = await this.loadImage(designUrl);
         } catch {
-            return { url: this.canvas.toDataURL(), productType, width: template.width, height: template.height };
+            return { url: canvas.toDataURL(), productType, width: template.width, height: template.height };
         }
 
         // 4. Overlay Design
-        this.overlayDesign(designImg, template.designArea, style);
+        this.overlayDesign(ctx, designImg, template.designArea, style);
 
         // 5. Final Effects
         if (style !== 'minimal') {
-            this.addLightingEffects(template, style);
+            this.addLightingEffects(ctx, template, style);
         }
 
         return {
-            url: this.canvas.toDataURL('image/png'),
+            url: canvas.toDataURL('image/png'),
             productType,
             width: template.width,
             height: template.height
@@ -460,58 +460,54 @@ export class ProductMockupEngine {
         });
     }
 
-    private drawBackground(width: number, height: number): void {
-        if (!this.ctx) return;
-        const gradient = this.ctx.createLinearGradient(0, 0, width, height);
+    private drawBackground(ctx: CanvasRenderingContext2D, width: number, height: number): void {
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
         gradient.addColorStop(0, '#f8f9fa');
         gradient.addColorStop(1, '#e9ecef');
-        this.ctx.fillStyle = gradient;
-        this.ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
     }
 
-    private overlayDesign(designImg: HTMLImageElement, area: any, style: MockupStyle): void {
-        if (!this.ctx) return;
-        this.ctx.save();
+    private overlayDesign(ctx: CanvasRenderingContext2D, designImg: HTMLImageElement, area: any, style: MockupStyle): void {
+        ctx.save();
 
         if (style === '3d') {
             const centerX = area.x + area.width / 2;
             const centerY = area.y + area.height / 2;
-            this.ctx.translate(centerX, centerY);
-            this.ctx.transform(1, 0, -0.05, 1, 0, 0); // Slight Skew
-            this.ctx.translate(-centerX, -centerY);
+            ctx.translate(centerX, centerY);
+            ctx.transform(1, 0, -0.05, 1, 0, 0); // Slight Skew
+            ctx.translate(-centerX, -centerY);
         }
 
         if (style === 'realistic') {
-            this.ctx.globalCompositeOperation = 'multiply';
-            this.ctx.globalAlpha = 0.9;
+            ctx.globalCompositeOperation = 'multiply';
+            ctx.globalAlpha = 0.9;
         }
 
-        this.ctx.drawImage(designImg, area.x, area.y, area.width, area.height);
-        this.ctx.restore();
+        ctx.drawImage(designImg, area.x, area.y, area.width, area.height);
+        ctx.restore();
     }
 
-    private addLightingEffects(template: any, style: MockupStyle): void {
-        if (!this.ctx) return;
-
-        const grad = this.ctx.createLinearGradient(0, 0, template.width, template.height);
+    private addLightingEffects(ctx: CanvasRenderingContext2D, template: any, style: MockupStyle): void {
+        const grad = ctx.createLinearGradient(0, 0, template.width, template.height);
         grad.addColorStop(0, 'rgba(255,255,255,0.15)');
         grad.addColorStop(0.5, 'rgba(255,255,255,0)');
         grad.addColorStop(1, 'rgba(0,0,0,0.05)');
 
-        this.ctx.globalCompositeOperation = 'overlay';
-        this.ctx.fillStyle = grad;
-        this.ctx.fillRect(0, 0, template.width, template.height);
-        this.ctx.globalCompositeOperation = 'source-over';
+        ctx.globalCompositeOperation = 'overlay';
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, template.width, template.height);
+        ctx.globalCompositeOperation = 'source-over';
 
         if (style === '3d') {
-            const vignette = this.ctx.createRadialGradient(
+            const vignette = ctx.createRadialGradient(
                 template.width / 2, template.height / 2, template.width * 0.4,
                 template.width / 2, template.height / 2, template.width * 0.9
             );
             vignette.addColorStop(0, 'rgba(0,0,0,0)');
             vignette.addColorStop(1, 'rgba(0,0,0,0.1)');
-            this.ctx.fillStyle = vignette;
-            this.ctx.fillRect(0, 0, template.width, template.height);
+            ctx.fillStyle = vignette;
+            ctx.fillRect(0, 0, template.width, template.height);
         }
     }
 }
