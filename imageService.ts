@@ -64,9 +64,9 @@ export class ImageService {
                 const chapterIndex = chapterMatch ? parseInt(chapterMatch[1]) - 1 : 0;
                 const totalChapters = 10; // Default estimate
                 const chapterTitle = title || 'Chapter ' + (chapterIndex + 1);
-                
+
                 console.log('🔢 [DEBUG] Chapter Index:', chapterIndex, 'Chapter Title:', chapterTitle);
-                
+
                 try {
                     const result = await coverGenerator.generateChapterIllustration(
                         chapterTitle,
@@ -84,7 +84,7 @@ export class ImageService {
             }
 
             // Specialized Canvas generation for book covers
-            if (module === 'KDP_COVER') {
+            if (module === 'KDP_COVER' || module === 'KDP') {
                 console.log('📚 Generating creative cover design...');
                 try {
                     const result = await coverGenerator.generateCover({
@@ -141,7 +141,7 @@ export class ImageService {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
-                const response = await fetch(url, { 
+                const response = await fetch(url, {
                     mode: 'cors',
                     signal: controller.signal
                 });
@@ -158,7 +158,7 @@ export class ImageService {
                 }
 
                 const blob = await response.blob();
-                
+
                 // Check for rate limit image (usually small placeholder)
                 if (blob.size < 5000) {
                     isRateLimited = true;
@@ -175,7 +175,7 @@ export class ImageService {
             } catch (e: any) {
                 console.warn(`⚠️ Pollinations Model ${pModel} failed:`, e.message);
                 lastError = e;
-                
+
                 // Check for specific error types
                 if (e.message.includes('530') || e.message.includes('origin')) {
                     console.warn('🌐 Pollinations.ai appears to be down (HTTP 530)');

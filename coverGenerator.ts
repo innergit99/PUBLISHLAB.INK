@@ -59,7 +59,7 @@ export class CoverGenerator {
         // Intelligent title and genre analysis
         const titleAnalysis = this.analyzeTitle(title);
         const creativeSeed = this.generateCreativeSeed(title, 0);
-        
+
         // Dynamic palette based on genre and title mood
         const palette = this.generateDynamicPalette(genre, titleAnalysis.mood, 0, 1);
 
@@ -74,7 +74,7 @@ export class CoverGenerator {
      */
     private analyzeTitle(title: string): any {
         const words = title.toLowerCase().split(/\s+/);
-        
+
         // Mood detection from title
         const moodKeywords = {
             dark: ['dark', 'shadow', 'night', 'black', 'death', 'blood', 'evil', 'curse'],
@@ -84,15 +84,15 @@ export class CoverGenerator {
             magical: ['magic', 'spell', 'witch', 'wizard', 'enchant', 'potion', 'myth'],
             romantic: ['love', 'heart', 'kiss', 'passion', 'romance', 'desire', 'embrace']
         };
-        
+
         let moodScores = {};
         for (const [mood, keywords] of Object.entries(moodKeywords)) {
             moodScores[mood] = keywords.filter(word => words.includes(word)).length;
         }
-        
-        const dominantMood = Object.entries(moodScores).reduce((a, b) => 
+
+        const dominantMood = Object.entries(moodScores).reduce((a, b) =>
             moodScores[a[0]] > moodScores[b[0]] ? a : b)[0] || 'neutral';
-        
+
         // Visual elements from title
         const visualElements = {
             nature: ['forest', 'mountain', 'river', 'sea', 'tree', 'flower', 'sky', 'moon', 'star'],
@@ -102,12 +102,12 @@ export class CoverGenerator {
             medieval: ['king', 'queen', 'knight', 'castle', 'sword', 'crown', 'throne'],
             modern: ['tech', 'digital', 'cyber', 'future', 'robot', 'AI', 'code']
         };
-        
+
         let elementScores = {};
         for (const [element, keywords] of Object.entries(visualElements)) {
             elementScores[element] = keywords.filter(word => words.includes(word)).length;
         }
-        
+
         return {
             mood: dominantMood,
             visualElements: Object.entries(elementScores).filter(([_, score]) => (score as number) > 0).map(([element, _]) => element),
@@ -123,7 +123,7 @@ export class CoverGenerator {
      */
     private createUniqueCoverComposition(title: string, author: string, analysis: any, palette: any, seed: number, width: number, height: number): void {
         const random = this.seededRandom(seed);
-        
+
         // Choose cover style based on analysis
         const coverStyles = [
             () => this.createModernMinimalCover(title, author, analysis, palette, random, width, height),
@@ -135,7 +135,7 @@ export class CoverGenerator {
             () => this.createCosmicCover(title, author, analysis, palette, random, width, height),
             () => this.createDramaticCover(title, author, analysis, palette, random, width, height)
         ];
-        
+
         const styleIndex = Math.floor(random() * coverStyles.length);
         coverStyles[styleIndex]();
     }
@@ -151,7 +151,7 @@ export class CoverGenerator {
         gradient.addColorStop(1, palette.secondary);
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Subtle geometric element
         this.ctx.strokeStyle = palette.accent;
         this.ctx.lineWidth = 2;
@@ -159,17 +159,17 @@ export class CoverGenerator {
         const centerX = width / 2;
         const centerY = height / 2;
         const size = Math.min(width, height) * 0.6;
-        
+
         this.ctx.beginPath();
-        this.ctx.moveTo(centerX - size/2, centerY - size/3);
-        this.ctx.lineTo(centerX + size/2, centerY - size/3);
-        this.ctx.lineTo(centerX + size/3, centerY + size/2);
-        this.ctx.lineTo(centerX - size/3, centerY + size/2);
+        this.ctx.moveTo(centerX - size / 2, centerY - size / 3);
+        this.ctx.lineTo(centerX + size / 2, centerY - size / 3);
+        this.ctx.lineTo(centerX + size / 3, centerY + size / 2);
+        this.ctx.lineTo(centerX - size / 3, centerY + size / 2);
         this.ctx.closePath();
         this.ctx.stroke();
-        
+
         this.ctx.globalAlpha = 1;
-        
+
         // Title and author
         this.drawCoverText(title, author, palette, width, height, 'modern');
     }
@@ -179,32 +179,32 @@ export class CoverGenerator {
      */
     private createAbstractArtCover(title: string, author: string, analysis: any, palette: any, random: any, width: number, height: number): void {
         // Dynamic background with abstract shapes
-        const bgGradient = this.ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width, height)/2);
+        const bgGradient = this.ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, Math.max(width, height) / 2);
         bgGradient.addColorStop(0, palette.primary);
         bgGradient.addColorStop(0.5, palette.secondary);
         bgGradient.addColorStop(1, palette.background);
         this.ctx.fillStyle = bgGradient;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Abstract flowing shapes
         for (let i = 0; i < 8; i++) {
             const x = random() * width;
             const y = random() * height;
             const radius = 50 + random() * 150;
-            
+
             const shapeGradient = this.ctx.createRadialGradient(x, y, 0, x, y, radius);
             shapeGradient.addColorStop(0, palette.accent);
             shapeGradient.addColorStop(1, 'transparent');
-            
+
             this.ctx.fillStyle = shapeGradient;
             this.ctx.globalAlpha = 0.1 + random() * 0.3;
             this.ctx.beginPath();
             this.ctx.arc(x, y, radius, 0, Math.PI * 2);
             this.ctx.fill();
         }
-        
+
         this.ctx.globalAlpha = 1;
-        
+
         // Title and author
         this.drawCoverText(title, author, palette, width, height, 'artistic');
     }
@@ -220,18 +220,18 @@ export class CoverGenerator {
         gradient.addColorStop(1, '#0a0a0a');
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Central symbolic element
         const centerX = width / 2;
         const centerY = height / 2;
         const symbols = this.generateSymbolsForMood(analysis.mood);
         const mainSymbol = symbols[Math.floor(random() * symbols.length)];
-        
+
         // Glowing symbol
         this.ctx.save();
         this.ctx.translate(centerX, centerY);
         this.ctx.rotate(random() * Math.PI * 0.2);
-        
+
         // Outer glow
         for (let i = 5; i > 0; i--) {
             this.ctx.font = `${100 + i * 20}px Arial`;
@@ -241,16 +241,16 @@ export class CoverGenerator {
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(mainSymbol, 0, 0);
         }
-        
+
         // Main symbol
         this.ctx.font = '120px Arial';
         this.ctx.fillStyle = '#ffffff';
         this.ctx.globalAlpha = 0.9;
         this.ctx.fillText(mainSymbol, 0, 0);
-        
+
         this.ctx.restore();
         this.ctx.globalAlpha = 1;
-        
+
         // Title and author
         this.drawCoverText(title, author, palette, width, height, 'mysterious');
     }
@@ -262,24 +262,24 @@ export class CoverGenerator {
         // Clean background
         this.ctx.fillStyle = palette.background;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Large typographic treatment
         const words = title.split(' ');
         const centerX = width / 2;
         const centerY = height / 2;
-        
+
         words.forEach((word, index) => {
             const fontSize = 60 + (words.length - index) * 15;
-            const yOffset = (index - words.length/2) * (fontSize * 0.8);
-            
+            const yOffset = (index - words.length / 2) * (fontSize * 0.8);
+
             this.ctx.save();
             this.ctx.translate(centerX, centerY + yOffset);
-            
+
             // Word background
             this.ctx.fillStyle = palette.primary;
             this.ctx.globalAlpha = 0.1;
-            this.ctx.fillRect(-200, -fontSize/2, 400, fontSize);
-            
+            this.ctx.fillRect(-200, -fontSize / 2, 400, fontSize);
+
             // Word text
             this.ctx.font = `bold ${fontSize}px Arial`;
             this.ctx.fillStyle = palette.accent;
@@ -287,12 +287,12 @@ export class CoverGenerator {
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(word.toUpperCase(), 0, 0);
-            
+
             this.ctx.restore();
         });
-        
+
         this.ctx.globalAlpha = 1;
-        
+
         // Author name
         this.ctx.font = '24px Arial';
         this.ctx.fillStyle = palette.secondary;
@@ -311,50 +311,50 @@ export class CoverGenerator {
         gradient.addColorStop(1, palette.secondary);
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Geometric pattern overlay
         const gridSize = 40;
         const shapes = ['circle', 'triangle', 'square'];
-        
+
         for (let x = gridSize; x < width; x += gridSize * 2) {
             for (let y = gridSize; y < height; y += gridSize * 2) {
                 if (random() > 0.3) {
                     const shape = shapes[Math.floor(random() * shapes.length)];
                     const color = [palette.primary, palette.secondary, palette.tertiary, palette.accent][Math.floor(random() * 4)];
-                    
+
                     this.ctx.fillStyle = color;
                     this.ctx.globalAlpha = 0.2 + random() * 0.3;
-                    
+
                     this.ctx.save();
                     this.ctx.translate(x, y);
                     this.ctx.rotate(random() * Math.PI * 2);
-                    
-                    switch(shape) {
+
+                    switch (shape) {
                         case 'circle':
                             this.ctx.beginPath();
-                            this.ctx.arc(0, 0, gridSize/3, 0, Math.PI * 2);
+                            this.ctx.arc(0, 0, gridSize / 3, 0, Math.PI * 2);
                             this.ctx.fill();
                             break;
                         case 'triangle':
                             this.ctx.beginPath();
-                            this.ctx.moveTo(0, -gridSize/3);
-                            this.ctx.lineTo(-gridSize/3, gridSize/3);
-                            this.ctx.lineTo(gridSize/3, gridSize/3);
+                            this.ctx.moveTo(0, -gridSize / 3);
+                            this.ctx.lineTo(-gridSize / 3, gridSize / 3);
+                            this.ctx.lineTo(gridSize / 3, gridSize / 3);
                             this.ctx.closePath();
                             this.ctx.fill();
                             break;
                         case 'square':
-                            this.ctx.fillRect(-gridSize/4, -gridSize/4, gridSize/2, gridSize/2);
+                            this.ctx.fillRect(-gridSize / 4, -gridSize / 4, gridSize / 2, gridSize / 2);
                             break;
                     }
-                    
+
                     this.ctx.restore();
                 }
             }
         }
-        
+
         this.ctx.globalAlpha = 1;
-        
+
         // Title and author
         this.drawCoverText(title, author, palette, width, height, 'bold');
     }
@@ -370,11 +370,11 @@ export class CoverGenerator {
         gradient.addColorStop(1, palette.secondary);
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Illustrative elements based on visual elements
         const centerX = width / 2;
         const centerY = height / 2;
-        
+
         if (analysis.visualElements.includes('nature')) {
             // Draw simplified landscape
             this.drawSimpleLandscape(centerX, centerY, width, height, palette, random);
@@ -388,7 +388,7 @@ export class CoverGenerator {
             // Generic abstract illustration
             this.drawSimpleAbstractScene(centerX, centerY, width, height, palette, random);
         }
-        
+
         // Title and author
         this.drawCoverText(title, author, palette, width, height, 'illustrative');
     }
@@ -398,37 +398,37 @@ export class CoverGenerator {
      */
     private createCosmicCover(title: string, author: string, analysis: any, palette: any, random: any, width: number, height: number): void {
         // Space background
-        const gradient = this.ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width, height)/2);
+        const gradient = this.ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, Math.max(width, height) / 2);
         gradient.addColorStop(0, '#0a0a2e');
         gradient.addColorStop(0.5, '#161650');
         gradient.addColorStop(1, '#000000');
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Stars
         for (let i = 0; i < 200; i++) {
             const x = random() * width;
             const y = random() * height;
             const size = random() * 2;
             const brightness = random();
-            
+
             this.ctx.fillStyle = `rgba(255, 255, 255, ${brightness})`;
             this.ctx.beginPath();
             this.ctx.arc(x, y, size, 0, Math.PI * 2);
             this.ctx.fill();
         }
-        
+
         // Nebula effect
-        const nebulaGradient = this.ctx.createRadialGradient(width/2, height/3, 0, width/2, height/3, width/3);
+        const nebulaGradient = this.ctx.createRadialGradient(width / 2, height / 3, 0, width / 2, height / 3, width / 3);
         nebulaGradient.addColorStop(0, palette.accent);
         nebulaGradient.addColorStop(0.5, palette.primary);
         nebulaGradient.addColorStop(1, 'transparent');
         this.ctx.fillStyle = nebulaGradient;
         this.ctx.globalAlpha = 0.3;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         this.ctx.globalAlpha = 1;
-        
+
         // Title and author
         this.drawCoverText(title, author, palette, width, height, 'cosmic');
     }
@@ -445,23 +445,23 @@ export class CoverGenerator {
         gradient.addColorStop(1, '#000000');
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Dramatic lighting effect
-        const lightGradient = this.ctx.createRadialGradient(width/2, height/3, 0, width/2, height/3, width/2);
+        const lightGradient = this.ctx.createRadialGradient(width / 2, height / 3, 0, width / 2, height / 3, width / 2);
         lightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
         lightGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
         lightGradient.addColorStop(1, 'transparent');
         this.ctx.fillStyle = lightGradient;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Dramatic element
         const centerX = width / 2;
         const centerY = height / 2;
-        
+
         this.ctx.strokeStyle = palette.accent;
         this.ctx.lineWidth = 3;
         this.ctx.globalAlpha = 0.8;
-        
+
         // Dramatic shape
         this.ctx.beginPath();
         this.ctx.moveTo(centerX - 100, centerY - 150);
@@ -470,9 +470,9 @@ export class CoverGenerator {
         this.ctx.lineTo(centerX - 50, centerY + 100);
         this.ctx.closePath();
         this.ctx.stroke();
-        
+
         this.ctx.globalAlpha = 1;
-        
+
         // Title and author
         this.drawCoverText(title, author, palette, width, height, 'dramatic');
     }
@@ -483,10 +483,10 @@ export class CoverGenerator {
     private drawCoverText(title: string, author: string, palette: any, width: number, height: number, style: string): void {
         const centerX = width / 2;
         let titleY = height / 2;
-        
+
         this.ctx.save();
-        
-        switch(style) {
+
+        switch (style) {
             case 'modern':
                 this.ctx.font = 'bold 48px Arial';
                 this.ctx.fillStyle = '#ffffff';
@@ -495,12 +495,12 @@ export class CoverGenerator {
                 this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
                 this.ctx.shadowBlur = 10;
                 this.ctx.fillText(title, centerX, titleY);
-                
+
                 this.ctx.font = '24px Arial';
                 this.ctx.fillStyle = palette.accent;
                 this.ctx.fillText(author, centerX, titleY + 80);
                 break;
-                
+
             case 'artistic':
                 this.ctx.font = 'bold 56px Georgia';
                 this.ctx.fillStyle = '#ffffff';
@@ -509,12 +509,12 @@ export class CoverGenerator {
                 this.ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
                 this.ctx.shadowBlur = 15;
                 this.ctx.fillText(title.toUpperCase(), centerX, titleY);
-                
+
                 this.ctx.font = 'italic 20px Georgia';
                 this.ctx.fillStyle = palette.secondary;
                 this.ctx.fillText(author, centerX, titleY + 100);
                 break;
-                
+
             case 'mysterious':
                 this.ctx.font = 'bold 52px serif';
                 this.ctx.fillStyle = '#ffffff';
@@ -523,12 +523,12 @@ export class CoverGenerator {
                 this.ctx.shadowColor = palette.accent;
                 this.ctx.shadowBlur = 20;
                 this.ctx.fillText(title, centerX, titleY);
-                
+
                 this.ctx.font = '18px serif';
                 this.ctx.fillStyle = palette.accent;
                 this.ctx.fillText(author, centerX, titleY + 90);
                 break;
-                
+
             case 'bold':
                 this.ctx.font = 'bold 64px Arial';
                 this.ctx.fillStyle = '#ffffff';
@@ -537,12 +537,12 @@ export class CoverGenerator {
                 this.ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
                 this.ctx.shadowBlur = 12;
                 this.ctx.fillText(title.toUpperCase(), centerX, titleY);
-                
+
                 this.ctx.font = 'bold 22px Arial';
                 this.ctx.fillStyle = palette.primary;
                 this.ctx.fillText(author, centerX, titleY + 100);
                 break;
-                
+
             case 'illustrative':
                 this.ctx.font = 'bold 46px Georgia';
                 this.ctx.fillStyle = '#ffffff';
@@ -552,12 +552,12 @@ export class CoverGenerator {
                 this.ctx.lineWidth = 3;
                 this.ctx.strokeText(title, centerX, titleY);
                 this.ctx.fillText(title, centerX, titleY);
-                
+
                 this.ctx.font = '20px Georgia';
                 this.ctx.fillStyle = palette.secondary;
                 this.ctx.fillText(author, centerX, titleY + 80);
                 break;
-                
+
             case 'cosmic':
                 this.ctx.font = 'bold 58px Arial';
                 this.ctx.fillStyle = '#ffffff';
@@ -566,12 +566,12 @@ export class CoverGenerator {
                 this.ctx.shadowColor = palette.accent;
                 this.ctx.shadowBlur = 25;
                 this.ctx.fillText(title, centerX, titleY);
-                
+
                 this.ctx.font = '22px Arial';
                 this.ctx.fillStyle = palette.tertiary;
                 this.ctx.fillText(author, centerX, titleY + 90);
                 break;
-                
+
             case 'dramatic':
                 this.ctx.font = 'bold 70px Impact';
                 this.ctx.fillStyle = '#ffffff';
@@ -580,13 +580,13 @@ export class CoverGenerator {
                 this.ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
                 this.ctx.shadowBlur = 20;
                 this.ctx.fillText(title.toUpperCase(), centerX, titleY);
-                
+
                 this.ctx.font = '24px Impact';
                 this.ctx.fillStyle = palette.accent;
                 this.ctx.fillText(author, centerX, titleY + 110);
                 break;
         }
-        
+
         this.ctx.restore();
     }
 
@@ -606,7 +606,7 @@ export class CoverGenerator {
         this.ctx.lineTo(0, height);
         this.ctx.closePath();
         this.ctx.fill();
-        
+
         // Sun/moon
         this.ctx.fillStyle = palette.accent;
         this.ctx.beginPath();
@@ -623,10 +623,10 @@ export class CoverGenerator {
             const x = (width / 8) * i;
             const buildingHeight = height * (0.3 + random() * 0.4);
             const buildingWidth = width / 10;
-            
+
             this.ctx.fillStyle = palette.secondary;
             this.ctx.fillRect(x, height - buildingHeight, buildingWidth, buildingHeight);
-            
+
             // Windows
             this.ctx.fillStyle = palette.accent;
             for (let j = 0; j < 5; j++) {
@@ -653,19 +653,19 @@ export class CoverGenerator {
         this.ctx.beginPath();
         this.ctx.arc(centerX, centerY, 100, 0, Math.PI * 2);
         this.ctx.stroke();
-        
+
         // Inner circle
         this.ctx.beginPath();
         this.ctx.arc(centerX, centerY, 70, 0, Math.PI * 2);
         this.ctx.stroke();
-        
+
         // Magical symbols
         const symbols = ['✦', '✧', '⋆', '✵', '⟡'];
         for (let i = 0; i < 8; i++) {
             const angle = (i / 8) * Math.PI * 2;
             const x = centerX + Math.cos(angle) * 130;
             const y = centerY + Math.sin(angle) * 130;
-            
+
             this.ctx.font = '24px Arial';
             this.ctx.fillStyle = palette.tertiary;
             this.ctx.textAlign = 'center';
@@ -684,11 +684,11 @@ export class CoverGenerator {
             this.ctx.lineWidth = 4;
             this.ctx.globalAlpha = 0.6;
             this.ctx.beginPath();
-            
+
             const startX = random() * width;
             const startY = random() * height;
             this.ctx.moveTo(startX, startY);
-            
+
             for (let j = 0; j < 3; j++) {
                 const cp1x = random() * width;
                 const cp1y = random() * height;
@@ -698,7 +698,7 @@ export class CoverGenerator {
                 const endY = random() * height;
                 this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
             }
-            
+
             this.ctx.stroke();
         }
         this.ctx.globalAlpha = 1;
@@ -1083,7 +1083,7 @@ export class CoverGenerator {
             this.ctx.fillStyle = palette.primary;
             this.ctx.globalAlpha = 0.1;
             this.ctx.fillRect(0, 0, width, height);
-            
+
             // Vintage texture
             for (let i = 0; i < 50; i++) {
                 this.ctx.strokeStyle = palette.accent;
@@ -1154,7 +1154,7 @@ export class CoverGenerator {
             this.ctx.fillStyle = '#000';
             this.ctx.globalAlpha = 0.3;
             this.ctx.fillRect(0, 0, width, height);
-            
+
             // Broken grid pattern
             this.ctx.strokeStyle = palette.accent;
             this.ctx.globalAlpha = 0.1;
@@ -1367,7 +1367,7 @@ export class CoverGenerator {
 
         if (g.includes('MYSTERY')) { symbol = "🕵️"; color = "#1e293b"; }
         if (g.includes('ROMANCE')) { symbol = "🌹"; color = "#9f1239"; }
-        if (g.includes('SCI-FI')) { symbol = "🛸"; color = "#0e7490"; }
+        if (g.includes('SCI-FI') || g.includes('SPACE')) { symbol = "🛸"; color = "#0e7490"; }
         if (g.includes('FANTASY')) { symbol = "🐉"; color = "#4c1d95"; }
         if (g.includes('HORROR')) { symbol = "💀"; color = "#450a0a"; }
         if (g.includes('CHILDREN')) { symbol = "🧸"; color = "#b45309"; }
@@ -1380,6 +1380,11 @@ export class CoverGenerator {
         if (g.includes('URBAN')) { symbol = "🏢"; color = "#111827"; }
         if (g.includes('ADVENTURE')) { symbol = "🧭"; color = "#064e3b"; }
         if (g.includes('SUSPENSE')) { symbol = "🔎"; color = "#312e81"; }
+        if (g.includes('BUSINESS')) { symbol = "📈"; color = "#1d4ed8"; }
+        if (g.includes('SELF-HELP') || g.includes('HEALTH')) { symbol = "🌱"; color = "#15803d"; }
+        if (g.includes('COOK') || g.includes('KITCHEN')) { symbol = "🍳"; color = "#9a3412"; }
+        if (g.includes('POETRY')) { symbol = "🖋️"; color = "#4338ca"; }
+        if (g.includes('BIOGRAPHY')) { symbol = "👤"; color = "#334155"; }
 
         // Draw shadow/glow
         this.ctx.font = `200px serif`;
@@ -1481,25 +1486,25 @@ export class CoverGenerator {
     async generateChapterIllustration(chapterTitle: string, chapterContent: string, genre: string, chapterIndex: number, totalChapters: number): Promise<string> {
         console.log('🎨 [COVER GENERATOR] generateChapterIllustration called!');
         console.log('📖 [DEBUG] Chapter:', chapterTitle, 'Genre:', genre, 'Index:', chapterIndex);
-        
+
         const width = 1200;
         const height = 900;
         this.canvas.width = width;
         this.canvas.height = height;
-        
+
         // Intelligent content analysis
         const contentAnalysis = this.analyzeContentDeeply(chapterTitle, chapterContent, chapterIndex, totalChapters);
         const creativeSeed = this.generateCreativeSeed(chapterTitle, chapterIndex);
-        
+
         // Dynamic palette based on content mood and chapter position
         const palette = this.generateDynamicPalette(genre, contentAnalysis.mood, chapterIndex, totalChapters);
-        
+
         // Create unique composition for this specific chapter
         this.createUniqueChapterComposition(contentAnalysis, palette, creativeSeed, width, height);
-        
+
         // Add chapter info with creative styling
         this.addCreativeChapterInfo(chapterIndex + 1, chapterTitle, width, height, palette);
-        
+
         return this.canvas.toDataURL('image/png', 0.95);
     }
 
@@ -1509,7 +1514,7 @@ export class CoverGenerator {
     private analyzeContentDeeply(chapterTitle: string, content: string, chapterIndex: number, totalChapters: any): any {
         const words = content.toLowerCase().split(/\s+/);
         const title = chapterTitle.toLowerCase();
-        
+
         // Emotional analysis
         const emotions = {
             joy: ['happy', 'joy', 'smile', 'laugh', 'celebration', 'love', 'wonderful'],
@@ -1519,15 +1524,15 @@ export class CoverGenerator {
             surprise: ['surprised', 'shocked', 'amazed', 'astonished', 'stunned'],
             mystery: ['unknown', 'mystery', 'secret', 'hidden', 'puzzle', 'enigma']
         };
-        
+
         let emotionScores = {};
         for (const [emotion, keywords] of Object.entries(emotions)) {
             emotionScores[emotion] = keywords.filter(word => words.includes(word)).length;
         }
-        
-        const dominantEmotion = Object.entries(emotionScores).reduce((a, b) => 
+
+        const dominantEmotion = Object.entries(emotionScores).reduce((a, b) =>
             emotionScores[a[0]] > emotionScores[b[0]] ? a : b)[0];
-        
+
         // Visual elements detection
         const visualElements = {
             nature: ['forest', 'mountain', 'river', 'ocean', 'tree', 'flower', 'sky', 'sun', 'moon', 'stars'],
@@ -1537,12 +1542,12 @@ export class CoverGenerator {
             romance: ['love', 'kiss', 'heart', 'romance', 'passion', 'embrace', 'together'],
             technology: ['computer', 'robot', 'AI', 'digital', 'code', 'technology', 'future']
         };
-        
+
         let elementScores = {};
         for (const [element, keywords] of Object.entries(visualElements)) {
             elementScores[element] = keywords.filter(word => words.includes(word)).length;
         }
-        
+
         // Chapter position analysis
         const chapterPosition = {
             isFirst: chapterIndex === 0,
@@ -1550,7 +1555,7 @@ export class CoverGenerator {
             isMiddle: chapterIndex > 0 && chapterIndex < totalChapters - 1,
             progress: chapterIndex / totalChapters
         };
-        
+
         return {
             mood: dominantEmotion,
             visualElements: Object.entries(elementScores).filter(([_, score]) => (score as number) > 0).map(([element, _]) => element),
@@ -1586,17 +1591,17 @@ export class CoverGenerator {
             surprise: ['#FF1493', '#FF69B4', '#FFB6C1', '#FFC0CB'],
             mystery: ['#2F4F4F', '#708090', '#778899', '#696969']
         };
-        
+
         const moodColors = basePalettes[mood] || basePalettes.joy;
         const progress = chapterIndex / totalChapters;
-        
+
         // Evolve colors through the book
         const evolvedColors = moodColors.map((color, index) => {
             const hue = this.adjustHue(color, progress * 60);
             const lightness = this.adjustLightness(color, 0.5 + Math.sin(progress * Math.PI) * 0.3);
             return this.hslToHex(hue, 70, lightness);
         });
-        
+
         return {
             primary: evolvedColors[0],
             secondary: evolvedColors[1],
@@ -1612,7 +1617,7 @@ export class CoverGenerator {
     private createUniqueChapterComposition(analysis: any, palette: any, seed: number, width: number, height: number): void {
         // Use seed for pseudo-random but reproducible variations
         const random = this.seededRandom(seed);
-        
+
         // Choose composition style based on content
         const compositionStyles = [
             () => this.createAbstractFlow(analysis, palette, random, width, height),
@@ -1624,7 +1629,7 @@ export class CoverGenerator {
             () => this.createMinimalistDesign(analysis, palette, random, width, height),
             () => this.createComplexIllustration(analysis, palette, random, width, height)
         ];
-        
+
         const styleIndex = Math.floor(random() * compositionStyles.length);
         compositionStyles[styleIndex]();
     }
@@ -1640,18 +1645,18 @@ export class CoverGenerator {
         gradient.addColorStop(1, palette.secondary);
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Flowing curves
         for (let i = 0; i < 5; i++) {
             this.ctx.strokeStyle = palette.accent;
             this.ctx.lineWidth = 2 + random() * 4;
             this.ctx.globalAlpha = 0.3 + random() * 0.4;
             this.ctx.beginPath();
-            
+
             const startX = random() * width;
             const startY = random() * height;
             this.ctx.moveTo(startX, startY);
-            
+
             for (let j = 0; j < 4; j++) {
                 const cp1x = random() * width;
                 const cp1y = random() * height;
@@ -1661,7 +1666,7 @@ export class CoverGenerator {
                 const endY = random() * height;
                 this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
             }
-            
+
             this.ctx.stroke();
         }
         this.ctx.globalAlpha = 1;
@@ -1673,45 +1678,45 @@ export class CoverGenerator {
     private createGeometricPattern(analysis: any, palette: any, random: any, width: number, height: number): void {
         this.ctx.fillStyle = palette.background;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         const gridSize = 30 + Math.floor(random() * 50);
         const shapes = ['circle', 'square', 'triangle', 'hexagon'];
-        
+
         for (let x = 0; x < width; x += gridSize) {
             for (let y = 0; y < height; y += gridSize) {
                 if (random() > 0.3) {
                     const shape = shapes[Math.floor(random() * shapes.length)];
                     const color = [palette.primary, palette.secondary, palette.tertiary, palette.accent][Math.floor(random() * 4)];
-                    
+
                     this.ctx.fillStyle = color;
                     this.ctx.globalAlpha = 0.3 + random() * 0.5;
-                    
+
                     this.ctx.save();
-                    this.ctx.translate(x + gridSize/2, y + gridSize/2);
+                    this.ctx.translate(x + gridSize / 2, y + gridSize / 2);
                     this.ctx.rotate(random() * Math.PI * 2);
-                    
-                    switch(shape) {
+
+                    switch (shape) {
                         case 'circle':
                             this.ctx.beginPath();
-                            this.ctx.arc(0, 0, gridSize/3, 0, Math.PI * 2);
+                            this.ctx.arc(0, 0, gridSize / 3, 0, Math.PI * 2);
                             this.ctx.fill();
                             break;
                         case 'square':
-                            this.ctx.fillRect(-gridSize/3, -gridSize/3, gridSize*2/3, gridSize*2/3);
+                            this.ctx.fillRect(-gridSize / 3, -gridSize / 3, gridSize * 2 / 3, gridSize * 2 / 3);
                             break;
                         case 'triangle':
                             this.ctx.beginPath();
-                            this.ctx.moveTo(0, -gridSize/3);
-                            this.ctx.lineTo(-gridSize/3, gridSize/3);
-                            this.ctx.lineTo(gridSize/3, gridSize/3);
+                            this.ctx.moveTo(0, -gridSize / 3);
+                            this.ctx.lineTo(-gridSize / 3, gridSize / 3);
+                            this.ctx.lineTo(gridSize / 3, gridSize / 3);
                             this.ctx.closePath();
                             this.ctx.fill();
                             break;
                         case 'hexagon':
-                            this.drawHexagon(0, 0, gridSize/3);
+                            this.drawHexagon(0, 0, gridSize / 3);
                             break;
                     }
-                    
+
                     this.ctx.restore();
                 }
             }
@@ -1723,23 +1728,23 @@ export class CoverGenerator {
      * Organic shapes composition
      */
     private createOrganicShapes(analysis: any, palette: any, random: any, width: number, height: number): void {
-        const gradient = this.ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width, height)/2);
+        const gradient = this.ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, Math.max(width, height) / 2);
         gradient.addColorStop(0, palette.primary);
         gradient.addColorStop(0.5, palette.secondary);
         gradient.addColorStop(1, palette.background);
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Organic blobs
         for (let i = 0; i < 8; i++) {
             const x = random() * width;
             const y = random() * height;
             const size = 50 + random() * 150;
             const color = [palette.tertiary, palette.accent][Math.floor(random() * 2)];
-            
+
             this.ctx.fillStyle = color;
             this.ctx.globalAlpha = 0.2 + random() * 0.3;
-            
+
             this.ctx.beginPath();
             const points = 6 + Math.floor(random() * 6);
             for (let j = 0; j < points; j++) {
@@ -1747,7 +1752,7 @@ export class CoverGenerator {
                 const radius = size * (0.5 + random() * 0.5);
                 const px = x + Math.cos(angle) * radius;
                 const py = y + Math.sin(angle) * radius;
-                
+
                 if (j === 0) {
                     this.ctx.moveTo(px, py);
                 } else {
@@ -1766,17 +1771,17 @@ export class CoverGenerator {
     private createTypographicArt(analysis: any, palette: any, random: any, width: number, height: number): void {
         this.ctx.fillStyle = palette.background;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Extract key words from content
         const words = analysis.titleKeywords.slice(0, 8);
-        
+
         words.forEach((word, index) => {
             const fontSize = 20 + random() * 60;
             const x = 50 + random() * (width - 100);
             const y = 50 + random() * (height - 100);
             const rotation = (random() - 0.5) * 0.5;
             const color = [palette.primary, palette.secondary, palette.tertiary, palette.accent][index % 4];
-            
+
             this.ctx.save();
             this.ctx.translate(x, y);
             this.ctx.rotate(rotation);
@@ -1797,16 +1802,16 @@ export class CoverGenerator {
     private createSymbolicRepresentation(analysis: any, palette: any, random: any, width: number, height: number): void {
         this.ctx.fillStyle = palette.background;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         const symbols = this.generateSymbolsForMood(analysis.mood);
         const symbolCount = 3 + Math.floor(random() * 5);
-        
+
         for (let i = 0; i < symbolCount; i++) {
             const x = width * (0.2 + random() * 0.6);
             const y = height * (0.2 + random() * 0.6);
             const size = 30 + random() * 80;
             const symbol = symbols[Math.floor(random() * symbols.length)];
-            
+
             this.ctx.save();
             this.ctx.translate(x, y);
             this.ctx.rotate(random() * Math.PI * 2);
@@ -1827,20 +1832,20 @@ export class CoverGenerator {
     private createDataVisualization(analysis: any, palette: any, random: any, width: number, height: number): void {
         this.ctx.fillStyle = palette.background;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Create abstract data representation
         const dataPoints = 20;
         const centerX = width / 2;
         const centerY = height / 2;
         const radius = Math.min(width, height) * 0.3;
-        
+
         for (let i = 0; i < dataPoints; i++) {
             const angle = (i / dataPoints) * Math.PI * 2;
             const value = random();
             const r = radius * (0.3 + value * 0.7);
             const x = centerX + Math.cos(angle) * r;
             const y = centerY + Math.sin(angle) * r;
-            
+
             this.ctx.strokeStyle = palette.primary;
             this.ctx.lineWidth = 2;
             this.ctx.globalAlpha = 0.6;
@@ -1848,7 +1853,7 @@ export class CoverGenerator {
             this.ctx.moveTo(centerX, centerY);
             this.ctx.lineTo(x, y);
             this.ctx.stroke();
-            
+
             this.ctx.fillStyle = palette.accent;
             this.ctx.beginPath();
             this.ctx.arc(x, y, 3 + value * 7, 0, Math.PI * 2);
@@ -1863,19 +1868,19 @@ export class CoverGenerator {
     private createMinimalistDesign(analysis: any, palette: any, random: any, width: number, height: number): void {
         this.ctx.fillStyle = palette.background;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Simple, elegant shapes
         const shapeCount = 2 + Math.floor(random() * 3);
-        
+
         for (let i = 0; i < shapeCount; i++) {
             const x = width * (0.2 + random() * 0.6);
             const y = height * (0.2 + random() * 0.6);
             const size = 50 + random() * 100;
-            
+
             this.ctx.strokeStyle = palette.primary;
             this.ctx.lineWidth = 1 + random() * 3;
             this.ctx.globalAlpha = 0.5 + random() * 0.3;
-            
+
             if (random() > 0.5) {
                 // Circle
                 this.ctx.beginPath();
@@ -1883,7 +1888,7 @@ export class CoverGenerator {
                 this.ctx.stroke();
             } else {
                 // Rectangle
-                this.ctx.strokeRect(x - size/2, y - size/2, size, size);
+                this.ctx.strokeRect(x - size / 2, y - size / 2, size, size);
             }
         }
         this.ctx.globalAlpha = 1;
@@ -1900,7 +1905,7 @@ export class CoverGenerator {
         gradient.addColorStop(1, palette.tertiary);
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, width, height);
-        
+
         // Add texture
         for (let i = 0; i < 100; i++) {
             const x = random() * width;
@@ -1911,23 +1916,23 @@ export class CoverGenerator {
             this.ctx.fillRect(x, y, size, size);
         }
         this.ctx.globalAlpha = 1;
-        
+
         // Complex central element
         const centerX = width / 2;
         const centerY = height / 2;
         const layers = 3 + Math.floor(random() * 3);
-        
+
         for (let i = 0; i < layers; i++) {
             const layerSize = 100 + i * 30;
             const rotation = random() * Math.PI * 2;
-            
+
             this.ctx.save();
             this.ctx.translate(centerX, centerY);
             this.ctx.rotate(rotation);
             this.ctx.strokeStyle = [palette.primary, palette.secondary, palette.tertiary][i % 3];
             this.ctx.lineWidth = 2;
             this.ctx.globalAlpha = 0.6 - i * 0.1;
-            
+
             // Draw complex shape
             this.ctx.beginPath();
             const points = 6 + i * 2;
@@ -1936,7 +1941,7 @@ export class CoverGenerator {
                 const radius = layerSize * (0.5 + Math.sin(j * 0.5) * 0.3);
                 const x = Math.cos(angle) * radius;
                 const y = Math.sin(angle) * radius;
-                
+
                 if (j === 0) {
                     this.ctx.moveTo(x, y);
                 } else {
@@ -1955,11 +1960,11 @@ export class CoverGenerator {
      */
     private addCreativeChapterInfo(chapterNum: number, chapterTitle: string, width: number, height: number, palette: any): void {
         this.ctx.save();
-        
+
         // Creative chapter number display
         const numX = width - 100;
         const numY = height - 100;
-        
+
         // Background circle for chapter number
         const gradient = this.ctx.createRadialGradient(numX, numY, 0, numX, numY, 40);
         gradient.addColorStop(0, palette.accent);
@@ -1969,14 +1974,14 @@ export class CoverGenerator {
         this.ctx.beginPath();
         this.ctx.arc(numX, numY, 35, 0, Math.PI * 2);
         this.ctx.fill();
-        
+
         // Chapter number
         this.ctx.fillStyle = '#ffffff';
         this.ctx.font = 'bold 20px Arial';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         this.ctx.fillText(chapterNum.toString(), numX, numY);
-        
+
         // Chapter title (if short enough)
         if (chapterTitle.length < 30) {
             this.ctx.fillStyle = palette.primary;
@@ -1985,7 +1990,7 @@ export class CoverGenerator {
             this.ctx.textAlign = 'right';
             this.ctx.fillText(chapterTitle, numX - 50, numY);
         }
-        
+
         this.ctx.restore();
     }
 
@@ -2001,7 +2006,7 @@ export class CoverGenerator {
             surprise: ['❗', '💫', '🌟', '✨', '🎆', '🎇', '💥', '🌠'],
             mystery: ['🔮', '🗝️', '🕯️', '🌙', '⭐', '🌌', '🔍', '📜']
         };
-        
+
         return symbolSets[mood] || symbolSets.joy;
     }
 
@@ -2013,7 +2018,7 @@ export class CoverGenerator {
         let a = 1103515245;
         let c = 12345;
         let state = seed;
-        
+
         return () => {
             state = (a * state + c) % m;
             return state / m;
@@ -2068,24 +2073,24 @@ export class CoverGenerator {
         r /= 255;
         g /= 255;
         b /= 255;
-        
+
         const max = Math.max(r, g, b);
         const min = Math.min(r, g, b);
         let h, s, l = (max + min) / 2;
-        
+
         if (max === min) {
             h = s = 0;
         } else {
             const d = max - min;
             s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            
+
             switch (max) {
                 case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
                 case g: h = ((b - r) / d + 2) / 6; break;
                 case b: h = ((r - g) / d + 4) / 6; break;
             }
         }
-        
+
         return { h: h * 360, s: s * 100, l: l * 100 };
     }
 
@@ -2093,34 +2098,34 @@ export class CoverGenerator {
         h = h / 360;
         s = s / 100;
         l = l / 100;
-        
+
         let r, g, b;
-        
+
         if (s === 0) {
             r = g = b = l;
         } else {
             const hue2rgb = (p: number, q: number, t: number) => {
                 if (t < 0) t += 1;
                 if (t > 1) t -= 1;
-                if (t < 1/6) return p + (q - p) * 6 * t;
-                if (t < 1/2) return q;
-                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                if (t < 1 / 6) return p + (q - p) * 6 * t;
+                if (t < 1 / 2) return q;
+                if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
                 return p;
             };
-            
+
             const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
             const p = 2 * l - q;
-            
-            r = hue2rgb(p, q, h + 1/3);
+
+            r = hue2rgb(p, q, h + 1 / 3);
             g = hue2rgb(p, q, h);
-            b = hue2rgb(p, q, h - 1/3);
+            b = hue2rgb(p, q, h - 1 / 3);
         }
-        
+
         const toHex = (x: number) => {
             const hex = Math.round(x * 255).toString(16);
             return hex.length === 1 ? '0' + hex : hex;
         };
-        
+
         return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
     }
 

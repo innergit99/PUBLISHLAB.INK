@@ -30,7 +30,7 @@ const ManuscriptDoctorPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             // 2. Analyze (Simulated thinking time for UX)
             await new Promise(r => setTimeout(r, 2000));
 
-            const profile = manuscriptDoctorService.analyzeContext(text);
+            const profile = await manuscriptDoctorService.analyzeContext(text);
             const metrics = (manuscriptDoctorService as any).calculateTextMetrics(text); // Accessing private for demo metrics
 
             setAnalysis({

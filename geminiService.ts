@@ -703,15 +703,15 @@ No explanations. No quotes.`;
   async testConnection(): Promise<{ success: boolean; message: string; tier: 'Free' | 'Paid' | 'Unknown' }> {
     try {
       const res = await this.queryGeminiFlash("Ping", false);
-      this.success = !!res;
-      this.message = "Engine Connection: ACTIVE";
-      this.tier = 'Paid';
-      return { success: true, message: this.message, tier: this.tier };
+      const success = !!res;
+      const message = "Engine Connection: ACTIVE";
+      const tier: 'Free' | 'Paid' | 'Unknown' = 'Paid';
+      return { success, message, tier };
     } catch (e: any) {
-      this.success = false;
-      this.message = `Engine Error: ${e.message}`;
-      this.tier = 'Unknown';
-      return { success: false, message: this.message, tier: this.tier };
+      const success = false;
+      const message = `Engine Error: ${e.message}`;
+      const tier: 'Free' | 'Paid' | 'Unknown' = 'Unknown';
+      return { success, message, tier };
     }
   }
 
@@ -732,25 +732,25 @@ No explanations. No quotes.`;
       }
       const data = await response.json();
       const allModels = data.models?.map((m: any) => m.name.replace('models/', '')) || [];
-      
+
       // Filter for generateContent-compatible models (Gemini 2.0+, 2.5+, 3.x)
-      const workingModels = allModels.filter((m: string) => 
-        m.includes('gemini-3') || 
-        m.includes('gemini-2.5') || 
+      const workingModels = allModels.filter((m: string) =>
+        m.includes('gemini-3') ||
+        m.includes('gemini-2.5') ||
         m.includes('gemini-2.0')
       );
-      
+
       // Note: Gemini 1.x models are RETIRED and will return 404
-      const retiredModels = allModels.filter((m: string) => 
+      const retiredModels = allModels.filter((m: string) =>
         m.includes('gemini-1.') || m === 'gemini-pro'
       );
 
       console.log("💎 Gemini Diagnostics: Key is VALID. Working models:", workingModels.slice(0, 10));
-      
+
       if (retiredModels.length > 0) {
         console.warn("💎 Gemini Diagnostics: RETIRED models in list (will 404):", retiredModels.length, "models");
       }
-      
+
       if (workingModels.length === 0) {
         console.warn("💎 Gemini Diagnostics: No working Gemini 2.0+ models found. Will fallback to Groq.");
       }
@@ -1031,9 +1031,11 @@ Output ONLY a valid JSON array: ["Title 1", "Title 2", "Title 3", "Title 4", "Ti
       };
 
       // Phase 3: Generate Back Cover Blurb (async, will update)
-      this.generateBackCoverBlurb(blueprint as any).then(blurb => {
-        blueprint.BACK_COVER_SPEC.blurb_text = blurb;
-      });
+      // Asynchronously generate blurb and hook it back in
+      // Fix: Await this correctly to ensure it's in the initial return if possible, 
+      // or at least ensure it's not a dangling promise in a mission-critical path.
+      const blurb = await this.generateBackCoverBlurb(blueprint as any);
+      blueprint.BACK_COVER_SPEC.blurb_text = blurb;
 
       return blueprint;
     } catch (e) {
@@ -2386,7 +2388,7 @@ AVOID: Any imagery that could interfere with barcode scanning`;
         model: module === 'KDP' || module === 'KDP_INTERIOR' ? 'dev' : 'schnell', // Higher quality for book content
         numInferenceSteps: module === 'KDP' ? 28 : 4, // More steps for covers
         guidanceScale: 7.5,
-        module,
+        module: module === 'KDP' ? 'KDP_COVER' : module, // ALIGN with specialized Canvas generator
         author: options.author,
         genre: options.genre,
         title: options.title
