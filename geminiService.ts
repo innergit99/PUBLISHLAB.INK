@@ -2312,7 +2312,7 @@ AVOID: Any imagery that could interfere with barcode scanning`;
    * Main entry point for all image generation.
    * Automatically selects the best engine and strictly optimizes prompts for the specific use case.
    */
-  async generateImageForModule(prompt: string, module: 'POD' | 'KDP' | 'MOCKUP' | 'KDP_INTERIOR' = 'POD', options: { forceEngine?: 'POLLINATIONS' | 'HF_ZERO_GPU' | 'DEEPAI', aspectRatio?: string, negativePrompt?: string, colorMode?: 'Color' | 'B&W', author?: string, genre?: string } = {}): Promise<string> {
+  async generateImageForModule(prompt: string, module: 'POD' | 'KDP' | 'MOCKUP' | 'KDP_INTERIOR' = 'POD', options: { forceEngine?: 'POLLINATIONS' | 'HF_ZERO_GPU' | 'DEEPAI', aspectRatio?: string, negativePrompt?: string, colorMode?: 'Color' | 'B&W', author?: string, genre?: string, title?: string } = {}): Promise<string> {
 
     // ENVIRONMENT-AWARE IMAGE GENERATION
     // Local mode: Canvas (zero cost)
@@ -2388,7 +2388,8 @@ AVOID: Any imagery that could interfere with barcode scanning`;
         guidanceScale: 7.5,
         module,
         author: options.author,
-        genre: options.genre
+        genre: options.genre,
+        title: options.title
       });
     } catch (error: any) {
       console.error(`❌ Image generation failed for ${module}:`, error.message);
@@ -2402,7 +2403,8 @@ AVOID: Any imagery that could interfere with barcode scanning`;
           height,
           module,
           author: options.author,
-          genre: options.genre
+          genre: options.genre,
+          title: options.title
         });
       } catch (fallbackError: any) {
         console.error('❌ Serious Error: Even Canvas fallback failed.', fallbackError.message);
