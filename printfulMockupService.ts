@@ -1,12 +1,5 @@
-/**
- * PRINTFUL MOCKUP SERVICE
- * High-quality, standardized product mockups
- * 
- * Free tier: Unlimited mockups with Printful account
- * Professional product photography with consistent lighting/angles
- */
-
 import { MockupType } from './types';
+import { productMockupEngine } from './productMockupEngine';
 
 export interface PrintfulMockupOptions {
   designUrl: string;
@@ -118,25 +111,25 @@ class PrintfulMockupService {
    */
   async generateMockup(options: PrintfulMockupOptions): Promise<MockupResult> {
     const { designUrl, productType } = options;
-    
+
     // Debug: Log API key status (first 5 chars only for security)
     const keyStatus = this.apiKey ? `Present (${this.apiKey.substring(0, 5)}...)` : 'MISSING';
     console.log('🔍 Printful Service:', { keyStatus, productType, designUrlLength: designUrl?.length });
-    
+
     if (!this.apiKey) {
       console.warn('⚠️ Printful API key missing, using fallback');
       return this.generateFallbackMockup(designUrl, productType);
     }
 
     const template = MOCKUP_TEMPLATES[productType];
-    
+
     if (!template) {
       console.error('❌ No template found for product type:', productType);
       return this.generateFallbackMockup(designUrl, productType);
     }
-    
+
     console.log('📋 Using template:', { variantId: template.variantId, placement: template.placement });
-    
+
     try {
       // Use API proxy to avoid CORS
       console.log('🚀 Calling API proxy...');
@@ -162,13 +155,13 @@ class PrintfulMockupService {
 
       const data = await response.json();
       console.log('✅ Mockup generated via proxy:', data);
-      
+
       if (!data.success || !data.mockupUrl) {
         throw new Error(data.error || 'No mockup URL returned');
       }
-      
+
       console.log('🎉 Mockup ready:', data.mockupUrl);
-      
+
       return {
         url: data.mockupUrl,
         productType,
@@ -188,7 +181,7 @@ class PrintfulMockupService {
   private async pollForMockup(taskKey: string, maxAttempts = 30): Promise<string> {
     for (let i = 0; i < maxAttempts; i++) {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const response = await fetch(`${this.baseUrl}/mockup-generator/task?task_key=${taskKey}`, {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`
@@ -198,16 +191,16 @@ class PrintfulMockupService {
       if (!response.ok) continue;
 
       const data = await response.json();
-      
+
       if (data.result.status === 'completed') {
         return data.result.mockups[0].mockup_url;
       }
-      
+
       if (data.result.status === 'failed') {
         throw new Error('Mockup generation failed');
       }
     }
-    
+
     throw new Error('Mockup generation timeout');
   }
 
@@ -215,24 +208,35 @@ class PrintfulMockupService {
    * Generate multiple product mockups
    */
   async generateMockupSet(designUrl: string, productTypes: MockupType[]): Promise<MockupResult[]> {
-    const promises = productTypes.map(type => 
+    const promises = productTypes.map(type =>
       this.generateMockup({ designUrl, productType: type })
     );
-    
+
     return Promise.all(promises);
   }
 
   /**
-   * Fallback: Use base64 design as placeholder
+   * Fallback: Use local drawing engine for high-fidelity placeholders
    */
-  private generateFallbackMockup(designUrl: string, productType: MockupType): MockupResult {
-    // Return the original design with product label
-    return {
-      url: designUrl,
-      productType,
-      width: 1000,
-      height: 1000
-    };
+  private async generateFallbackMockup(designUrl: string, productType: MockupType): Promise<MockupResult> {
+    console.warn(`🎨 Printful Fallback: Generating local drawing for ${productType}`);
+    try {
+      const result = await productMockupEngine.generateMockup({
+        designUrl,
+        productType,
+        color: '#ffffff',
+        style: 'realistic'
+      });
+      return result as MockupResult;
+    } catch (e) {
+      console.error("Local drawing engine failed:", e);
+      return {
+        url: designUrl,
+        productType,
+        width: 1000,
+        height: 1000
+      };
+    }
   }
 
   /**
@@ -251,7 +255,7 @@ class PrintfulMockupService {
       }
 
       const data = await response.json();
-      
+
       return data.result.map((product: any) => ({
         type: product.id as MockupType,
         name: product.name,

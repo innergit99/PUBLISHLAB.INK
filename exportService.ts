@@ -28,22 +28,63 @@ const BARCODE_OFFSET = 6.35; // 0.25" Safety Buffer
 
 export class ExportService {
     async generatePrintPDF(blueprint: KDPBlueprint): Promise<Blob> {
-        // PLIS INTELLIGENCE: Calculate Specs First
-        const totalWords = blueprint.INTERIOR_CONTENT.reduce((acc, ch) => acc + (ch.content?.split(/\s+/).length || 0), 0);
-        const estPages = Math.max(24, Math.ceil(totalWords / 250) + (blueprint.INTERIOR_CONTENT.length * 2) + 12);
+        // PLIS INTELLIGENCE: Multi-Pass Layout Orchestration
+        // ---------------------------------------------------------------------------
+        // PHASE 1: GHOST PAGINATION (Calculate Exact Page Count)
+        // ---------------------------------------------------------------------------
 
+        // Setup temporary doc for measurement
+        const trimSize = blueprint.PROJECT_META?.trim_size || '6" x 9" (Standard)';
+        let trim = TRIM_MAP[trimSize] || TRIM_MAP['6" x 9" (Standard)'];
+        const tempDoc = new jsPDF({ unit: 'mm', format: [trim.w, trim.h] });
+
+        // Front Matter fixed pages
+        let pageCount = 1; // Title Page
+        pageCount++; // Copyright Page
+        if (blueprint.BOOK_STRUCTURE.front_matter.dedication_text) pageCount++;
+        pageCount++; // TOC Page
+
+        // Ensure Chapters start on ODD pages (Recto)
+        if (pageCount % 2 === 0) pageCount++;
+
+        const chapterStartPages: number[] = [];
+
+        // Standard KDP Margins for estimation (will be refined in Phase 2)
+        const estGutter = 12.7; // 0.5" default
+        const estOuter = 6.35; // 0.25" default
+        const contentWidth = trim.w - estGutter - estOuter;
+        const mmPerLine = 5.5; // Benchmark line height
+
+        blueprint.INTERIOR_CONTENT.forEach(ch => {
+            if (pageCount % 2 === 0) pageCount++;
+            chapterStartPages.push(pageCount);
+
+            let chPages = 1; // Chapter start page
+            const textStartY = ch.generatedImageUrl ? trim.w + 20 : 60; // Approx start Y
+            const firstPageAvailableH = trim.h - textStartY - estOuter;
+            const textHeightPerFullPage = trim.h - (estOuter * 2) - 15;
+
+            const lines = tempDoc.splitTextToSize(ch.content || "", contentWidth);
+            const firstPageLines = Math.floor(firstPageAvailableH / mmPerLine);
+
+            let remainingLines = lines.length - firstPageLines;
+            if (remainingLines > 0) {
+                const linesPerPage = Math.floor(textHeightPerFullPage / mmPerLine);
+                chPages += Math.ceil(remainingLines / linesPerPage);
+            }
+            pageCount += chPages;
+        });
+
+        // ---------------------------------------------------------------------------
+        // PHASE 2: FINAL SPEC CALCULATION (Based on REAL Page Count)
+        // ---------------------------------------------------------------------------
+        const finalPageCount = pageCount;
         const paperType = blueprint.PROJECT_META.interior_color === 'Color' ? 'Color' : 'Cream';
-        const specs = structureService.calculateLayoutSpecs(estPages, paperType);
+        const specs = structureService.calculateLayoutSpecs(finalPageCount, paperType);
 
         // Convert Specs (Inches) to MM
         const mmConv = 25.4;
         const bleedsMM = specs.bleed * mmConv;
-
-        // Trust the ToolView selected string to look up the base size
-        const trimSize = blueprint.PROJECT_META?.trim_size || '6" x 9" (Standard)';
-        let trim = TRIM_MAP[trimSize] || TRIM_MAP['6" x 9" (Standard)'];
-
-        // Apply PLIS Margins
         const gutterMargin = specs.margins.inner * mmConv;
         const outerMargin = specs.margins.outer * mmConv;
         const topMargin = specs.margins.top * mmConv;
@@ -58,70 +99,11 @@ export class ExportService {
             format: [finalPdfW, finalPdfH]
         });
 
+        // ---------------------------------------------------------------------------
+        // PHASE 3: ACTUAL RENDERING
+        // ---------------------------------------------------------------------------
         const titleFont = 'times';
         const bodyFont = 'times';
-
-        // ---------------------------------------------------------------------------
-        // PHASE 1: GHOST PAGINATION (Calculate Chapter Start Pages)
-        // ---------------------------------------------------------------------------
-        // We simulate the rendering to find where content lands.
-        // Front Matter fixed pages: 
-        // 1 (Title) + 1 (Copyright) + 1 (Dedication if exists) + 1 (TOC) = Base
-        let pageCount = 1; // Title Page
-        pageCount++; // Copyright Page
-        if (blueprint.BOOK_STRUCTURE.front_matter.dedication_text) pageCount++;
-        pageCount++; // TOC Page
-
-        // Ensure Chapters start on ODD pages (Recto)
-        if (pageCount % 2 === 0) pageCount++;
-
-        const chapterStartPages: number[] = [];
-
-        // Calculation Canvas (to measure text height accurately)
-        const contentWidth = trim.w - gutterMargin - outerMargin;
-        const textHeightPerFullPage = finalPdfH - topMargin - botMargin - 15; // -15 for footer gap
-
-        // Approximate lines per page based on Font Size 11 + Line Spacing
-        // Helper to count pages for content
-        // Note: splitTextToSize is available on the doc instance
-
-        blueprint.INTERIOR_CONTENT.forEach(ch => {
-            // Force start on Odd page? usually yes for professional books
-            if (pageCount % 2 === 0) pageCount++;
-
-            chapterStartPages.push(pageCount);
-
-            let chPages = 1; // Title Page of Chapter
-
-            // Image takes space?
-            let currentY = ch.generatedImageUrl ? finalPdfW + 20 : topMargin + 40;
-
-            doc.setFont(bodyFont, 'normal');
-            doc.setFontSize(11);
-            const lines = doc.splitTextToSize(ch.content || "", contentWidth);
-
-            // Calculate remaining space on first page
-            const firstPageAvailableH = finalPdfH - currentY - botMargin;
-            // Approx lines that fit on first page (11pt font ~ 4mm height with leading?)
-            // pdf line height factor usually 1.15
-            // 11pt = 3.88mm. With leading ~5-6mm per line.
-            const mmPerLine = 5.5;
-            const firstPageLines = Math.floor(firstPageAvailableH / mmPerLine);
-
-            let remainingLines = lines.length - firstPageLines;
-
-            if (remainingLines > 0) {
-                const linesPerPage = Math.floor(textHeightPerFullPage / mmPerLine);
-                const extraPages = Math.ceil(remainingLines / linesPerPage);
-                chPages += extraPages;
-            }
-
-            pageCount += chPages;
-        });
-
-        // ---------------------------------------------------------------------------
-        // PHASE 2: ACTUAL RENDERING
-        // ---------------------------------------------------------------------------
 
         // 1. Title Page
         doc.setFont(titleFont, 'bold');

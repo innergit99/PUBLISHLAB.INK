@@ -533,6 +533,14 @@ No explanations. No quotes.`;
     }
   }
 
+  /**
+   * PRIMARY AI ENGINE: Generates a strategic response using the best available model.
+   * Centralized fallback and safety logic for all project services.
+   */
+  async generateStrategicResponse(prompt: string, jsonMode: boolean = false): Promise<string> {
+    return this.queryGeminiFlash(prompt, jsonMode);
+  }
+
   private async queryGeminiFlash(prompt: string, jsonMode: boolean = false): Promise<string> {
     const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) throw new Error("Gemini API Key missing (VITE_GEMINI_API_KEY)");

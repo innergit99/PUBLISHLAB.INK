@@ -2,6 +2,7 @@
 import { google } from '@ai-sdk/google';
 import { generateObject } from 'ai';
 import { z } from 'zod';
+import { gemini } from './geminiService';
 
 // Define the shape of our Market Intelligence
 export interface NicheOpportunity {
@@ -118,9 +119,6 @@ export class MarketService {
      * Uses Gemini to analyze the SERP data and output structured JSON
      */
     private async synthesizeMarketData(keyword: string, serpData: string, mode: 'KDP' | 'POD'): Promise<NicheAnalysis> {
-        const geminiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-        if (!geminiKey) throw new Error("Gemini API Key missing (VITE_GEMINI_API_KEY)");
-
         const contextInstruction = mode === 'KDP'
             ? "Focus on Book Titles, Subtitles, and Series ideas."
             : "Focus on T-Shirt Slogans, Sticker Designs, and Merch Aesthetics.";
@@ -157,53 +155,14 @@ export class MarketService {
         }
         `;
 
-        // List of models to try in order of preference
-        const models = [
-            'gemini-1.5-flash-latest',
-            'gemini-1.5-flash',
-            'gemini-1.5-flash-001',
-            'gemini-1.5-pro-latest',
-            'gemini-pro',
-            'gemini-1.0-pro'
-        ];
-
-        let lastError: any;
-        const jsonMode = true; // Assuming we always want JSON mode if available
-
-        for (const model of models) {
-            for (const version of ['v1beta', 'v1']) {
-                try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${geminiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: prompt }] }],
-                            generationConfig: {
-                                temperature: 0.7,
-                                responseMimeType: (jsonMode && version === 'v1beta') ? "application/json" : undefined
-                            }
-                        })
-                    });
-
-                    if (!response.ok) {
-                        const err = await response.json().catch(() => ({ error: { message: response.statusText } }));
-                        throw new Error(`(${response.status}) ${err.error?.message || response.statusText}`);
-                    }
-
-                    const json = await response.json();
-                    const rawText = json.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                    if (!rawText) throw new Error("Gemini returned empty analysis");
-
-                    return JSON.parse(rawText) as NicheAnalysis;
-
-                } catch (e: any) {
-                    lastError = e;
-                }
-            }
+        try {
+            const rawText = await gemini.generateStrategicResponse(prompt, true);
+            if (!rawText) throw new Error("Gemini returned empty analysis");
+            return JSON.parse(rawText) as NicheAnalysis;
+        } catch (e: any) {
+            console.error("Market Radar Synth Failed:", e);
+            throw new Error(`Market Radar Synth Failed: ${e.message}`);
         }
-
-        throw new Error(`Market Radar Synth Failed (All Gemini Models): ${lastError?.message}`);
     }
 
     private getSimulatedData(keyword: string, mode: 'KDP' | 'POD'): NicheAnalysis {

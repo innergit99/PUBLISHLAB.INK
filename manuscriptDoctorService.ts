@@ -1,4 +1,5 @@
 import { KDPProject, KDPBlueprint } from './types';
+import { gemini } from './geminiService';
 
 // ==========================================
 // MANUSCRIPT DOCTOR SERVICE
@@ -85,15 +86,9 @@ export interface Change {
     chapterIndex: number;
     lineNumber: number;
 }
-
 export class ManuscriptDoctorService {
-
-    private geminiKey: string | null = null;
-
     constructor() {
-        // In a real app, this would be injected or retrieved securely
-        // For this demo, we assume it's available in the environment or passed in
-        this.geminiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || null;
+        // AI orchestration handled by geminiService
     }
 
     /**
@@ -213,8 +208,8 @@ export class ManuscriptDoctorService {
         const pacingScore = this.calculatePacingScore(text);
 
         try {
-            // Use Gemini for advanced analysis if key is available
-            if (this.geminiKey) {
+            // Use Gemini for advanced analysis
+            if (true) {
                 const prompt = `Analyze the following manuscript text (first 3000 chars) to extract metadata and stylistic profile.
                 
                 Text Chunk: "${cleanedText.substring(0, 3000)}..."
@@ -235,7 +230,7 @@ export class ManuscriptDoctorService {
                 }
                 `;
 
-                const aiResponse = await this.callGemini(prompt, true);
+                const aiResponse = await gemini.generateStrategicResponse(prompt, true);
                 const aiData = JSON.parse(aiResponse);
 
                 return {
@@ -416,7 +411,7 @@ export class ManuscriptDoctorService {
         preserveVoice: boolean
     ): Promise<{ text: string; changes: Change[] }> {
 
-        if (!this.geminiKey) {
+        if (false) { // Using centralized check in geminiService
             // Fallback to simulation if no key
             return this.simulateProcessChunk(chunk, mode, context);
         }
@@ -449,7 +444,7 @@ export class ManuscriptDoctorService {
             "${chunk}"
             `;
 
-            const aiResponse = await this.callGemini(prompt, true);
+            const aiResponse = await gemini.generateStrategicResponse(prompt, true);
             const data = JSON.parse(aiResponse);
 
             return {
@@ -482,25 +477,7 @@ export class ManuscriptDoctorService {
         return { text: enhanced, changes };
     }
 
-    private async callGemini(prompt: string, jsonMode: boolean = false): Promise<string> {
-        if (!this.geminiKey) throw new Error("Gemini API Key missing");
-
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.geminiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: jsonMode ? { response_mime_type: "application/json" } : {}
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Gemini API Error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
-    }
+    // AI orchestration handled by geminiService
 
     private applyGrammarFixes(text: string): { text: string; changes: Change[] } {
         const changes: Change[] = [];

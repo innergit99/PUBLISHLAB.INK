@@ -68,16 +68,33 @@ export const complianceService = {
 
     /**
      * BAN SHIELD AUDIT
-     * Checks text/keywords against known restricted KDP phrases.
+     * Checks text/keywords against known restricted KDP phrases, trademarks, and policy-violating terms.
      */
     async runBanShield(text: string): Promise<any> {
-        const restricted = ['best seller', 'free', 'kindle unlimited', 'amazon'];
-        const found = restricted.filter(word => text.toLowerCase().includes(word));
+        const restricted = [
+            // Misleading Quality Claims
+            'best seller', 'bestseller', 'no. 1', 'number one', 'award winning', 'top rated',
+            // Pricing & Promo (Prohibited in metadata)
+            'free', 'unlimited', 'kindle unlimited', 'ku', 'on sale', 'promotion', 'cheap', 'discount',
+            // Competitors & Platforms
+            'amazon', 'kindle', 'audible', 'barnes and noble', 'nook', 'kobo', 'apple books',
+            // Trademarks (High Risk)
+            'disney', 'marvel', 'star wars', 'lego', 'harry potter', 'pokemon', 'barbie',
+            // Prohibited Formatting/Metadata phrases
+            'new edition', 'revised', 'updated', 'vol 1', 'v1', 'volume 1',
+            // Spammy/Filler
+            'keywords', 'tags', 'search terms'
+        ];
+
+        const textLower = text.toLowerCase();
+        const found = restricted.filter(word => textLower.includes(word));
 
         return {
             status: found.length > 0 ? 'FLAGGED' : 'CLEAN',
             flags: found,
-            recommendation: found.length > 0 ? `Remove restricted terms: ${found.join(', ')}` : "Content is KDP compliant."
+            recommendation: found.length > 0
+                ? `⚠️ KDP Compliance Warning: Remove restricted terms: ${found.join(', ')}`
+                : "✅ Content is KDP compliant (Artisan Ban Shield Active)."
         };
     }
 };

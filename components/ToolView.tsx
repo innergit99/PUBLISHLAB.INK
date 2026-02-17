@@ -494,7 +494,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   const [isPromptBettering, setIsPromptBettering] = useState(false);
   const [isGeneratingMockups, setIsGeneratingMockups] = useState(false);
   const [printfulMockups, setPrintfulMockups] = useState<Record<string, string>>({});
-  const [canvasMockupService, setCanvasMockupService] = useState<any>(null);
+  const [mockupEngine, setMockupEngine] = useState<any>(null);
   const [showUploadCopilot, setShowUploadCopilot] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
 
@@ -563,25 +563,30 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     if (toolType === ToolType.POD_MERCH) {
       const initDrawings = async () => {
         try {
-          console.log('Loading canvas mockup service...');
-          const canvasMockupModule = await import('../canvasMockupService');
-          const service = canvasMockupModule.canvasMockupService;
-          setCanvasMockupService(service);
-          console.log('Canvas mockup service loaded successfully');
-          
+          console.log('Loading product mockup engine...');
+          const { productMockupEngine } = await import('../productMockupEngine');
+          setMockupEngine(productMockupEngine);
+          console.log('Product mockup engine loaded successfully');
+
           const drawings: Record<string, string> = {};
           for (const type of Object.keys(MOCKUP_LABELS)) {
             try {
-              const baseURL = await service.generateBaseProduct(type, '#ffffff');
-              drawings[type] = baseURL;
-              drawings[`base_${type}`] = baseURL;
-            } catch (e) { 
+              // Base products don't need color or style usually
+              const result = await productMockupEngine.generateMockup({
+                designUrl: '', // Plain base
+                productType: type,
+                color: '#ffffff',
+                style: 'minimal'
+              });
+              drawings[type] = result.url;
+              drawings[`base_${type}`] = result.url;
+            } catch (e) {
               console.warn(`Failed to generate mockup for ${type}:`, e);
             }
           }
           setPrintfulMockups(prev => ({ ...prev, ...drawings }));
         } catch (e) {
-          console.error('Failed to load canvas mockup service:', e);
+          console.error('Failed to load product mockup engine:', e);
           // Fallback: Use existing mockup assets
           console.log('Using fallback mockup assets');
         }
@@ -656,10 +661,11 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   useEffect(() => {
     const updateProductBase = async () => {
       try {
-        const result = await canvasMockupService?.generateMockup({
+        const result = await mockupEngine?.generateMockup({
           designUrl: '', // Plain base
           productType: activeMockup,
-          color: baseColor
+          color: baseColor,
+          style: 'minimal'
         });
         setProductBaseUrl(result.url);
       } catch (e) {
