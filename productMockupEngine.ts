@@ -183,6 +183,181 @@ const PRODUCT_SHAPES: Record<string, any> = {
             }
         },
         designArea: { x: 150, y: 150, width: 500, height: 700 }
+    },
+    'HAT': {
+        width: 800, height: 700,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 15, 25);
+            ctx.fillStyle = color; ctx.strokeStyle = '#222'; ctx.lineWidth = 2;
+            // Dome
+            ctx.beginPath(); ctx.arc(400, 350, 200, Math.PI, 0); ctx.fill(); ctx.stroke();
+            // Brim
+            ctx.beginPath(); ctx.ellipse(400, 350, 280, 40, 0, 0, Math.PI * 2); ctx.fillStyle = shadeColor(color, -0.1); ctx.fill(); ctx.stroke();
+            // Button
+            ctx.fillStyle = '#222'; ctx.beginPath(); ctx.arc(400, 150, 10, 0, Math.PI * 2); ctx.fill();
+            resetShadow(ctx);
+        },
+        designArea: { x: 280, y: 180, width: 240, height: 150 }
+    },
+    'DESK_MAT': {
+        width: 1200, height: 600,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 10, 20);
+            ctx.fillStyle = color; ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.roundRect(100, 100, 1000, 400, 25); ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // Stitching
+            ctx.setLineDash([5, 5]); ctx.strokeStyle = '#555'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.roundRect(110, 110, 980, 380, 20); ctx.stroke(); ctx.setLineDash([]);
+        },
+        designArea: { x: 100, y: 100, width: 1000, height: 400 }
+    },
+    'CANVAS': {
+        width: 900, height: 700,
+        draw: (ctx: CanvasRenderingContext2D) => {
+            addDropShadow(ctx, 25, 50);
+            // Side depth
+            ctx.fillStyle = '#ddd'; ctx.beginPath(); ctx.moveTo(800, 100); ctx.lineTo(840, 140); ctx.lineTo(840, 640); ctx.lineTo(800, 600); ctx.fill();
+            ctx.fillStyle = '#ccc'; ctx.beginPath(); ctx.moveTo(100, 600); ctx.lineTo(140, 640); ctx.lineTo(840, 640); ctx.lineTo(800, 600); ctx.fill();
+
+            // Front face
+            ctx.fillStyle = '#fff'; ctx.strokeStyle = '#eee'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.rect(100, 100, 700, 500); ctx.fill(); resetShadow(ctx); ctx.stroke();
+        },
+        designArea: { x: 100, y: 100, width: 700, height: 500 }
+    },
+    'LAPTOP_SKIN': {
+        width: 1000, height: 700,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 10, 20);
+            ctx.fillStyle = color; ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.roundRect(150, 100, 700, 480, 30); ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // Apple Logo cutout placeholder
+            ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.beginPath(); ctx.arc(500, 340, 40, 0, Math.PI * 2); ctx.fill();
+        },
+        designArea: { x: 150, y: 100, width: 700, height: 480 }
+    },
+    'DRESS': {
+        width: 800, height: 1100,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 15, 30);
+            ctx.fillStyle = color; ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(300, 100); ctx.quadraticCurveTo(400, 150, 500, 100); // Neck
+            ctx.lineTo(600, 150); ctx.quadraticCurveTo(550, 300, 600, 400); // Right sleeve/waist
+            ctx.lineTo(700, 900); ctx.quadraticCurveTo(400, 950, 100, 900); // Bottom hem
+            ctx.lineTo(200, 400); ctx.quadraticCurveTo(250, 300, 200, 150); // Left sleeve/waist
+            ctx.closePath();
+            ctx.fill(); resetShadow(ctx); ctx.stroke();
+        },
+        designArea: { x: 250, y: 200, width: 300, height: 600 }
+    },
+    'CLOCK': {
+        width: 800, height: 800,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 20, 40);
+            ctx.fillStyle = '#222'; ctx.beginPath(); ctx.arc(400, 400, 310, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = color; ctx.strokeStyle = '#111'; ctx.lineWidth = 5;
+            ctx.beginPath(); ctx.arc(400, 400, 300, 0, Math.PI * 2); ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // Hands
+            ctx.strokeStyle = '#000'; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(400, 400); ctx.lineTo(400, 200); ctx.stroke();
+            ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(400, 400); ctx.lineTo(550, 400); ctx.stroke();
+            ctx.fillStyle = '#d00'; ctx.beginPath(); ctx.arc(400, 400, 15, 0, Math.PI * 2); ctx.fill();
+        },
+        designArea: { x: 150, y: 150, width: 500, height: 500 }
+    },
+    'SHOWER_CURTAIN': {
+        width: 800, height: 900,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 10, 30);
+            ctx.fillStyle = color; ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.rect(100, 100, 600, 700); ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // Rings
+            ctx.fillStyle = '#fff'; ctx.strokeStyle = '#999';
+            for (let x = 120; x < 700; x += 55) {
+                ctx.beginPath(); ctx.arc(x, 115, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            }
+        },
+        designArea: { x: 100, y: 150, width: 600, height: 650 }
+    },
+    'PUZZLE': {
+        width: 800, height: 600,
+        draw: (ctx: CanvasRenderingContext2D) => {
+            addDropShadow(ctx, 5, 10);
+            ctx.fillStyle = '#fff'; ctx.strokeStyle = '#ccc';
+            ctx.beginPath(); ctx.rect(100, 100, 600, 400); ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // Puzzle Overlay Pattern
+            ctx.beginPath(); ctx.lineWidth = 0.5; ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+            for (let x = 100; x <= 700; x += 50) { ctx.moveTo(x, 100); ctx.lineTo(x, 500); }
+            for (let y = 100; y <= 500; y += 50) { ctx.moveTo(100, y); ctx.lineTo(700, y); }
+            ctx.stroke();
+        },
+        designArea: { x: 100, y: 100, width: 600, height: 400 }
+    },
+    'SOCKS': {
+        width: 600, height: 800,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 10, 20);
+            ctx.fillStyle = color; ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2;
+            // Sock Shape
+            ctx.beginPath(); ctx.moveTo(200, 100); ctx.lineTo(400, 100); ctx.lineTo(380, 500);
+            ctx.quadraticCurveTo(380, 700, 200, 700); ctx.quadraticCurveTo(100, 700, 100, 600);
+            ctx.lineTo(200, 500); ctx.lineTo(200, 100); ctx.closePath();
+            ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // Heel & Toe
+            ctx.fillStyle = '#333';
+            ctx.beginPath(); ctx.moveTo(200, 650); ctx.quadraticCurveTo(100, 650, 100, 600); ctx.lineTo(200, 550); ctx.fill(); // Toe
+            ctx.beginPath(); ctx.moveTo(200, 500); ctx.quadraticCurveTo(250, 550, 200, 600); ctx.lineTo(200, 500); ctx.fill(); // Heel
+        },
+        designArea: { x: 200, y: 120, width: 180, height: 350 }
+    },
+    'GENERIC_RECT': {
+        width: 800, height: 600,
+        draw: (ctx: CanvasRenderingContext2D) => {
+            addDropShadow(ctx, 15, 30);
+            ctx.fillStyle = '#f0f0f0'; ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.roundRect(100, 100, 600, 400, 20); ctx.fill(); resetShadow(ctx); ctx.stroke();
+        },
+        designArea: { x: 100, y: 100, width: 600, height: 400 }
+    },
+    'GENERIC_SQUARE': {
+        width: 800, height: 800,
+        draw: (ctx: CanvasRenderingContext2D) => {
+            addDropShadow(ctx, 15, 30);
+            ctx.fillStyle = '#f0f0f0'; ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.roundRect(150, 150, 500, 500, 20); ctx.fill(); resetShadow(ctx); ctx.stroke();
+        },
+        designArea: { x: 150, y: 150, width: 500, height: 500 }
+    },
+    'APRON': {
+        width: 800, height: 1000,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 10, 20);
+            ctx.fillStyle = color; ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+            // Apron Body
+            ctx.beginPath();
+            ctx.moveTo(300, 200); ctx.lineTo(500, 200); // Neck top
+            ctx.lineTo(600, 400); ctx.lineTo(600, 900); // Right side
+            ctx.lineTo(200, 900); ctx.lineTo(200, 400); // Left side
+            ctx.closePath();
+            ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // Neck Strap
+            ctx.beginPath(); ctx.moveTo(300, 200); ctx.quadraticCurveTo(400, 50, 500, 200); ctx.strokeStyle = '#222'; ctx.lineWidth = 4; ctx.stroke();
+            // Waist Straps
+            ctx.beginPath(); ctx.moveTo(200, 400); ctx.lineTo(50, 450); ctx.moveTo(600, 400); ctx.lineTo(750, 450); ctx.stroke();
+        },
+        designArea: { x: 250, y: 300, width: 300, height: 500 }
+    },
+    'BUTTON': {
+        width: 600, height: 600,
+        draw: (ctx: CanvasRenderingContext2D) => {
+            addDropShadow(ctx, 10, 20);
+            ctx.fillStyle = '#f0f0f0'; ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.arc(300, 300, 250, 0, Math.PI * 2); ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // Reflection
+            const grad = ctx.createLinearGradient(100, 100, 500, 500); grad.addColorStop(0, 'rgba(255,255,255,0.8)'); grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad; ctx.fill();
+        },
+        designArea: { x: 100, y: 100, width: 400, height: 400 }
     }
 };
 
@@ -252,7 +427,27 @@ export class ProductMockupEngine {
         if (lower.includes('sticker')) return PRODUCT_SHAPES['STICKER'];
         if (lower.includes('notebook')) return PRODUCT_SHAPES['SPIRAL_NOTEBOOK'];
 
-        return PRODUCT_SHAPES['STANDARD_TEE']; // Fallback
+        if (lower.includes('hat') || lower.includes('cap')) return PRODUCT_SHAPES['HAT'];
+        if (lower.includes('mat') || lower.includes('mouse')) return PRODUCT_SHAPES['DESK_MAT'];
+        if (lower.includes('canvas')) return PRODUCT_SHAPES['CANVAS'];
+        if (lower.includes('skin') || lower.includes('laptop')) return PRODUCT_SHAPES['LAPTOP_SKIN'];
+        if (lower.includes('dress') || lower.includes('skirt')) return PRODUCT_SHAPES['DRESS'];
+        if (lower.includes('clock')) return PRODUCT_SHAPES['CLOCK'];
+        if (lower.includes('curtain')) return PRODUCT_SHAPES['SHOWER_CURTAIN'];
+        if (lower.includes('journal')) return PRODUCT_SHAPES['JOURNAL'];
+        if (lower.includes('puzzle')) return PRODUCT_SHAPES['PUZZLE'];
+        if (lower.includes('sock')) return PRODUCT_SHAPES['SOCKS'];
+
+        if (lower.includes('apron')) return PRODUCT_SHAPES['APRON'];
+        if (lower.includes('button') || lower.includes('pin') || lower.includes('magnet')) return PRODUCT_SHAPES['BUTTON'];
+        if (lower.includes('coaster')) return PRODUCT_SHAPES['GENERIC_SQUARE']; // Coasters are essentially square buttons/tiles
+
+        // Intelligent Fallbacks
+        if (lower.includes('mat') || lower.includes('flag') || lower.includes('towel') || lower.includes('blanket') || lower.includes('duvet') || lower.includes('tapestry') || lower.includes('card') || lower.includes('pouch')) return PRODUCT_SHAPES['GENERIC_RECT'];
+        if (lower.includes('block') || lower.includes('square')) return PRODUCT_SHAPES['GENERIC_SQUARE'];
+        if (lower.includes('bag') || lower.includes('pack')) return PRODUCT_SHAPES['TOTE_BAG'];
+
+        return PRODUCT_SHAPES['GENERIC_SQUARE']; // Better Default than T-Shirt
     }
 
     private async loadImage(src: string): Promise<HTMLImageElement> {

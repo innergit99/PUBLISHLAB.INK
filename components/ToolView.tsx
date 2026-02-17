@@ -16,6 +16,7 @@ import { manuscriptDoctorService } from '../manuscriptDoctorService';
 import { intelligenceService } from '../intelligenceService';
 import { visualService } from '../visualService';
 import { complianceService } from '../complianceService';
+import { productMockupEngine } from '../productMockupEngine';
 import { NicheRadarView } from './NicheRadarView';
 import { CharacterVault } from './CharacterVault';
 import { PODStyleCard } from './PODStyleCard';
@@ -494,7 +495,6 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   const [isPromptBettering, setIsPromptBettering] = useState(false);
   const [isGeneratingMockups, setIsGeneratingMockups] = useState(false);
   const [printfulMockups, setPrintfulMockups] = useState<Record<string, string>>({});
-  const [mockupEngine, setMockupEngine] = useState<any>(null);
   const [showUploadCopilot, setShowUploadCopilot] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
 
@@ -563,32 +563,38 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     if (toolType === ToolType.POD_MERCH) {
       const initDrawings = async () => {
         try {
-          console.log('Loading product mockup engine...');
-          const { productMockupEngine } = await import('../productMockupEngine');
-          setMockupEngine(productMockupEngine);
-          console.log('Product mockup engine loaded successfully');
+          console.log('Using unified product mockup engine...');
 
-          const drawings: Record<string, string> = {};
-          for (const type of Object.keys(MOCKUP_LABELS)) {
+          // Parallel Generation for Performance
+          const types = Object.keys(MOCKUP_LABELS);
+          const promises = types.map(async (type) => {
             try {
-              // Base products don't need color or style usually
               const result = await productMockupEngine.generateMockup({
                 designUrl: '', // Plain base
                 productType: type,
                 color: '#ffffff',
                 style: 'minimal'
               });
-              drawings[type] = result.url;
-              drawings[`base_${type}`] = result.url;
+              return { type, url: result.url };
             } catch (e) {
               console.warn(`Failed to generate mockup for ${type}:`, e);
+              return null;
             }
-          }
+          });
+
+          const results = await Promise.all(promises);
+
+          const drawings: Record<string, string> = {};
+          results.forEach(res => {
+            if (res) {
+              drawings[res.type] = res.url;
+              drawings[`base_${res.type}`] = res.url;
+            }
+          });
+
           setPrintfulMockups(prev => ({ ...prev, ...drawings }));
         } catch (e) {
-          console.error('Failed to load product mockup engine:', e);
-          // Fallback: Use existing mockup assets
-          console.log('Using fallback mockup assets');
+          console.error('Failed to init mockups:', e);
         }
       };
       initDrawings();
@@ -1130,15 +1136,17 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
       try {
         console.log('🎨 Finalizing Primary Mockup (T-Shirt)...');
 
-        // Generate ONLY Standard Tee immediately
-        const teeResult = await canvasMockupService?.generateMockup({
-          designUrl: finalAsset,
-          productType: 'STANDARD_TEE'
+        // Generate Base Mockup (No Design) for the background
+        const teeBase = await productMockupEngine.generateMockup({
+          designUrl: '', // Empty design for base
+          productType: 'STANDARD_TEE',
+          color: baseColor
         });
 
         setPrintfulMockups(prev => ({
           ...prev,
-          'STANDARD_TEE': teeResult.url
+          'base_STANDARD_TEE': teeBase.url,
+          'STANDARD_TEE': teeBase.url // Initialize with base
         }));
 
         setActiveMockup('STANDARD_TEE');
@@ -1159,17 +1167,22 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     const isGenerated = printfulMockups[type] && printfulMockups[type] !== printfulMockups[`base_${type}`];
 
     if (result && !isGenerated) {
-      console.log(`🎨 Lazy Generating Mockup: ${type}...`);
+      console.log(`🎨 Lazy Generating Mockup Base: ${type}...`);
       try {
-        const newMockup = await canvasMockupService?.generateMockup({
-          designUrl: result,
-          productType: type
-        });
+        // Generate Base if missing
+        if (!printfulMockups[`base_${type}`]) {
+          const baseMockup = await productMockupEngine.generateMockup({
+            designUrl: '',
+            productType: type,
+            color: baseColor
+          });
 
-        setPrintfulMockups(prev => ({
-          ...prev,
-          [type]: newMockup.url
-        }));
+          setPrintfulMockups(prev => ({
+            ...prev,
+            [`base_${type}`]: baseMockup.url, // Store base
+            [type]: baseMockup.url
+          }));
+        }
       } catch (e) {
         console.error("Lazy generation failed:", e);
       }
@@ -4209,7 +4222,13 @@ h1, h2, h3 { page -break-after: avoid; }
                         className="absolute inset-0 pointer-events-none flex items-center justify-center z-20"
                       >
                         <div className="relative">
-                          <img src={result} className={` ${activeMockup.includes('TEE') || activeMockup.includes('HOODIE') ? 'w-[45%]' : activeMockup === 'PHONE_CASE' ? 'w-[28%]' : activeMockup === 'MUG' ? 'w-[22%]' : 'w-[50%]'} drop-shadow-2xl pointer-events-none `} />
+                          <img
+                            src={result}
+                            className={` ${activeMockup.includes('TEE') || activeMockup.includes('HOODIE') ? 'w-[45%]' : activeMockup === 'PHONE_CASE' ? 'w-[28%]' : activeMockup === 'MUG' ? 'w-[22%]' : 'w-[50%]'} drop-shadow-2xl pointer-events-none transition-transform duration-100 ease-out origin-center`}
+                            style={{
+                              transform: `translate(${mockupPosX}px, ${mockupPosY}px) scale(${mockupScale})`
+                            }}
+                          />
                           <div className="absolute -top-12 -right-12 flex flex-col gap-2 bg-slate-900/90 backdrop-blur-lg p-2 rounded-xl border border-slate-700">
                             <button onClick={() => setMockupScale(s => Math.min(3, s + 0.1))} className="text-slate-400 hover:text-white"><ZoomIn size={16} /></button>
                             <button onClick={() => setMockupScale(s => Math.max(0.5, s - 0.1))} className="text-slate-400 hover:text-white"><ZoomOut size={16} /></button>
@@ -4366,6 +4385,23 @@ h1, h2, h3 { page -break-after: avoid; }
                             </button>
                           ))}
                         </div>
+                        <button
+                          onClick={async () => {
+                            // Force regenerate base for current mockup with new color
+                            const newBase = await productMockupEngine.generateMockup({
+                              designUrl: '',
+                              productType: activeMockup,
+                              color: baseColor
+                            });
+                            setPrintfulMockups(prev => ({
+                              ...prev,
+                              [`base_${activeMockup}`]: newBase.url
+                            }));
+                          }}
+                          className="w-full mt-2 py-2 bg-slate-800 text-[9px] font-bold uppercase text-slate-400 rounded-lg hover:text-white hover:bg-indigo-600 transition-colors"
+                        >
+                          Refresh Base Color
+                        </button>
                       </div>
 
                       {/* Platform Switcher & SEO */}
