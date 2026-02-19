@@ -58,6 +58,7 @@ export interface PODStyle {
   category: string;
   gradient: string;
   promptSuffix: string;
+  previewUrl?: string;
 }
 
 export type MockupType =

@@ -335,6 +335,16 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   const [availableCharacters, setAvailableCharacters] = useState<CharacterProfile[]>([]);
   const [activeCharacter, setActiveCharacter] = useState<CharacterProfile | null>(null);
 
+  // Carousel Refs
+  const stylesRef = useRef<HTMLDivElement>(null);
+
+  const scrollStyles = (direction: 'left' | 'right') => {
+    if (stylesRef.current) {
+      const scrollAmount = direction === 'left' ? -320 : 320;
+      stylesRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
   // Load characters on mount
   useEffect(() => {
     storage.getAllCharacters().then(chars => setAvailableCharacters(chars));
@@ -4109,30 +4119,77 @@ h1, h2, h3 { page -break-after: avoid; }
             </div>
 
             {toolType === ToolType.POD_MERCH && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Style Studio</label>
-                  <div className="flex gap-1">
-                    {["All", "Modern", "Retro", "Artistic", "Gothic"].map(cat => (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between px-2">
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Style Studio</label>
+                    <p className="text-[8px] font-bold text-slate-600 uppercase">Select Aesthetic Direction</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex gap-1 bg-slate-900/50 p-1 rounded-xl border border-slate-800">
+                      {["All", "Modern", "Retro", "Artistic"].map(cat => (
+                        <button
+                          key={cat}
+                          onClick={() => setSelectedStyleCategory(cat)}
+                          className={`px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-wider transition-all ${selectedStyleCategory === cat ? 'bg-indigo-600 text-white shadow-lg' : 'bg-transparent text-slate-500 hover:text-slate-300'}`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex gap-2 border-l border-slate-800 pl-4">
                       <button
-                        key={cat}
-                        onClick={() => setSelectedStyleCategory(cat)}
-                        className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider transition-all ${selectedStyleCategory === cat ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-800 text-slate-500 hover:text-slate-300 hover:bg-slate-700'}`}
+                        onClick={() => scrollStyles('left')}
+                        className="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-all shadow-xl"
                       >
-                        {cat}
+                        <ChevronLeft size={16} />
                       </button>
-                    ))}
+                      <button
+                        onClick={() => scrollStyles('right')}
+                        className="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-all shadow-xl"
+                      >
+                        <ChevronRight size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
-                  {POD_STYLES.filter(s => selectedStyleCategory === "All" || s.category === selectedStyleCategory).map(s => (
-                    <PODStyleCard
-                      key={s.id}
-                      style={s}
-                      isSelected={selectedStyle === s.id}
-                      onClick={() => setSelectedStyle(s.id === selectedStyle ? null : s.id)}
-                    />
-                  ))}
+
+                <div className="relative group/carousel">
+                  <div
+                    ref={stylesRef}
+                    className="flex gap-4 overflow-x-auto pb-6 pt-2 px-2 no-scrollbar scroll-smooth"
+                    style={{ scrollSnapType: 'x mandatory' }}
+                  >
+                    {/* 0. EDIT AN IMAGE CARD (UPLOAD) */}
+                    <button
+                      onClick={() => onNavigate && onNavigate(ToolType.OBJECT_ISOLATOR)}
+                      className="relative group flex-shrink-0 w-32 md:w-40 aspect-[2/3] overflow-hidden rounded-[1.5rem] md:rounded-[2rem] transition-all duration-500 border-2 border-dashed border-slate-800 hover:border-indigo-500 hover:bg-indigo-500/5 flex flex-col items-center justify-center gap-4 group/upload"
+                      style={{ scrollSnapAlign: 'start' }}
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 group-hover/upload:scale-110 group-hover/upload:bg-indigo-600 group-hover/upload:text-white transition-all duration-500">
+                        <Upload size={24} />
+                      </div>
+                      <div className="text-center space-y-1">
+                        <p className="text-[10px] font-black text-white uppercase tracking-widest">Edit Image</p>
+                        <p className="text-[7px] font-bold text-slate-500 uppercase tracking-tighter px-4">Upload and Isolate Subject</p>
+                      </div>
+                    </button>
+
+                    {/* STYLE CARDS */}
+                    {POD_STYLES.filter(s => selectedStyleCategory === "All" || s.category === selectedStyleCategory).map(s => (
+                      <div key={s.id} style={{ scrollSnapAlign: 'start' }}>
+                        <PODStyleCard
+                          style={s}
+                          isSelected={selectedStyle === s.id}
+                          onClick={() => setSelectedStyle(s.id === selectedStyle ? null : s.id)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Left/Right Overlays for "Fade" effect at edges */}
+                  <div className="absolute top-0 left-0 w-12 h-full bg-linear-to-r from-slate-950 to-transparent pointer-events-none z-10" />
+                  <div className="absolute top-0 right-0 w-12 h-full bg-linear-to-l from-slate-950 to-transparent pointer-events-none z-10" />
                 </div>
               </div>
             )}
