@@ -9,6 +9,7 @@ import {
   Search, ShieldCheck, Target, BookOpen, Rocket, FileEdit, Monitor,
   ShieldAlert, Info
 } from 'lucide-react';
+import { UsageMeter } from './UsageMeter';
 
 interface DashboardProps {
   onNavigate: (tab: ToolType, prompt?: string) => void;
@@ -177,7 +178,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, isDarkMode }) => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-6 w-full xl:max-w-2xl">
+          <div className="flex flex-col gap-6 w-full xl:max-w-medium">
+            <UsageMeter isDarkMode={isDarkMode} />
+
             {/* INTENT-AWARE BANNER */}
             <div className={`p-10 rounded-[4rem] border backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-700 ${isDarkMode ? 'bg-indigo-600/5 border-indigo-500/20' : 'bg-indigo-50 border-indigo-100'}`}>
               <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:scale-125 transition-transform duration-1000">

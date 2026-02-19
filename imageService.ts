@@ -8,6 +8,8 @@
 
 import { coverGenerator } from './coverGenerator';
 import { isLocalMode, isProductionMode } from './environmentConfig';
+import { UsageGuard } from './usageGuard';
+import { getCachedTier } from './paddleIntegration';
 
 export interface ImageGenerationOptions {
     prompt: string;
@@ -30,6 +32,13 @@ export class ImageService {
      * Generate an image with environment-aware routing
      */
     async generateImage(options: ImageGenerationOptions): Promise<string> {
+        // GATING: Check Image Usage
+        const tier = getCachedTier();
+        const stats = await UsageGuard.getUsageStats();
+        if (stats.imagesThisMonth >= tier.limits.imagesPerMonth) {
+            throw new Error(`Usage Limit Reached: Your ${tier.name} plan allows ${tier.limits.imagesPerMonth} images per month. Upgrade for more capacity.`);
+        }
+
         if (isLocalMode()) {
             console.log('🏠 LOCAL MODE: Using Canvas generation (zero API costs)');
             return this.generateWithCanvas(options);

@@ -1,5 +1,5 @@
-/// <reference types="vite/client" />
-/// <reference types="vite/client" />
+import { supabase, getCurrentUser } from './supabaseClient';
+
 // Paddle Payment Integration for PublishLab SaaS
 // Handles subscriptions, user tiers, and payment processing
 
@@ -200,7 +200,7 @@ export async function openPaddleCheckout(tier: SubscriptionTier, userEmail?: str
 }
 
 // Handle successful checkout
-function handleCheckoutCompleted(data: any) {
+async function handleCheckoutCompleted(data: any) {
     console.log('✅ Checkout completed:', data);
 
     // Save subscription data to localStorage (in production, use backend)
@@ -217,6 +217,22 @@ function handleCheckoutCompleted(data: any) {
 
     localStorage.setItem('userSubscription', JSON.stringify(subscription));
 
+    // 4. Sync to Supabase
+    try {
+        const user = await getCurrentUser();
+        if (user) {
+            await supabase.from('profiles').upsert({
+                id: user.id,
+                subscription_tier: data.customData.tierId,
+                paddle_subscription_id: data.subscription_id,
+                subscription_status: 'active',
+                updated_at: new Date().toISOString()
+            });
+        }
+    } catch (e) {
+        console.warn('Paddle: Sync to DB failed - ensure "profiles" table exists.');
+    }
+
     // Reload to apply new tier
     window.location.reload();
 }
@@ -226,8 +242,27 @@ function handleCheckoutClosed(data: any) {
     console.log('Checkout closed:', data);
 }
 
-// Get current user tier
-export function getCurrentTier(): SubscriptionTier {
+// Get current user tier (Asynchronous for DB sync)
+export async function getCurrentTier(): Promise<SubscriptionTier> {
+    // 1. Try Supabase first
+    try {
+        const user = await getCurrentUser();
+        if (user) {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('subscription_tier')
+                .eq('id', user.id)
+                .single();
+
+            if (data && !error) {
+                return SUBSCRIPTION_TIERS[data.subscription_tier.toUpperCase()] || SUBSCRIPTION_TIERS.FREE;
+            }
+        }
+    } catch (e) {
+        // Silent fallback to local
+    }
+
+    // 2. Fallback to LocalStorage
     const subscriptionStr = localStorage.getItem('userSubscription');
 
     if (!subscriptionStr) {
@@ -242,9 +277,21 @@ export function getCurrentTier(): SubscriptionTier {
     }
 }
 
+// Synchronous version for simple UI checks (based on local cache)
+export function getCachedTier(): SubscriptionTier {
+    const subscriptionStr = localStorage.getItem('userSubscription');
+    if (!subscriptionStr) return SUBSCRIPTION_TIERS.FREE;
+    try {
+        const subscription: UserSubscription = JSON.parse(subscriptionStr);
+        return SUBSCRIPTION_TIERS[subscription.tier] || SUBSCRIPTION_TIERS.FREE;
+    } catch (e) {
+        return SUBSCRIPTION_TIERS.FREE;
+    }
+}
+
 // Check if user can perform action
 export function canPerformAction(action: 'book' | 'image' | 'chapter'): boolean {
-    const tier = getCurrentTier();
+    const tier = getCachedTier();
     const subscriptionStr = localStorage.getItem('userSubscription');
 
     if (!subscriptionStr) {

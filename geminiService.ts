@@ -2,6 +2,8 @@
 
 import { Type } from "@google/genai"; // Keep types for compatibility if needed
 import { SEOMetadata, ToolType, TrendingNiche, KDPProject, KDPBlueprint, BrandDNAReport, NicheRadarReport, KDPSeoDossier, ProductionDossier, ListingDossier, AestheticContinuityReport, KDPAplusModule, CharacterProfile } from "./types";
+import { UsageGuard } from './usageGuard';
+import { getCachedTier } from './paddleIntegration';
 import { hfBackend } from "./hfBackendService";
 import { structureService } from "./structureService";
 import { coverGenerator } from "./coverGenerator";
@@ -1331,6 +1333,13 @@ Output ONLY valid JSON array:
   }
 
   async expandChapterNarrative(project: any, chapterIndex: number, wordTarget: number = 1000, previousChapter?: string): Promise<{ content: string; audit: any }> {
+    // GATING: Check Manuscript Usage
+    const tier = getCachedTier();
+    const stats = await UsageGuard.getUsageStats();
+    if (tier.id !== 'artisan' && tier.id !== 'master' && stats.manuscriptsThisMonth >= tier.limits.booksPerMonth) {
+      throw new Error(`Usage Limit Reached: Your ${tier.name} plan allows ${tier.limits.booksPerMonth} manuscripts per month. Upgrade to Artisan for unlimited projections.`);
+    }
+
     // RESET OLLAMA FLAG: New chapter = New attempt at HF Cloud
     // This ensures we try to use the superior model for each new major task, 
     // but if it fails, we stick to Ollama for the rest of THAT task.

@@ -1,8 +1,8 @@
 /**
- * PRODUCT MOCKUP ENGINE v3.0 (Unified)
- * Industrial-grade programmatic rendering engine.
- * Consolidates CanvasMockupService (Flat Lay) and HolographicMockupService (3D/Lighting).
- */
+* PRODUCT MOCKUP ENGINE v3.0 (Unified)
+* Industrial-grade programmatic rendering engine.
+* Consolidates CanvasMockupService (Flat Lay) and HolographicMockupService (3D/Lighting).
+*/
 
 export type MockupStyle = 'realistic' | 'minimal' | '3d';
 
