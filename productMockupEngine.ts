@@ -358,6 +358,87 @@ const PRODUCT_SHAPES: Record<string, any> = {
             ctx.fillStyle = grad; ctx.fill();
         },
         designArea: { x: 100, y: 100, width: 400, height: 400 }
+    },
+    'HARDCOVER_JOURNAL': {
+        width: 800, height: 1000,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 15, 30);
+            // Main cover
+            ctx.fillStyle = color; ctx.strokeStyle = '#333'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.roundRect(100, 80, 540, 700, [4, 12, 12, 4]); ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // Spine stripe
+            ctx.fillStyle = shadeColor(color, -30);
+            ctx.fillRect(100, 80, 50, 700);
+            // Cover highlight
+            ctx.fillStyle = 'rgba(255,255,255,0.07)';
+            ctx.fillRect(155, 85, 480, 690);
+            // Elastic band
+            ctx.strokeStyle = shadeColor(color, 40); ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(100, 430); ctx.lineTo(640, 430); ctx.stroke();
+        },
+        designArea: { x: 165, y: 150, width: 440, height: 500 }
+    },
+    'BACKPACK': {
+        width: 800, height: 1000,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 15, 30);
+            ctx.fillStyle = color; ctx.strokeStyle = '#333'; ctx.lineWidth = 3;
+            // Main body
+            ctx.beginPath(); ctx.roundRect(150, 200, 500, 600, 30); ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // Top handle
+            ctx.strokeStyle = shadeColor(color, -20); ctx.lineWidth = 12;
+            ctx.beginPath(); ctx.moveTo(360, 200); ctx.lineTo(440, 200); ctx.stroke();
+            // Front pocket
+            ctx.fillStyle = shadeColor(color, -15); ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.roundRect(190, 550, 420, 200, 20); ctx.fill(); ctx.stroke();
+            // Zipper line
+            ctx.strokeStyle = '#aaa'; ctx.lineWidth = 3; ctx.setLineDash([8, 5]);
+            ctx.beginPath(); ctx.moveTo(220, 550); ctx.lineTo(590, 550); ctx.stroke(); ctx.setLineDash([]);
+            // Shoulder straps
+            ctx.strokeStyle = shadeColor(color, -25); ctx.lineWidth = 18;
+            ctx.beginPath(); ctx.moveTo(220, 200); ctx.bezierCurveTo(180, 100, 120, 80, 150, 30); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(580, 200); ctx.bezierCurveTo(620, 100, 680, 80, 650, 30); ctx.stroke();
+        },
+        designArea: { x: 200, y: 230, width: 400, height: 280 }
+    },
+    'DUFFLE_BAG': {
+        width: 1000, height: 700,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 15, 30);
+            ctx.fillStyle = color; ctx.strokeStyle = '#333'; ctx.lineWidth = 3;
+            // Main barrel body
+            ctx.beginPath(); ctx.ellipse(500, 350, 440, 220, 0, 0, Math.PI * 2); ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // End caps shading
+            ctx.fillStyle = shadeColor(color, -20);
+            ctx.beginPath(); ctx.ellipse(100, 350, 70, 210, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.ellipse(900, 350, 70, 210, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            // Top zipper
+            ctx.strokeStyle = '#aaa'; ctx.lineWidth = 4; ctx.setLineDash([10, 6]);
+            ctx.beginPath(); ctx.moveTo(200, 160); ctx.bezierCurveTo(400, 100, 600, 100, 800, 160); ctx.stroke(); ctx.setLineDash([]);
+            // Handles
+            ctx.strokeStyle = shadeColor(color, -30); ctx.lineWidth = 14;
+            ctx.beginPath(); ctx.moveTo(380, 150); ctx.bezierCurveTo(390, 80, 610, 80, 620, 150); ctx.stroke();
+        },
+        designArea: { x: 200, y: 200, width: 600, height: 280 }
+    },
+    'BASEBALL_CAP': {
+        width: 900, height: 700,
+        draw: (ctx: CanvasRenderingContext2D, color: string) => {
+            addDropShadow(ctx, 10, 20);
+            ctx.fillStyle = color; ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+            // Cap dome
+            ctx.beginPath(); ctx.ellipse(450, 400, 350, 260, 0, Math.PI, 0); ctx.closePath(); ctx.fill(); resetShadow(ctx); ctx.stroke();
+            // Visor/brim
+            ctx.fillStyle = shadeColor(color, -20);
+            ctx.beginPath(); ctx.ellipse(450, 420, 390, 50, 0, 0, Math.PI); ctx.closePath(); ctx.fill(); ctx.stroke();
+            // Seam down center
+            ctx.strokeStyle = shadeColor(color, -30); ctx.lineWidth = 2; ctx.setLineDash([5, 4]);
+            ctx.beginPath(); ctx.moveTo(450, 140); ctx.lineTo(450, 420); ctx.stroke(); ctx.setLineDash([]);
+            // Sweatband line
+            ctx.strokeStyle = shadeColor(color, -15); ctx.lineWidth = 6;
+            ctx.beginPath(); ctx.ellipse(450, 415, 350, 30, 0, Math.PI, 0); ctx.stroke();
+        },
+        designArea: { x: 310, y: 200, width: 280, height: 160 }
     }
 };
 
@@ -366,7 +447,7 @@ export class ProductMockupEngine {
 
     async generateMockup(options: MockupOptions): Promise<MockupResult> {
         const { designUrl, productType, color = '#f2f2f2', style = 'realistic' } = options;
-        const template = this.getTemplate(productType);
+        const template = this.getTemplate(productType) || PRODUCT_SHAPES['GENERIC_SQUARE'];
 
         if (typeof window === 'undefined') {
             throw new Error("Window not defined");
@@ -434,20 +515,26 @@ export class ProductMockupEngine {
         if (lower.includes('dress') || lower.includes('skirt')) return PRODUCT_SHAPES['DRESS'];
         if (lower.includes('clock')) return PRODUCT_SHAPES['CLOCK'];
         if (lower.includes('curtain')) return PRODUCT_SHAPES['SHOWER_CURTAIN'];
-        if (lower.includes('journal')) return PRODUCT_SHAPES['JOURNAL'];
+        if (lower.includes('journal') || lower.includes('hardcover')) return PRODUCT_SHAPES['HARDCOVER_JOURNAL'];
         if (lower.includes('puzzle')) return PRODUCT_SHAPES['PUZZLE'];
         if (lower.includes('sock')) return PRODUCT_SHAPES['SOCKS'];
 
         if (lower.includes('apron')) return PRODUCT_SHAPES['APRON'];
         if (lower.includes('button') || lower.includes('pin') || lower.includes('magnet')) return PRODUCT_SHAPES['BUTTON'];
-        if (lower.includes('coaster')) return PRODUCT_SHAPES['GENERIC_SQUARE']; // Coasters are essentially square buttons/tiles
+        if (lower.includes('coaster')) return PRODUCT_SHAPES['GENERIC_SQUARE'];
+        if (lower.includes('baseball') || lower.includes('snapback')) return PRODUCT_SHAPES['BASEBALL_CAP'];
+
+        // Bag specifics — MUST come before generic 'bag' catch-all
+        if (lower.includes('duffle') || lower.includes('duffel')) return PRODUCT_SHAPES['DUFFLE_BAG'];
+        if (lower.includes('backpack') || lower.includes('rucksack')) return PRODUCT_SHAPES['BACKPACK'];
+        if (lower.includes('tote') || lower.includes('pouch')) return PRODUCT_SHAPES['TOTE_BAG'];
 
         // Intelligent Fallbacks
-        if (lower.includes('mat') || lower.includes('flag') || lower.includes('towel') || lower.includes('blanket') || lower.includes('duvet') || lower.includes('tapestry') || lower.includes('card') || lower.includes('pouch')) return PRODUCT_SHAPES['GENERIC_RECT'];
+        if (lower.includes('mat') || lower.includes('flag') || lower.includes('towel') || lower.includes('blanket') || lower.includes('duvet') || lower.includes('tapestry') || lower.includes('card')) return PRODUCT_SHAPES['GENERIC_RECT'];
         if (lower.includes('block') || lower.includes('square')) return PRODUCT_SHAPES['GENERIC_SQUARE'];
         if (lower.includes('bag') || lower.includes('pack')) return PRODUCT_SHAPES['TOTE_BAG'];
 
-        return PRODUCT_SHAPES['GENERIC_SQUARE']; // Better Default than T-Shirt
+        return PRODUCT_SHAPES['GENERIC_SQUARE'];
     }
 
     private async loadImage(src: string): Promise<HTMLImageElement> {
