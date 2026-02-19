@@ -4199,33 +4199,36 @@ h1, h2, h3 { page -break-after: avoid; }
                     ))}
                   </div>
 
-                  {/* Left/Right Overlays for "Fade" effect at edges */}
                   <div className="absolute top-0 left-0 w-12 h-full bg-linear-to-r from-slate-950 to-transparent pointer-events-none z-10" />
                   <div className="absolute top-0 right-0 w-12 h-full bg-linear-to-l from-slate-950 to-transparent pointer-events-none z-10" />
+                </div>
+
+                {/* RELOCATED COMPACT CONTROLS (v3.5.2) */}
+                <div className="flex flex-col gap-4 pt-4 animate-in fade-in slide-in-from-top-4 duration-700">
+                  <div className="flex items-center justify-between p-3 bg-slate-900/40 rounded-2xl border border-slate-800/50 backdrop-blur-sm">
+                    <div className="flex items-center gap-2">
+                      <Maximize size={12} className="text-indigo-400" />
+                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">4K Industrial Render</span>
+                    </div>
+                    <button
+                      onClick={() => setIs4K(!is4K)}
+                      className={`w-10 h-5 rounded-full transition-all relative ${is4K ? 'bg-indigo-600 shadow-[0_0_10px_rgba(99,102,241,0.5)]' : 'bg-slate-800'}`}
+                    >
+                      <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${is4K ? 'right-0.5' : 'left-0.5'}`} />
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={handleGenerateVariants} disabled={isGenerating || !prompt}
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 py-6 rounded-[2rem] font-black uppercase tracking-[0.3em] text-xs shadow-2xl flex items-center justify-center gap-3 transition-all active:scale-[0.98] border-b-6 border-indigo-900 group/engage"
+                  >
+                    {isGenerating ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} className="group-hover/engage:rotate-12 transition-transform" />}
+                    <span>{isGenerating ? 'Processing...' : 'Engage Engine'}</span>
+                  </button>
                 </div>
               </div>
             )}
 
-            <div className="flex items-center justify-between p-4 bg-slate-950 rounded-2xl border border-slate-800">
-              <div className="flex items-center gap-2">
-                <Maximize size={14} className="text-indigo-400" />
-                <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">4K Industrial Render</span>
-              </div>
-              <button
-                onClick={() => setIs4K(!is4K)}
-                className={`w-12 h-6 rounded-full transition-all relative ${is4K ? 'bg-indigo-600 shadow-[0_0_10px_rgba(99,102,241,0.5)]' : 'bg-slate-800'}`}
-              >
-                <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${is4K ? 'right-1' : 'left-1'}`} />
-              </button>
-            </div>
-
-            <button
-              onClick={handleGenerateVariants} disabled={isGenerating || !prompt}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 py-7 rounded-[2.5rem] font-black uppercase tracking-[0.4em] text-sm shadow-2xl flex items-center justify-center gap-4 transition-all active:scale-[0.98] border-b-8 border-indigo-900"
-            >
-              {isGenerating ? <Loader2 size={24} className="animate-spin" /> : <Sparkles size={24} />}
-              <span>{isGenerating ? 'Processing...' : 'Engage Engine'}</span>
-            </button>
           </div>
         </div>
 
