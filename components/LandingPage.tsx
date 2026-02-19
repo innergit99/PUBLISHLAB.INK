@@ -106,120 +106,144 @@ export default function LandingPage({
                 </div>
             </nav>
 
-            {/* HERO SECTION: INDUSTRIAL BRIEFING */}
-            <section className="pt-48 pb-32 px-6 relative overflow-visible perspective-1000">
+            {/* 1. HERO REINVENTION: THE INDUSTRIAL GALAXY CORE */}
+            <section className="pt-48 pb-32 px-6 relative overflow-hidden perspective-1000">
                 <NeuralNetworkBackground />
+                <div className="absolute inset-0 bg-radial-glow opacity-30 pointer-events-none" />
 
-                <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10">
-                    <div className="text-left space-y-10">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-indigo-500/30 bg-indigo-500/10 text-[10px] font-black tracking-[0.2em] text-indigo-400 uppercase">
+                <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24 items-center relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="text-left space-y-12"
+                    >
+                        <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full border border-indigo-500/40 bg-indigo-500/10 text-[10px] font-black tracking-[0.3em] text-indigo-400 uppercase shadow-indigo-500/20 shadow-lg">
                             <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-                            <span>System Online</span>
+                            <span>v4.0 Alpha Reactor Online</span>
                         </div>
 
                         <div>
-                            <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white leading-[1.05] mb-6">
-                                PUBLISHLAB <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-500">AI PUBLISHING PLATFORM</span>
+                            <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white leading-[0.9] mb-8 uppercase italic font-industrial">
+                                OWN THE <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-500 to-indigo-600 drop-shadow-2xl">ENTIRE FACTORY</span>
                             </h1>
-                            <p className="text-lg text-gray-400 leading-relaxed max-w-xl border-l-2 border-indigo-500/50 pl-6">
-                                Write bestsellers, design professional covers, and discover profitable niches — all powered by intelligent AI automation.
+                            <p className="text-xl text-gray-400 leading-relaxed max-w-xl font-medium border-l-[3px] border-indigo-500/60 pl-8 py-2">
+                                Artisan AI is the ultimate industrial production line for creators. Scale from concept to global distribution in seconds.
                             </p>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-wrap gap-6 pt-4">
                             <button
                                 onClick={() => onLaunchApp()}
-                                className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] flex items-center justify-center gap-3"
+                                className="group relative px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.3)] overflow-hidden"
                             >
-                                <Play size={18} fill="currentColor" />
-                                Launch Studio (Public Beta)
+                                <span className="relative z-10 flex items-center gap-3">
+                                    <Zap size={20} fill="black" />
+                                    Launch The Studio
+                                </span>
+                                <div className="absolute inset-0 bg-linear-to-r from-transparent via-indigo-500/20 to-transparent translate-x-[-200%] group-hover:animate-shine" />
                             </button>
                             <button
-                                onClick={() => document.getElementById('system')?.scrollIntoView({ behavior: 'smooth' })}
-                                className="px-8 py-4 bg-[#111] border border-white/10 hover:bg-white/5 text-gray-300 font-medium rounded-lg transition-all flex items-center justify-center gap-3"
+                                onClick={() => document.getElementById('galaxy')?.scrollIntoView({ behavior: 'smooth' })}
+                                className="px-10 py-5 bg-slate-950/50 border border-white/10 hover:bg-white/5 text-white/80 font-black uppercase tracking-widest text-[11px] rounded-full transition-all backdrop-blur-xl"
                             >
-                                <LayoutTemplate size={18} />
-                                View System Architecture
+                                Explore The Arsenal
                             </button>
                         </div>
 
-                        {/* Persona Selector */}
-                        <div className="pt-8 border-t border-white/5">
-                            <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-4">Select Operations Mode:</p>
-                            <div className="flex flex-wrap gap-2 mb-6">
+                        {/* Mode Quick-Selection (Stitch Redesign) */}
+                        <div className="pt-10 border-t border-white/5 space-y-6">
+                            <p className="text-[10px] text-gray-500 uppercase tracking-[0.4em] font-black italic">Select Deployment Zone:</p>
+                            <div className="flex flex-wrap gap-3">
                                 {(['SELF-PUBLISHER', 'POD SELLER', 'STUDIO / AGENCY'] as const).map((mode) => (
                                     <button
                                         key={mode}
                                         onClick={() => setSelectedMode(mode)}
-                                        className={`px-4 py-2 border rounded text-xs font-mono transition-all uppercase ${selectedMode === mode
-                                            ? 'bg-indigo-600/20 border-indigo-500 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.3)]'
-                                            : 'bg-[#111] border-white/10 text-gray-400 hover:border-white/20'
+                                        className={`px-5 py-2.5 rounded-xl text-[10px] font-black transition-all uppercase tracking-tighter border-2 ${selectedMode === mode
+                                            ? 'bg-indigo-600 border-indigo-400 text-white shadow-[0_0_20px_rgba(99,102,241,0.5)] rotate-[-1deg]'
+                                            : 'bg-white/5 border-white/5 text-gray-500 hover:border-white/20 hover:text-gray-300'
                                             }`}
                                     >
-                                        [{mode}]
+                                        {mode}
                                     </button>
                                 ))}
                             </div>
 
-                            {/* Dynamic Mode Briefing */}
                             <motion.div
                                 key={selectedMode}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                className="p-4 rounded-lg bg-[#0A0A0A] border border-white/5 flex items-start gap-4 max-w-md group hover:border-indigo-500/20 transition-colors"
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="p-6 rounded-[2rem] bg-indigo-500/5 border border-indigo-500/20 backdrop-blur-sm flex items-start gap-5 group hover:border-indigo-500/40 transition-all duration-500"
                             >
-                                <div className={`p-2 rounded bg-${MODE_BRIEFING[selectedMode].color}-500/10 text-${MODE_BRIEFING[selectedMode].color}-400`}>
+                                <div className="p-3 rounded-2xl bg-indigo-500/20 text-indigo-400 shadow-inner">
                                     {MODE_BRIEFING[selectedMode].icon}
                                 </div>
-                                <div>
-                                    <p className="text-xs text-gray-300 leading-relaxed mb-2">
+                                <div className="space-y-3">
+                                    <p className="text-[14px] text-gray-300 font-medium leading-relaxed">
                                         {MODE_BRIEFING[selectedMode].text}
                                     </p>
                                     <button
                                         onClick={() => onLaunchApp()}
-                                        className={`text-[10px] font-black uppercase tracking-widest text-indigo-400 flex items-center gap-2 group-hover:gap-3 transition-all`}
+                                        className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 group-hover:text-white transition-colors flex items-center gap-2"
                                     >
-                                        {MODE_BRIEFING[selectedMode].cta} <ChevronRight size={10} />
+                                        Deploy Protocol <ChevronRight size={12} strokeWidth={3} />
                                     </button>
                                 </div>
                             </motion.div>
                         </div>
-                    </div>
+                    </motion.div>
 
-                    <div className="relative h-[500px] w-full flex items-center justify-center hero-3d-card group">
-                        {/* Abstract Industrial Intelligence Visual */}
-                        <div className="relative w-full h-full rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-[#050505]">
-                            <img
-                                src="/industrial_hero_engine.png"
-                                alt="PublishLab Industrial Engine Core"
-                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
-                            />
+                    <div className="relative h-[600px] w-full flex items-center justify-center animate-industrial-float">
+                        {/* 3D CORE REACTOR VISUAL */}
+                        <div className="absolute inset-0 bg-indigo-500/20 blur-[120px] rounded-full animate-pulse" />
+                        <div className="relative w-full aspect-square max-w-[500px] glass-card rounded-[4rem] group overflow-hidden rotate-[2deg] shadow-2xl border-white/10 p-1">
+                            <div className="absolute inset-0 bg-radial-glow opacity-50 z-0" />
+                            <div className="w-full h-full relative z-10 p-10 flex flex-col items-center justify-center text-center">
+                                <IndustrialReactorNode />
+                                <div className="mt-8 space-y-4">
+                                    <div className="flex gap-2 justify-center">
+                                        {[...Array(3)].map((_, i) => (
+                                            <div key={i} className="w-20 h-1 bg-white/10 rounded-full overflow-hidden">
+                                                <div className="h-full bg-indigo-500 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <p className="text-[11px] font-black uppercase tracking-[0.5em] text-white/60">Factory_Mainframe_Status: Locked</p>
+                                </div>
+                            </div>
 
-                            {/* Overlay UI hints - subtle */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-80" />
+                            {/* Floating Metadata Overlays */}
+                            <div className="absolute top-10 right-10 p-4 glass-card rounded-2xl border-white/20 translate-x-8 group-hover:translate-x-0 transition-transform duration-700">
+                                <TrendingUp className="text-emerald-400 mb-2" size={16} />
+                                <div className="text-[10px] font-bold text-white uppercase tracking-widest">+942% Eff.</div>
+                            </div>
+                            <div className="absolute bottom-10 left-10 p-4 glass-card rounded-2xl border-white/20 -translate-x-8 group-hover:translate-x-0 transition-transform duration-700">
+                                <Cpu className="text-indigo-400 mb-2" size={16} />
+                                <div className="text-[10px] font-bold text-white uppercase tracking-widest">Neural Sync</div>
+                            </div>
+                        </div>
 
-                            {/* Interactive Prompt Overlay (Optional - kept for interaction) */}
-                            <div className="absolute bottom-0 left-0 right-0 p-8">
-                                <form onSubmit={handleGenesisSubmit} className="relative flex items-center bg-black/60 backdrop-blur-xl rounded-lg border border-white/10 p-1 shadow-2xl">
-                                    <div className="pl-4 text-indigo-500"><Sparkles size={16} /></div>
+                        {/* Interactive Genesis Input (Re-engineered) */}
+                        <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-full max-w-md px-4">
+                            <form onSubmit={handleGenesisSubmit} className="relative group/input">
+                                <div className="absolute -inset-1 bg-linear-to-r from-indigo-500 to-purple-600 rounded-2xl blur opacity-20 group-hover/input:opacity-60 transition duration-1000" />
+                                <div className="relative flex items-center bg-black/80 backdrop-blur-3xl rounded-2xl border border-white/10 p-2 shadow-2xl transition-all group-focus-within:border-indigo-500/50">
+                                    <div className="pl-4 text-indigo-400"><Sparkles size={20} /></div>
                                     <input
                                         type="text"
                                         value={genesisPrompt}
                                         onChange={(e) => setGenesisPrompt(e.target.value)}
                                         placeholder="Initialize generation sequence..."
-                                        className="flex-1 bg-transparent border-none text-white px-4 py-3 focus:ring-0 placeholder:text-gray-500 text-sm font-mono outline-none"
+                                        className="flex-1 bg-transparent border-none text-white px-5 py-4 focus:ring-0 placeholder:text-gray-600 text-[13px] font-medium outline-none"
                                     />
-                                    <button type="submit" className="bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded transition-colors">
-                                        <ArrowRight size={16} />
+                                    <button type="submit" className="bg-indigo-600 hover:bg-indigo-500 p-4 rounded-xl shadow-lg transition-all active:scale-95">
+                                        <ArrowRight size={20} className="text-white" />
                                     </button>
-                                </form>
-                            </div>
+                                </div>
+                            </form>
                         </div>
-
-                        {/* Decorative Elements */}
-                        <div className="absolute -right-12 -top-12 w-64 h-64 bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none" />
-                        <div className="absolute -left-12 -bottom-12 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
                     </div>
                 </div>
             </section>
@@ -345,119 +369,47 @@ export default function LandingPage({
                 </div>
             </section>
 
-            {/* PHASED FEATURE REVEAL */}
-            <section id="features" className="py-32 px-6 bg-[#050505]">
+            {/* 3. THE FEATURE GALAXY (PHASED BENTO REINVENTION) */}
+            <section id="galaxy" className="py-24 px-6 bg-slate-950/50 border-y border-white/5 relative">
                 <div className="max-w-7xl mx-auto">
-                    {/* PHASE 1 */}
-                    <div className="grid lg:grid-cols-2 gap-16 items-center mb-32">
-                        <div className="order-2 lg:order-1">
-                            <div className="w-full h-96 bg-[#0A0A0A] rounded-[2.5rem] border border-emerald-500/20 flex items-center justify-center relative overflow-hidden group shadow-[0_0_50px_rgba(16,185,129,0.1)]">
-                                {/* Mesh Gradient Background */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-transparent to-transparent opacity-50" />
-                                <div className="absolute -top-24 -left-24 w-64 h-64 bg-emerald-500/10 blur-[80px] rounded-full group-hover:bg-emerald-500/20 transition-all duration-1000" />
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        className="text-center mb-24 space-y-6"
+                    >
+                        <h2 className="text-[12px] font-black text-indigo-500 uppercase tracking-[0.5em] italic">The Autonomous Arsenal</h2>
+                        <h3 className="text-4xl md:text-6xl font-black text-white italic font-industrial tracking-tighter">WHY RENT TOOLS WHEN <br /> YOU CAN OWN THE GALAXY?</h3>
+                        <p className="text-gray-500 max-w-2xl mx-auto uppercase text-[11px] font-black tracking-widest leading-loose">Artisan AI aggregates 15+ industrial-grade engines into a single production factory.</p>
+                    </motion.div>
 
-                                <div className="text-center z-10 transition-transform duration-700 group-hover:scale-110">
-                                    <div className="relative inline-block">
-                                        <div className="absolute -inset-4 bg-emerald-500/20 blur-xl rounded-full animate-pulse" />
-                                        <Search size={80} className="relative text-emerald-400 mb-6 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
-                                    </div>
-                                    <p className="font-mono text-emerald-400 text-[10px] tracking-[0.4em] uppercase">Market_Intelligence_Module</p>
-                                    <div className="mt-4 flex gap-1 justify-center">
-                                        {[...Array(5)].map((_, i) => (
-                                            <div key={i} className="w-8 h-1 bg-emerald-500/20 rounded-full overflow-hidden">
-                                                <div className="h-full bg-emerald-500" style={{ width: '100%', animation: `shimmer 2s infinite ${i * 0.2}s` }} />
-                                            </div>
-                                        ))}
-                                    </div>
+                    <div className="bento-grid">
+                        {/* FEATURE CARDS: STITCH PROTOCOL */}
+                        {[
+                            { title: 'KDP Book Lab', icon: <BookOpen />, desc: 'End-to-end writing, layout, and publishing suite.', color: 'indigo', size: 'col-span-1 md:col-span-2' },
+                            { title: 'POD Designer', icon: <Shirt />, desc: '30+ high-fidelity styles for luxury merchandise.', color: 'emerald', size: 'col-span-1' },
+                            { title: 'Niche Radar', icon: <Search />, desc: 'Real-time market scanning and gap analysis.', color: 'emerald', size: 'col-span-1' },
+                            { title: 'Manuscript Doctor', icon: <PenTool />, desc: 'AI-driven structure and flow optimization.', color: 'indigo', size: 'col-span-1' },
+                            { title: 'Logo Creator', icon: <Palette />, desc: 'Industrial branding core for digital assets.', color: 'purple', size: 'col-span-1 md:col-span-2' },
+                            { title: 'Trend Intel', icon: <TrendingUp />, desc: 'Predictive seasonal analysis for global markets.', color: 'emerald', size: 'col-span-1' },
+                            { title: 'Object Isolator', icon: <Scissors />, desc: 'Precise industrial alpha-stripping for subjects.', color: 'blue', size: 'col-span-1' },
+                            { title: 'HD Upscaler', icon: <Maximize />, desc: 'Canvas-based real-time 4k asset remastering.', color: 'blue', size: 'col-span-1' },
+                            { title: 'Ban Shield', icon: <ShieldCheck />, desc: 'Platform-aware compliance guardrails.', color: 'red', size: 'col-span-1' },
+                            { title: 'SEO Engine', icon: <BarChart3 />, desc: 'Massive metadata optimization for search engines.', color: 'indigo', size: 'col-span-1' },
+                        ].map((f, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: i * 0.05 }}
+                                className={`group glass-card p-10 rounded-[3rem] transition-all duration-500 hover:scale-[1.03] hover:border-white/20 hover:shadow-2xl hover:shadow-${f.color}-500/10 cursor-pointer ${f.size}`}
+                            >
+                                <div className={`w-16 h-16 rounded-[1.5rem] bg-${f.color}-500/10 border border-${f.color}-500/20 flex items-center justify-center text-${f.color}-400 mb-8 transition-transform group-hover:rotate-12`}>
+                                    {React.cloneElement(f.icon as React.ReactElement<any>, { size: 28, strokeWidth: 3 })}
                                 </div>
-                                <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent" />
-                            </div>
-                        </div>
-                        <div className="order-1 lg:order-2">
-                            <h4 className="text-emerald-500 font-bold uppercase tracking-widest mb-2">Phase 1</h4>
-                            <h3 className="text-4xl font-black text-white mb-4">Market Intelligence</h3>
-                            <p className="text-gray-400 text-lg leading-relaxed">
-                                Don't guess. Know. Our Niche Radar analyzes millions of data points to identify high-demand, low-competition vectors before execution begins.
-                            </p>
-                            <ul className="mt-6 space-y-2 text-gray-500 font-mono text-sm">
-                                <li>&gt; Real-time Amazon Best Seller Scans</li>
-                                <li>&gt; Keyword Profitability Calc</li>
-                                <li>&gt; Trend Velocity Metrics</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    {/* PHASE 2 */}
-                    <div className="grid lg:grid-cols-2 gap-16 items-center mb-32">
-                        <div>
-                            <h4 className="text-indigo-500 font-bold uppercase tracking-widest mb-2">Phase 2</h4>
-                            <h3 className="text-4xl font-black text-white mb-4">Asset Orchestration</h3>
-                            <p className="text-gray-400 text-lg leading-relaxed">
-                                PublishLab writes 50k word manuscripts and generates procedural, print-ready covers in parallel. Context is preserved across the entire assembly line.
-                            </p>
-                            <ul className="mt-6 space-y-2 text-gray-500 font-mono text-sm">
-                                <li>&gt; Context-Aware Gemini Text Engine</li>
-                                <li>&gt; 300 DPI Procedural Flux Image Gen</li>
-                                <li>&gt; Bleed-Zone Safe Layouts</li>
-                            </ul>
-                        </div>
-                        <div className="">
-                            <div className="w-full h-96 bg-[#0A0A0A] rounded-[2.5rem] border border-indigo-500/20 flex items-center justify-center relative overflow-hidden group shadow-[0_0_50px_rgba(79,70,229,0.1)]">
-                                {/* Mesh Gradient Background */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-transparent to-transparent opacity-50" />
-                                <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full group-hover:bg-indigo-500/20 transition-all duration-1000" />
-
-                                <div className="text-center z-10 transition-transform duration-700 group-hover:scale-110">
-                                    <div className="relative inline-block">
-                                        <div className="absolute -inset-4 bg-indigo-500/20 blur-xl rounded-full animate-pulse" />
-                                        <Layers size={80} className="relative text-indigo-400 mb-6 drop-shadow-[0_0_15px_rgba(79,70,229,0.5)]" />
-                                    </div>
-                                    <p className="font-mono text-indigo-400 text-[10px] tracking-[0.4em] uppercase">Asset_Construction_Module</p>
-                                    <div className="mt-4 grid grid-cols-3 gap-2 justify-center max-w-[120px] mx-auto">
-                                        {[...Array(6)].map((_, i) => (
-                                            <div key={i} className="w-full aspect-square bg-indigo-500/10 border border-indigo-500/20 rounded animate-pulse" style={{ animationDelay: `${i * 0.1}s` }} />
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* PHASE 3 */}
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        <div className="order-2 lg:order-1">
-                            <div className="w-full h-96 bg-[#0A0A0A] rounded-[2.5rem] border border-blue-500/20 flex items-center justify-center relative overflow-hidden group shadow-[0_0_50px_rgba(59,130,246,0.1)]">
-                                {/* Mesh Gradient Background */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-transparent opacity-50" />
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
-
-                                <div className="text-center z-10 transition-transform duration-700 group-hover:scale-110">
-                                    <div className="relative inline-block">
-                                        <div className="absolute -inset-4 bg-blue-500/20 blur-xl rounded-full animate-pulse" />
-                                        <ShieldCheck size={80} className="relative text-blue-400 mb-6 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
-                                    </div>
-                                    <p className="font-mono text-blue-400 text-[10px] tracking-[0.4em] uppercase">Compliance_Export_Module</p>
-                                    <div className="mt-4 flex items-center gap-2 justify-center">
-                                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-                                        <span className="font-mono text-blue-500/60 text-[8px] tracking-widest uppercase">Encryption Active</span>
-                                    </div>
-                                </div>
-                                <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
-                            </div>
-                        </div>
-                        <div className="order-1 lg:order-2">
-                            <h4 className="text-blue-500 font-bold uppercase tracking-widest mb-2">Phase 3</h4>
-                            <h3 className="text-4xl font-black text-white mb-4">Compliance & Export</h3>
-                            <p className="text-gray-400 text-lg leading-relaxed">
-                                Zero-rejection pipeline. Assets are validated against platform rules before they leave the system. One-click deploy to PDF, EPUB, or print.
-                            </p>
-                            <ul className="mt-6 space-y-2 text-gray-500 font-mono text-sm">
-                                <li>&gt; Auto-Formatting Engine</li>
-                                <li>&gt; Copyright & Trademark Checks</li>
-                                <li>&gt; Multi-Platform Bundle Export</li>
-                            </ul>
-                        </div>
+                                <h3 className="text-xl font-black text-white italic tracking-tight mb-3 font-industrial uppercase">{f.title}</h3>
+                                <p className="text-gray-500 text-sm font-medium leading-relaxed group-hover:text-gray-300 transition-colors uppercase tracking-tight">{f.desc}</p>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </section>
@@ -469,6 +421,71 @@ export default function LandingPage({
                         <h3 className="text-lg font-bold text-gray-400 mb-6 uppercase tracking-widest">Who This Is <span className="text-red-500">NOT</span> For</h3>
                         <ul className="space-y-4 text-gray-500">
                             <li className="flex gap-2 items-center"><X size={16} /> Hobbyists dabbling in free tools</li>
+                            {/* 4. ROI ENGINE v2: THE COST OF FRAGMENTATION */}
+                            <section className="py-24 px-6 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/10 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2" />
+
+                                <div className="max-w-6xl mx-auto glass-card rounded-[4rem] p-12 md:p-20 relative z-10 border-white/10 shadow-indigo-500/20 shadow-2xl overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-indigo-500 to-transparent" />
+
+                                    <div className="roi-container gap-20 items-center">
+                                        <div className="space-y-8 flex-1">
+                                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-black tracking-widest text-emerald-400 uppercase">
+                                                <TrendingUp size={12} /> Live Economic Audit
+                                            </div>
+                                            <h2 className="text-4xl md:text-5xl font-black text-white italic font-industrial tracking-tighter leading-tight uppercase">
+                                                KILL THE <br />
+                                                <span className="text-emerald-400">SUBSCRIPTION SWARM</span>
+                                            </h2>
+                                            <p className="text-gray-400 text-lg leading-relaxed font-medium">
+                                                Fragmented tools (Canva + Midjourney + Jasper + Helium10) cost you $4,000+/year. <br />
+                                                <span className="text-white">Artisan AI consolidates 15+ engines into one flat reactor.</span>
+                                            </p>
+
+                                            <div className="space-y-6 pt-4">
+                                                <div className="p-6 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-between group hover:border-emerald-500/40 transition-all">
+                                                    <div className="text-gray-400 text-sm font-bold uppercase tracking-widest">Yearly Fragmented Cost</div>
+                                                    <div className="text-2xl font-black text-red-400 font-mono tracking-tighter">$4,280</div>
+                                                </div>
+                                                <div className="p-6 rounded-3xl bg-emerald-500/10 border border-emerald-500/40 flex items-center justify-between shadow-[0_0_30px_rgba(16,185,129,0.1)]">
+                                                    <div className="text-emerald-400 text-sm font-black uppercase tracking-widest animate-pulse">Artisan_Factory_Cost</div>
+                                                    <div className="text-2xl font-black text-white font-mono tracking-tighter">$290</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="glass-card rounded-[3rem] p-10 bg-slate-950/40 border-white/5 space-y-10 relative group flex-1">
+                                            <div className="absolute -inset-1 bg-linear-to-r from-indigo-500/20 to-emerald-500/20 rounded-[3rem] blur-xl opacity-0 group-hover:opacity-100 transition duration-1000" />
+
+                                            <div className="space-y-4 relative z-10">
+                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em]">Asset Output (Monthly)</label>
+                                                <input
+                                                    type="range"
+                                                    min="1"
+                                                    max="500"
+                                                    defaultValue="50"
+                                                    className="w-full accent-indigo-500 h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer"
+                                                />
+                                                <div className="flex justify-between text-[10px] font-bold text-gray-600 uppercase tracking-widest">
+                                                    <span>1 Product</span>
+                                                    <span className="text-indigo-400">Scale Mode</span>
+                                                    <span>500+ Assets</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-6 border-t border-white/5 text-center relative z-10">
+                                                <div className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] mb-4">Estimated Monthly Savings</div>
+                                                <div className="text-6xl font-black text-white tracking-tighter font-industrial italic shadow-emerald-500/20 shadow-2xl">$1,840.42</div>
+                                                <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em] mt-4">+ 120 Hours Saved</p>
+                                            </div>
+
+                                            <button onClick={() => onLaunchApp()} className="w-full py-6 bg-linear-to-r from-indigo-600 to-indigo-500 text-white font-black uppercase tracking-widest rounded-[1.5rem] shadow-xl shadow-indigo-500/20 relative z-10 hover:scale-[1.02] active:scale-95 transition-all">
+                                                Claim My Savings
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
                             <li className="flex gap-2 items-center"><X size={16} /> One-off creators aiming for a single book</li>
                             <li className="flex gap-2 items-center"><X size={16} /> People afraid of industrial automation</li>
                         </ul>
@@ -480,44 +497,6 @@ export default function LandingPage({
                             <li className="flex gap-2 items-center"><Check size={16} className="text-emerald-500" /> System-Thinkers scaling assets</li>
                             <li className="flex gap-2 items-center"><Check size={16} className="text-emerald-500" /> Publishers who value infrastructure over toys</li>
                         </ul>
-                    </div>
-                </div>
-            </section>
-
-            {/* SUBSCRIPTION / ROI */}
-            <section id="infrastructure" className="py-32 px-6 bg-[#0F0F0F] relative overflow-hidden">
-                <div className="max-w-5xl mx-auto text-center relative z-10">
-                    <h2 className="text-4xl font-black text-white mb-12">Stop Burning Cash. Start Building Revenue.</h2>
-
-                    <div className="bg-[#111] border border-white/10 rounded-3xl p-8 lg:p-12 shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-32 bg-indigo-600/10 blur-[100px] rounded-full pointer-events-none" />
-
-                        <div className="flex flex-col md:flex-row justify-between items-center gap-12">
-                            <div className="text-left space-y-4">
-                                <p className="text-gray-400">Projected output per year</p>
-                                <div className="flex items-center gap-4">
-                                    <input
-                                        type="range"
-                                        min="1" max="100"
-                                        value={roiBooks} onChange={(e) => setRoiBooks(parseInt(e.target.value))}
-                                        className="w-48 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
-                                    />
-                                    <span className="text-3xl font-bold text-white">{roiBooks} Projects</span>
-                                </div>
-                            </div>
-
-                            <div className="text-right">
-                                <p className="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-1">Annual Profit Unlocked</p>
-                                <div className="text-5xl font-black text-white mb-2">+${yearlySavings.toLocaleString()}</div>
-                                <p className="text-xs text-gray-500">Compared to traditional tool stack costs</p>
-                            </div>
-                        </div>
-
-                        <div className="mt-12 pt-8 border-t border-white/5 flex justify-center">
-                            <button onClick={onViewPricing} className="text-indigo-400 hover:text-white flex items-center gap-2 text-sm font-bold transition-colors">
-                                View Enterprise Licensing Models <ArrowRight size={16} />
-                            </button>
-                        </div>
                     </div>
                 </div>
             </section>
