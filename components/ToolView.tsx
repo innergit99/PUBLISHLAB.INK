@@ -4157,32 +4157,44 @@ h1, h2, h3 { page -break-after: avoid; }
                 <div className="relative group/carousel">
                   <div
                     ref={stylesRef}
-                    className="flex gap-4 overflow-x-auto pb-6 pt-2 px-2 no-scrollbar scroll-smooth"
+                    className="flex gap-6 overflow-x-auto pb-10 pt-2 px-4 no-scrollbar scroll-smooth items-start"
                     style={{ scrollSnapType: 'x mandatory' }}
                   >
-                    {/* 0. EDIT AN IMAGE CARD (UPLOAD) */}
-                    <button
-                      onClick={() => onNavigate && onNavigate(ToolType.OBJECT_ISOLATOR)}
-                      className="relative group flex-shrink-0 w-32 md:w-40 aspect-[2/3] overflow-hidden rounded-[1.5rem] md:rounded-[2rem] transition-all duration-500 border-2 border-dashed border-slate-800 hover:border-indigo-500 hover:bg-indigo-500/5 flex flex-col items-center justify-center gap-4 group/upload"
-                      style={{ scrollSnapAlign: 'start' }}
-                    >
-                      <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 group-hover/upload:scale-110 group-hover/upload:bg-indigo-600 group-hover/upload:text-white transition-all duration-500">
-                        <Upload size={24} />
-                      </div>
+                    {/* 0. EDIT AN IMAGE CARD (UPLOAD) - SEPARATED */}
+                    <div className="flex flex-col items-center gap-4" style={{ scrollSnapAlign: 'start' }}>
+                      <button
+                        onClick={() => onNavigate && onNavigate(ToolType.OBJECT_ISOLATOR)}
+                        className="relative group flex-shrink-0 w-32 md:w-36 aspect-[2/3] overflow-hidden rounded-[1.5rem] md:rounded-[2rem] transition-all duration-500 border-2 border-dashed border-slate-800 hover:border-indigo-500 hover:bg-indigo-500/5 flex flex-col items-center justify-center gap-4 group/upload"
+                      >
+                        <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 group-hover/upload:scale-110 group-hover/upload:bg-indigo-600 group-hover/upload:text-white transition-all duration-500">
+                          <Upload size={24} />
+                        </div>
+                      </button>
                       <div className="text-center space-y-1">
-                        <p className="text-[10px] font-black text-white uppercase tracking-widest">Edit Image</p>
-                        <p className="text-[7px] font-bold text-slate-500 uppercase tracking-tighter px-4">Upload and Isolate Subject</p>
+                        <p className="text-[10px] font-black text-white/80 uppercase tracking-widest">Edit an image</p>
+                        <p className="text-[7px] font-bold text-slate-500 uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">Upload & Isolate</p>
                       </div>
-                    </button>
+                    </div>
 
-                    {/* STYLE CARDS */}
+                    {/* VERTICAL SEPARATOR */}
+                    <div className="flex-shrink-0 w-px h-40 bg-linear-to-b from-transparent via-slate-800 to-transparent self-center mx-2" />
+
+                    {/* STYLE CARDS WITH LABELS UNDERNEATH */}
                     {POD_STYLES.filter(s => selectedStyleCategory === "All" || s.category === selectedStyleCategory).map(s => (
-                      <div key={s.id} style={{ scrollSnapAlign: 'start' }}>
+                      <div key={s.id} className="flex flex-col items-center gap-4 transition-all duration-500" style={{ scrollSnapAlign: 'start' }}>
                         <PODStyleCard
                           style={s}
                           isSelected={selectedStyle === s.id}
                           onClick={() => setSelectedStyle(s.id === selectedStyle ? null : s.id)}
                         />
+                        <div className="text-center space-y-0.5">
+                          <p className={`text-[9px] md:text-[10px] font-black uppercase tracking-tight transition-colors duration-300 ${selectedStyle === s.id ? 'text-white' : 'text-slate-400'}`}>
+                            {s.label}
+                          </p>
+                          <p className="text-[7px] font-bold text-slate-600 uppercase tracking-widest">
+                            {s.category}
+                          </p>
+                        </div>
                       </div>
                     ))}
                   </div>
