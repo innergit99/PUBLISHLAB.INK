@@ -2733,51 +2733,55 @@ AVOID: Any imagery that could interfere with barcode scanning`;
     return await this.queryAI(prompt);
   }
 
-  async generateSEOMetadata(prompt: string): Promise<SEOMetadata> {
-    const res = await this.queryAI(`Generate Amazon SEO JSON (title, description, story, tags) for: "${prompt}". Output ONLY JSON.`, true);
-    return JSON.parse(this.cleanAndRepairJSON(res));
+  async generateKDPBlurb(blueprint: KDPBlueprint): Promise<string> {
+    const prompt = `YOU ARE THE "KDP CONVERSION COPYWRITER".
+    Summarize the following book blueprint into a high-conversion, professional Amazon back-cover blurb.
+    
+    TITLE: ${blueprint.PROJECT_META.title_working}
+    GENRE: ${blueprint.PROJECT_META.primary_genre}
+    USP: ${blueprint.bookLabInspiration?.uniqueSellingPoint || "Industrial Quality"}
+    CHAPTERS: ${blueprint.INTERIOR_CONTENT.map(c => c.chapterTitle).join(', ')}
+    
+    GUIDELINES:
+    - Use AIDA framework (Attention, Interest, Desire, Action).
+    - Maintain a professional, bestseller tone.
+    - Focus on the transformation/value for the reader.
+    - Output ONLY the blurb text. No conversational filler.`;
+
+    return await this.queryAI(prompt);
   }
 
   async processTransparency(imageUrl: string): Promise<string> {
     try {
-      console.log("🎨 Transparency: Fetching image...", imageUrl.substring(0, 50));
-      // Robust CORS-safe fetching with cache busting
-      const response = await fetch(imageUrl, { mode: 'cors', cache: 'reload' });
-      if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
-      const blob = await response.blob();
-      const bitmap = await createImageBitmap(blob);
+      console.log("🎨 Transparency Engine: Routing to visualService for advanced isolation...");
+      const { visualService } = await import('./visualService');
 
-      const canvas = document.createElement('canvas');
-      canvas.width = bitmap.width;
-      canvas.height = bitmap.height;
-      const ctx = canvas.getContext('2d')!;
-
-      ctx.drawImage(bitmap, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-
-      // Industrial White Removal (Luminance Key)
-      // We assume the background is pure white or very close to it.
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-
-        // Check if pixel is near white (Tolerance of 40/255)
-        if (r > 215 && g > 215 && b > 215) {
-          // Create a soft alpha mask based on how white it is
-          const brightness = (r + g + b) / 3;
-          const alpha = 255 - (brightness - 215) * 6; // Fade out edge
-          data[i + 3] = Math.max(0, Math.min(255, alpha));
-          if (brightness > 240) data[i + 3] = 0; // Hard cut for pure white
-        }
-      }
-
-      ctx.putImageData(imageData, 0, 0);
-      return canvas.toDataURL('image/png');
+      // visualService.isolateSubject uses corner-sampling and soft-edge feathering
+      // which is significantly more robust than a simple luminance key.
+      return await visualService.isolateSubject(imageUrl);
     } catch (e) {
-      console.error("Transparency Engine Failed:", e);
-      return imageUrl; // Fallback to original if processing fails
+      console.error("Advanced Transparency Engine Failed, falling back to basic luminance key:", e);
+
+      // LEGACY FALLBACK (Basic luminance key for safety)
+      try {
+        const response = await fetch(imageUrl, { mode: 'cors', cache: 'reload' });
+        const blob = await response.blob();
+        const bitmap = await createImageBitmap(blob);
+        const canvas = document.createElement('canvas');
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(bitmap, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          if (data[i] > 230 && data[i + 1] > 230 && data[i + 2] > 230) data[i + 3] = 0;
+        }
+        ctx.putImageData(imageData, 0, 0);
+        return canvas.toDataURL('image/png');
+      } catch (fallbackError) {
+        return imageUrl;
+      }
     }
   }
 

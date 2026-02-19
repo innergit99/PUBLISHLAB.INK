@@ -871,20 +871,27 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     if (!kdpBlueprint) return;
     setIsGenerating(true);
     try {
-      // Simulate AI generation by grabbing a different chunk or summarizing
-      // In production this calls Gemini
-      // Pseudo-AI: Pick a random chapter snippet to ensure variety
-      const chapters = kdpBlueprint.INTERIOR_CONTENT;
-      const randomChapter = chapters[Math.floor(Math.random() * chapters.length)];
-      const start = Math.floor(Math.random() * 500);
-      const newBlurb = `[AI DRAFT] ${randomChapter?.content.substring(start, start + 350) || "Generative content not available."}...`;
+      // Real AI-driven blurb generation (UPGRADE v3.4)
+      const newBlurb = await gemini.generateKDPBlurb(kdpBlueprint);
 
       setKdpBlueprint({
         ...kdpBlueprint,
         BACK_COVER_SPEC: { ...kdpBlueprint.BACK_COVER_SPEC, blurb_text: newBlurb }
       });
     } catch (e) {
-      console.error(e);
+      console.error("Blurb generation failed:", e);
+      setError("Copywriting engine stall. Using fallback snippet.");
+
+      // Fallback: Pick a random chapter snippet if AI fails
+      const chapters = kdpBlueprint.INTERIOR_CONTENT;
+      const randomChapter = chapters[Math.floor(Math.random() * chapters.length)];
+      const start = Math.floor(Math.random() * 500);
+      const fallbackBlurb = `[AI DRAFT] ${randomChapter?.content.substring(start, start + 350) || "Generative content not available."}...`;
+
+      setKdpBlueprint({
+        ...kdpBlueprint,
+        BACK_COVER_SPEC: { ...kdpBlueprint.BACK_COVER_SPEC, blurb_text: fallbackBlurb }
+      });
     } finally {
       setIsGenerating(false);
     }
