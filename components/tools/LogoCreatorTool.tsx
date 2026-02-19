@@ -104,6 +104,12 @@ export const LogoCreatorTool: React.FC<ToolComponentProps> = ({ onBack, isDarkMo
           <div className="space-y-12">
             <div className={`border p-12 rounded-[4rem] space-y-8 ${isDarkMode ? 'bg-slate-950 border-slate-900' : 'bg-slate-50 border-slate-200'}`}>
               <h3 className={`text-2xl font-black uppercase italic tracking-tighter ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Brand Guidelines</h3>
+              {logoReport.fonts && (
+                <div className={`flex items-center gap-4 p-4 border rounded-2xl text-xs font-bold ${cardClass} ${textMuted}`}>
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-0" />
+                  <span>Primary font: <span className="text-cyan-400">{logoReport.fonts.primary}</span> · Fallback: {logoReport.fonts.secondary}</span>
+                </div>
+              )}
               <div className="space-y-4">
                 {logoReport.guidelines.map((g: string, i: number) => (
                   <div key={i} className={`flex gap-4 p-4 border rounded-2xl text-xs font-bold ${cardClass} ${textMuted}`}>
@@ -114,15 +120,16 @@ export const LogoCreatorTool: React.FC<ToolComponentProps> = ({ onBack, isDarkMo
             </div>
             <div className={`border p-12 rounded-[4rem] space-y-8 ${isDarkMode ? 'bg-slate-950 border-slate-900' : 'bg-slate-50 border-slate-200'}`}>
               <h3 className={`text-2xl font-black uppercase italic tracking-tighter ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Genesis Palette</h3>
-              <div className="flex gap-6">
-                {logoReport.palette.map((c: string) => (
+              <div className="flex gap-6 flex-wrap">
+                {logoReport.palette.map((c: string, idx: number) => (
                   <div key={c} className="group relative">
                     <div className="w-20 h-20 rounded-2xl border border-white/5 shadow-xl transition-transform group-hover:scale-110" style={{ backgroundColor: c }} />
-                    <div className={`absolute -bottom-8 left-1/2 -translate-x-1/2 text-[10px] font-black font-mono ${textMuted}`}>{c}</div>
+                    <div className={`absolute -bottom-8 left-1/2 -translate-x-1/2 text-[9px] font-black font-mono whitespace-nowrap ${textMuted}`}>{idx === 0 ? 'Primary' : idx === 1 ? 'Accent' : 'BG'}</div>
                   </div>
                 ))}
               </div>
             </div>
+
           </div>
         </div>
       )}
