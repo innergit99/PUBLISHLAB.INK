@@ -4319,16 +4319,14 @@ h1, h2, h3 { page -break-after: avoid; }
                         </div>
                       </div>
 
-                      {/* PRODUCT BASE LAYER (Only visible when NO design is applied) */}
-                      {!result && (
-                        <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/5 transition-colors duration-500">
-                          <img
-                            src={productBaseUrl || printfulMockups[`base_${activeMockup}`] || MOCKUP_ASSETS[activeMockup]}
-                            className="w-full h-full object-contain p-8 select-none pointer-events-none transition-all duration-300"
-                            alt="Product Base"
-                          />
-                        </div>
-                      )}
+                      {/* PRODUCT BASE LAYER (Always visible as background behind the design) */}
+                      <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/5 transition-colors duration-500">
+                        <img
+                          src={productBaseUrl || printfulMockups[`base_${activeMockup}`] || MOCKUP_ASSETS[activeMockup]}
+                          className="w-full h-full object-contain p-8 select-none pointer-events-none transition-all duration-300"
+                          alt="Product Base"
+                        />
+                      </div>
                     </div>
 
                     <div className="mt-6 bg-slate-900/95 backdrop-blur-2xl px-12 py-5 rounded-[2.5rem] border border-slate-700 flex items-center justify-between shadow-2xl">
