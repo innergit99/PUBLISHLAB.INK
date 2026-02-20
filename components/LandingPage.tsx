@@ -130,7 +130,7 @@ export default function LandingPage({
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-500 to-indigo-600 drop-shadow-2xl">ENTIRE FACTORY</span>
                             </h1>
                             <p className="text-xl text-gray-400 leading-relaxed max-w-xl font-medium border-l-[3px] border-indigo-500/60 pl-8 py-2">
-                                Artisan AI is the ultimate industrial production line for creators. Scale from concept to global distribution in seconds.
+                                Publish Lab is the ultimate industrial production line for creators. Scale from concept to global distribution in seconds.
                             </p>
                         </div>
 
@@ -379,7 +379,7 @@ export default function LandingPage({
                     >
                         <h2 className="text-[12px] font-black text-indigo-500 uppercase tracking-[0.5em] italic">The Autonomous Arsenal</h2>
                         <h3 className="text-4xl md:text-6xl font-black text-white italic font-industrial tracking-tighter">WHY RENT TOOLS WHEN <br /> YOU CAN OWN THE GALAXY?</h3>
-                        <p className="text-gray-500 max-w-2xl mx-auto uppercase text-[11px] font-black tracking-widest leading-loose">Artisan AI aggregates 15+ industrial-grade engines into a single production factory.</p>
+                        <p className="text-gray-500 max-w-2xl mx-auto uppercase text-[11px] font-black tracking-widest leading-loose">Publish Lab aggregates 15+ industrial-grade engines into a single production factory.</p>
                     </motion.div>
 
                     <div className="bento-grid">
@@ -439,7 +439,7 @@ export default function LandingPage({
                                             </h2>
                                             <p className="text-gray-400 text-lg leading-relaxed font-medium">
                                                 Fragmented tools (Canva + Midjourney + Jasper + Helium10) cost you $4,000+/year. <br />
-                                                <span className="text-white">Artisan AI consolidates 15+ engines into one flat reactor.</span>
+                                                <span className="text-white">Publish Lab consolidates 15+ engines into one flat reactor.</span>
                                             </p>
 
                                             <div className="space-y-6 pt-4">

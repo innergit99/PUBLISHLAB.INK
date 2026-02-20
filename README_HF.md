@@ -1,5 +1,5 @@
 ---
-title: Artisan AI Creative Studio
+title: Publish Lab Creative Studio
 emoji: 🎨
 colorFrom: purple
 colorTo: pink
@@ -9,7 +9,7 @@ license: mit
 app_port: 7860
 ---
 
-# Artisan AI - Creative Studio
+# Publish Lab - Creative Studio
 
 A comprehensive AI-powered creative suite for content creation, design, and publishing.
 

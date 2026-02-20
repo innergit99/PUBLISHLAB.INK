@@ -72,7 +72,7 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
             'Unlimited Manuscripts',
             '300 DPI High-Res Assets',
             'Trend Radar API Access',
-            'Gemini 1.5 Pro Engine',
+            'Gemini 2.0 Flash Engine',
             'Advanced Character Bibles',
             'Priority Support',
         ],

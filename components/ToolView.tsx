@@ -4126,8 +4126,8 @@ h1, h2, h3 { page -break-after: avoid; }
                     <p className="text-[8px] font-bold text-slate-600 uppercase">Select Aesthetic Direction</p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="flex gap-1 bg-slate-900/50 p-1 rounded-xl border border-slate-800">
-                      {["All", "Modern", "Retro", "Artistic"].map(cat => (
+                    <div className="flex gap-1 bg-slate-900/50 p-1 rounded-xl border border-slate-800 overflow-x-auto no-scrollbar max-w-[250px] md:max-w-[400px]">
+                      {["All", "Typography", "Vector", "Illustrative", "Textural", "Retro", "Tech"].map(cat => (
                         <button
                           key={cat}
                           onClick={() => setSelectedStyleCategory(cat)}

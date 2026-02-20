@@ -158,7 +158,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, isDarkMode }) => {
         <div className="mb-20 flex flex-col xl:flex-row xl:items-end justify-between gap-12">
           <div className="space-y-8 max-w-4xl">
             <div className="flex items-center gap-4">
-              <div className="px-5 py-2 bg-indigo-600/10 border border-indigo-500/20 rounded-full text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500 animate-pulse">PublishLab v4.2</div>
+              <div className="px-5 py-2 bg-indigo-600/10 border border-indigo-500/20 rounded-full text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500 animate-pulse">Publish Lab v5.0</div>
               {activeProject && (
                 <div className="px-5 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Active: {activeProject.title}

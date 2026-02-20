@@ -1,11 +1,12 @@
-# ARTISAN AI - Master Memory
+# Publish Lab - Master Memory
 
-> **Last Update**: 2026-02-11 18:20
+> **Last Update**: 2026-02-20 15:32
 > **Current Status**: 🟢 LIVE / PRODUCTION DEPLOYED (publishlab.ink)
+> **Core Version**: v5.1.0 (Stable)
 > **Backend**: 🤗 HuggingFace Spaces Integrated (Llama 3.1-8B + FLUX.1)
 
 ## Project Overview
-**ARTISAN AI** is an advanced KDP (Kindle Direct Publishing) automation suite designed to accelerate the creation of professional-grade book content, covers, and metadata.
+**Publish Lab** is an advanced KDP (Kindle Direct Publishing) automation suite designed to accelerate the creation of professional-grade book content, covers, and metadata.
 **Tech Stack**:
 - **Frontend**: React, TypeScript, Tailwind CSS, Framer Motion
 - **Backend/Tooling**: Node.js, Vite, FastAPI (Python), Gradio
@@ -87,7 +88,7 @@
 ### 📚 KDP Export Quality (Critical Fixes)
 16. **[KDP] Placeholder Leak Blocker**: `geminiService.ts` now throws error instead of returning placeholder text that leaked into PDFs.
 17. **[KDP] ISBN Placeholder Removed**: Removed "ISBN: Assign via KDP Dashboard" from `downloadService.ts`.
-18. **[KDP] Publisher Branding Fixed**: Changed "Artisan AI Genesis ∞" to "Independently Published" as default.
+18. **[KDP] Publisher Branding Fixed**: Changed "Publish Lab Genesis ∞" to "Independently Published" as default.
 19. **[KDP] Content Pending Removed**: Empty chapters now show blank instead of "Content pending..." text.
 20. **[KDP] Export Validator Created**: New `kdpExportValidator.ts` with 25+ blocker patterns. Blocks export if placeholder content detected.
 21. **[KDP] Gemini API Endpoint Fixed**: Updated `diagnostics.ts` from `v1beta` to `v1` endpoint.
@@ -95,6 +96,13 @@
 42. **[DEV] Gemini CLI Integration**: Configured local `gemini` CLI with dedicated API key (`GEMINI_CLI_KEY`) via `init_cli.ps1` for quota-isolated terminal usage.
 43. **[RADAR] Real-Time Intelligence**: Activated `marketService.ts` with Firecrawl API. `TrendRadarPage.tsx` now performs live cross-platform niche analysis using Gemini 1.5 Flash.
 44. **[DEPLOY] Market Radar v1**: Deployed to Vercel (Production) with Real-Time Engine (Requires `VITE_FIRECRAWL_API_KEY` in Vercel Env Vars).
+
+### 📝 Recent Major Advancements (v5.0.0 - v5.1.0)
+1.  **[BRAND] Global Transition to Publish Lab**: Successfully rebranded the entire ecosystem from Artisan AI to **Publish Lab**.
+2.  **[POD] Massive Style Expansion**: Integrated 50+ professional design styles categorized into Typography, Vector, Illustrative, Textural, Retro, and Tech.
+3.  **[POD] UI/UX Overhaul**: Implemented horizontally scrolling category navigation in the POD Designer.
+4.  **[AI] Gemini 3.1 Alignment**: Prioritized Gemini 3.1 models in the AI orchestration layer for enhanced creative reasoning.
+5.  **[STABILITY] Image Fallback Engine**: Developed robust error-handling in `PODStyleCard` to fall back to CSS gradients if the image API times out.
 
 ### 📝 Previous Changes (2026-02-03)
 1.  **[SYSTEM] Free Tier Switch (Critical)**: Disabled `GEMINI_API_KEY` to stop billing. Refactored `geminiService.ts` to strictly block Google API calls and enforce a fallback chain.

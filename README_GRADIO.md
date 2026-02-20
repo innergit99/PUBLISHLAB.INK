@@ -1,5 +1,5 @@
 ---
-title: Artisan AI Creative Studio
+title: Publish Lab Creative Studio
 emoji: 🎨
 colorFrom: purple
 colorTo: pink
@@ -10,7 +10,7 @@ pinned: false
 license: mit
 ---
 
-# 🎨 Artisan AI - Creative Studio
+# 🎨 Publish Lab - Creative Studio
 
 A comprehensive AI-powered creative suite for content creation, design, and publishing.
 

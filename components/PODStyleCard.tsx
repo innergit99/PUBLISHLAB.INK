@@ -1,5 +1,5 @@
-import React from 'react';
-import { Check, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, Sparkles, ImageOff } from 'lucide-react';
 import { PODStyle } from '../types';
 
 interface PODStyleCardProps {
@@ -13,6 +13,8 @@ export const PODStyleCard: React.FC<PODStyleCardProps> = ({
   isSelected,
   onClick
 }) => {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <button
       onClick={onClick}
@@ -25,14 +27,17 @@ export const PODStyleCard: React.FC<PODStyleCardProps> = ({
       `}
     >
       {/* Visual Preview */}
-      {style.previewUrl ? (
+      {style.previewUrl && !imgError ? (
         <img
           src={style.previewUrl}
           alt={style.label}
+          onError={() => setImgError(true)}
           className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ${isSelected ? 'scale-110' : 'group-hover:scale-110'}`}
         />
       ) : (
-        <div className={`absolute inset-0 bg-linear-to-br ${style.gradient} opacity-80 group-hover:opacity-100 transition-opacity`} />
+        <div className={`absolute inset-0 bg-linear-to-br ${style.gradient} opacity-80 group-hover:opacity-100 transition-opacity flex items-center justify-center`}>
+          <Sparkles className="text-white/20 w-12 h-12" />
+        </div>
       )}
 
       {/* Gradient Vignette */}

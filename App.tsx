@@ -54,7 +54,7 @@ const App: React.FC = () => {
 
   // Log environment configuration on mount
   useEffect(() => {
-    console.log("🚀 ARTISAN AI | Core Version: v2.1.6-stable");
+    console.log("🚀 PUBLISH LAB | Core Version: v2.1.6-stable");
     gemini.runDiagnostics();
   }, []);
 
