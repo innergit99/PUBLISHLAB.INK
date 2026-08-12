@@ -56,7 +56,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                 onClose();
             }
         } catch (err: any) {
-            setError(err.message);
+            // "Failed to fetch" = Supabase project paused or env vars missing
+            if (err.message === 'Failed to fetch' || err.message?.includes('fetch')) {
+                setError('Connection error — the server may be waking up. Please wait 30 seconds and try again, or check your internet connection.');
+            } else {
+                setError(err.message);
+            }
         } finally {
             setLoading(false);
         }

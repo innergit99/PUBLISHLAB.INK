@@ -20,6 +20,8 @@ import { productMockupEngine } from '../productMockupEngine';
 import { NicheRadarView } from './NicheRadarView';
 import { CharacterVault } from './CharacterVault';
 import { PODStyleCard } from './PODStyleCard';
+import { AIDisclosureModal } from './AIDisclosureModal';
+import { UsageGuard } from '../usageGuard';
 import {
   ChevronLeft, Sparkles, Download, Loader2, ImageIcon, X, Rocket, Upload,
   Search, Copy, CheckCircle, ZoomIn, ZoomOut, Move, Palette, Edit3,
@@ -313,6 +315,8 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   const [isGenerating, setIsGenerating] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [isFinalizing, setIsFinalizing] = useState(false);
+  const [showDisclosureModal, setShowDisclosureModal] = useState(false);
+  const [pendingExportTarget, setPendingExportTarget] = useState<KDPTarget | null>(null);
   const [variants, setVariants] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -716,6 +720,8 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
         if (!blueprint || !blueprint.INTERIOR_CONTENT) throw new Error("Industrial Engine failure.");
         setKdpBlueprint(blueprint);
         setKdpStep('BLUEPRINT');
+        // Record usage AFTER successful generation
+        UsageGuard.recordUsage('BOOK', blueprint.PROJECT_META?.title_working, { genre: kdpProject.genre });
       }
     } catch (e: any) { setError(e.message); }
     finally { setIsGenerating(false); }
@@ -907,7 +913,16 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     }
   };
 
-  const handleExportMS = async (target: KDPTarget) => {
+  // Public entry point — shows AI disclosure modal before any export
+  const handleExportMS = (target: KDPTarget) => {
+    if (!kdpBlueprint) return;
+    if (isGenerating) return;
+    setPendingExportTarget(target);
+    setShowDisclosureModal(true);
+  };
+
+  // Called after user confirms disclosure
+  const executeExport = async (target: KDPTarget) => {
     if (!kdpBlueprint) return;
     if (isGenerating) return; // Debounce
 
@@ -4619,6 +4634,23 @@ h1, h2, h3 { page -break-after: avoid; }
           )}
         </div>
       </div>
+
+      {/* AI Disclosure Modal — shown before every KDP export (legal requirement) */}
+      <AIDisclosureModal
+        isOpen={showDisclosureModal}
+        bookTitle={kdpBlueprint?.PROJECT_META.title_working || 'Your Book'}
+        onConfirm={() => {
+          setShowDisclosureModal(false);
+          if (pendingExportTarget) {
+            executeExport(pendingExportTarget);
+            setPendingExportTarget(null);
+          }
+        }}
+        onCancel={() => {
+          setShowDisclosureModal(false);
+          setPendingExportTarget(null);
+        }}
+      />
 
       {error && (
         <div className="fixed bottom-12 left-1/2 -translate-x-1/2 bg-red-950 border-2 border-red-500/50 p-8 rounded-[3rem] flex items-center gap-6 animate-in slide-in-from-bottom-12 shadow-2xl z-50 max-w-xl">

@@ -1,5 +1,6 @@
 import { supabase, getCurrentUser } from './supabaseClient';
 import { SUBSCRIPTION_TIERS, SubscriptionTier } from './paddleIntegration';
+import { ToolType } from './types';
 
 export interface UsageStats {
     booksThisMonth: number;
@@ -7,9 +8,52 @@ export interface UsageStats {
     manuscriptsThisMonth: number;
 }
 
+// Maps ToolType values to usage categories
+const BOOK_TOOLS = new Set([
+    ToolType.TEXT_TO_IMAGE,    // KDP Book Lab uses this route in some flows
+    'KDP_BOOK_LAB',            // Direct string fallback
+    ToolType.COLORING_PAGES,
+]);
+
+const IMAGE_TOOLS = new Set([
+    ToolType.POD_MERCH,
+    ToolType.LOGO_CREATOR,
+    ToolType.PATTERN_MAKER,
+]);
+
+const MANUSCRIPT_TOOLS = new Set([
+    ToolType.MANUSCRIPT_DOCTOR,
+]);
+
 export class UsageGuard {
     /**
-     * Retrieves the current usage statistics for the user from the source of truth (Database)
+     * Records a generation event to Supabase.
+     * Call this AFTER a successful generation completes (not before — don't charge failed attempts).
+     */
+    static async recordUsage(toolType: string, title?: string, data?: unknown): Promise<void> {
+        const user = await getCurrentUser();
+        if (!user) return; // Guest users — no tracking needed
+
+        try {
+            const { error } = await supabase.from('content').insert({
+                user_id: user.id,
+                type: toolType,
+                title: title || toolType,
+                data: data ? JSON.stringify(data).slice(0, 10000) : null, // cap at 10KB
+                created_at: new Date().toISOString(),
+            });
+
+            if (error) {
+                console.error('UsageGuard: Failed to record usage', error);
+            }
+        } catch (e) {
+            console.error('UsageGuard: recordUsage threw', e);
+            // Non-fatal — don't block the user experience on tracking failures
+        }
+    }
+
+    /**
+     * Retrieves current usage stats for the logged-in user from Supabase.
      */
     static async getUsageStats(): Promise<UsageStats> {
         const user = await getCurrentUser();
@@ -20,7 +64,6 @@ export class UsageGuard {
         startOfMonth.setHours(0, 0, 0, 0);
 
         try {
-            // Count actual content records created this month
             const { data, error } = await supabase
                 .from('content')
                 .select('type, created_at')
@@ -29,57 +72,56 @@ export class UsageGuard {
 
             if (error) throw error;
 
-            const stats: UsageStats = {
-                booksThisMonth: 0,
-                imagesThisMonth: 0,
-                manuscriptsThisMonth: 0
-            };
+            const stats: UsageStats = { booksThisMonth: 0, imagesThisMonth: 0, manuscriptsThisMonth: 0 };
 
-            data?.forEach((item: any) => {
-                // Determine category from type/tool
-                if (item.type === 'COLORING_PAGES') stats.booksThisMonth++; // Book Lab
-                if (item.type === 'MANUSCRIPT_DOCTOR') stats.manuscriptsThisMonth++;
-                if (['TEXT_TO_IMAGE', 'POD_MERCH'].includes(item.type)) stats.imagesThisMonth++;
+            data?.forEach((item: { type: string }) => {
+                if (BOOK_TOOLS.has(item.type as ToolType) || item.type === 'BOOK') {
+                    stats.booksThisMonth++;
+                } else if (MANUSCRIPT_TOOLS.has(item.type as ToolType)) {
+                    stats.manuscriptsThisMonth++;
+                } else if (IMAGE_TOOLS.has(item.type as ToolType)) {
+                    stats.imagesThisMonth++;
+                }
             });
 
             return stats;
         } catch (e) {
             console.error('UsageGuard: Failed to fetch stats', e);
-            // Fallback to localStorage if DB fails (transitional)
-            const localUsage = localStorage.getItem('usage');
-            return localUsage ? JSON.parse(localUsage) : { booksThisMonth: 0, imagesThisMonth: 0, manuscriptsThisMonth: 0 };
+            // Fail closed — return high values so limits appear reached rather than bypassed
+            return { booksThisMonth: 999, imagesThisMonth: 999, manuscriptsThisMonth: 999 };
         }
     }
 
     /**
-     * Checks if the user has reached their limit for a specific action
+     * Checks if the user can perform an action given their tier.
      */
     static async canPerformAction(action: 'MANUSCRIPT' | 'IMAGE' | 'BOOK', tier: SubscriptionTier): Promise<boolean> {
+        // Master and Artisan = unlimited
+        if (tier.id === 'artisan' || tier.id === 'master') return true;
+
         const stats = await this.getUsageStats();
 
         switch (action) {
             case 'MANUSCRIPT':
-                // Artisan and Master have unlimited manuscripts
-                if (tier.id === 'artisan' || tier.id === 'master') return true;
-                return stats.manuscriptsThisMonth < tier.limits.booksPerMonth; // Mapping manuscript to book limit for now
+                return stats.manuscriptsThisMonth < (tier.limits.booksPerMonth ?? 1);
             case 'IMAGE':
-                return stats.imagesThisMonth < tier.limits.imagesPerMonth;
+                return stats.imagesThisMonth < (tier.limits.imagesPerMonth ?? 5);
             case 'BOOK':
-                return stats.booksThisMonth < tier.limits.booksPerMonth;
+                return stats.booksThisMonth < (tier.limits.booksPerMonth ?? 1);
             default:
                 return false;
         }
     }
 
     /**
-     * Centralized Gating Logic - Returns a reason if blocked
+     * Centralized gate — returns allowed:false with upgrade reason if blocked.
      */
-    static async checkGating(action: 'MANUSCRIPT' | 'IMAGE' | 'BOOK', tier: SubscriptionTier): Promise<{ allowed: boolean, reason?: string }> {
+    static async checkGating(action: 'MANUSCRIPT' | 'IMAGE' | 'BOOK', tier: SubscriptionTier): Promise<{ allowed: boolean; reason?: string }> {
         const allowed = await this.canPerformAction(action, tier);
         if (!allowed) {
             return {
                 allowed: false,
-                reason: `You have reached the limit for your ${tier.name} plan. Upgrade to unlock more power.`
+                reason: `You've reached the ${tier.name} plan limit. Upgrade to unlock unlimited generation.`,
             };
         }
         return { allowed: true };

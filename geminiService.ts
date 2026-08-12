@@ -286,7 +286,7 @@ No explanations. No quotes.`;
     const geminiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (geminiKey && !geminiKey.includes('PLACEHOLDER')) {
       try {
-        console.log('💎 Calling Gemini 1.5 Flash...');
+        console.log('💎 Calling Gemini (2.5/3.x)...');
         return await this.retryWithBackoff(
           () => this.queryGeminiFlash(prompt, jsonMode),
           2,
@@ -547,14 +547,17 @@ No explanations. No quotes.`;
     const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) throw new Error("Gemini API Key missing (VITE_GEMINI_API_KEY)");
 
-    // UPDATED FEB 2026: Gemini 1.0 and 1.5 models are RETIRED (return 404)
-    // Current working models: gemini-3-*, gemini-2.5-*, gemini-2.0-*
+    // UPDATED AUG 2026: Ordered by reliability. Falls through on 404 automatically.
+    // Gemini 1.x/1.5 RETIRED. gemini-2.0-flash RETIRED March 2026.
+    // Verify at: https://ai.google.dev/gemini-api/docs/models
     const models = [
-      'gemini-3-flash-preview',      // Newest, fastest
-      'gemini-3-pro-preview',        // Newest, most capable
-      'gemini-2.5-flash-lite',       // Recommended replacement for 2.0
-      'gemini-2.0-flash',            // Stable (retiring March 2026)
-      'gemini-2.0-flash-lite',       // Stable lite version
+      'gemini-2.5-flash',            // GA — most stable as of mid-2026
+      'gemini-2.5-pro',              // GA — highest quality
+      'gemini-2.5-flash-lite',       // GA — cost efficient
+      'gemini-3-flash',              // GA — if released by runtime date
+      'gemini-3-flash-preview',      // Preview fallback
+      'gemini-3-pro-preview',        // Preview fallback
+      'gemini-2.0-flash-lite',       // Last resort — may be retired
     ];
 
     let lastError: any;
@@ -743,11 +746,10 @@ No explanations. No quotes.`;
       const data = await response.json();
       const allModels = data.models?.map((m: any) => m.name.replace('models/', '')) || [];
 
-      // Filter for generateContent-compatible models (Gemini 2.0+, 2.5+, 3.x)
+      // Filter for generateContent-compatible models (Gemini 2.5+, 3.x — 2.0 retired March 2026)
       const workingModels = allModels.filter((m: string) =>
         m.includes('gemini-3') ||
-        m.includes('gemini-2.5') ||
-        m.includes('gemini-2.0')
+        m.includes('gemini-2.5')
       );
 
       // Note: Gemini 1.x models are RETIRED and will return 404
@@ -762,7 +764,7 @@ No explanations. No quotes.`;
       }
 
       if (workingModels.length === 0) {
-        console.warn("💎 Gemini Diagnostics: No working Gemini 2.0+ models found. Will fallback to Groq.");
+        console.warn("💎 Gemini Diagnostics: No working Gemini 2.5+ models found. Will fallback to Groq.");
       }
     } catch (e: any) {
       console.error("💎 Gemini Diagnostics: Scan Failed -", e.message);
