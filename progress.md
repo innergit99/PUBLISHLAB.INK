@@ -1,6 +1,6 @@
 # PUBLISH LAB — LIVE PROGRESS TRACKER
 > Single source of truth for all active development. Update when phase tasks complete.
-> Last updated: 2026-08-12 | Resumed after 6-7 month gap
+> Last updated: 2026-08-14 | Phase 2 complete, Phase 3A/3B deployed
 
 ---
 
@@ -24,13 +24,14 @@ Goal: Confirm + fix what's broken after 6-7 months idle
 
 ---
 
-## 🟡 PHASE 2 — QUALITY (Week 2-3)
+## ✅ PHASE 2 — QUALITY (COMPLETE)
 Goal: User pays → gets genuine value → doesn't churn
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Generation progress streaming | 🔄 IN PROGRESS | Show "1/3 Creating outline..." |
-| Onboarding overlay | ⏳ Pending | 3-step guide for first-time users |
+| Generation progress streaming | ✅ DONE | GenerationProgressBar.tsx — outline→blueprint→blurb steps |
+| Onboarding overlay | ✅ DONE | OnboardingOverlay.tsx — 4-step tour, localStorage flag |
+| Paddle webhook handler | ✅ DONE | api/paddle-webhook.ts — HMAC verified, upserts profiles |
 | Error states overhaul | ⏳ Pending | No more silent failures |
 | EPUB reflowable export fix | ⏳ Pending | Interactive TOC, responsive images |
 | Back cover word count validator | ⏳ Pending | 150-220 words enforced |
@@ -39,14 +40,16 @@ Goal: User pays → gets genuine value → doesn't churn
 
 ---
 
-## 🟠 PHASE 3 — MONETIZE (Week 3-4)
+## 🟠 PHASE 3 — MONETIZE (Week 3-4) — IN PROGRESS
 Goal: Usage limits server-enforced; first real revenue confirmed
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Supabase RLS for usage table | ⏳ Pending | CRITICAL — currently bypassable |
-| Paddle webhook handler | ⏳ Pending | /api/paddle-webhook Vercel function |
-| usageGuard.ts → Supabase read | ⏳ Pending | Replace local state with DB check |
+| PostHog analytics | ✅ DONE | analyticsService.ts — full funnel instrumented |
+| Landing page SEO | ✅ DONE | JSON-LD schema, KDP keywords, canonical URL |
+| Supabase RLS for usage table | ⏳ NEXT | CRITICAL — currently bypassable frontend-only |
+| Paddle webhook env vars | ⏳ USER ACTION | Add PADDLE_WEBHOOK_SECRET + SUPABASE_SERVICE_ROLE_KEY to Vercel |
+| PostHog env var | ⏳ USER ACTION | Add VITE_POSTHOG_KEY to Vercel env vars |
 | Upgrade modal at limit | ⏳ Pending | Trigger when free tier hit |
 | Welcome email on signup | ⏳ Pending | Resend or SendGrid |
 | Dashboard usage meters live | ⏳ Pending | Real data from Supabase |
@@ -139,8 +142,19 @@ Goal: Moat + retention; $500+ MRR
 - Gemini 1.x retired — updated to 2.x/3.x
 - POD Designer V3 mockup shapes
 
-### 2026-08-12 (Current — RESUME SESSION)
+### 2026-08-12 (Session 1 — RESUME)
 - Full project audit after 6-7 month gap
 - CLAUDE.md + PROGRESS.md + memory system created
 - Phase 1-5 roadmap established
-- Starting Phase 1 execution now
+- Phase 1 complete: auth fix, Gemini refresh, AI Disclosure Modal, usageGuard
+
+### 2026-08-14 (Session 2 — SPRINT)
+- Phase 2A: GenerationProgressBar.tsx — live step streaming
+- Phase 2B: OnboardingOverlay.tsx — first-run 4-step tour
+- Phase 2C: api/paddle-webhook.ts — HMAC-verified subscription sync
+- Phase 3A: analyticsService.ts — PostHog full funnel
+- Phase 3B: index.html SEO — JSON-LD schema, KDP keywords
+- GitHub remote fixed: innergit99/PUBLISHLAB.INK (was Artisan-AI)
+- Vercel account confirmed: vercel.com/artisan-ai-s-projects/artisanai
+- 6 commits pushed, all auto-deployed to publishlab.ink
+- Pending user actions: Supabase unpause + 3 Vercel env vars
