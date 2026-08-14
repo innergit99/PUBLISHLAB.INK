@@ -984,14 +984,16 @@ Output ONLY a valid JSON array: ["Title 1", "Title 2", "Title 3", "Title 4", "Ti
     return titles;
   }
 
-  async generateKDPBlueprint(project: KDPProject): Promise<any> {
+  async generateKDPBlueprint(project: KDPProject, onProgress?: (stepId: string) => void): Promise<any> {
     try {
       // Phase 1: Generate Story Outline
+      onProgress?.('outline');
       const outline = await this.generateStoryOutline(project);
 
       const { key, spec } = resolveGenreSpec(project.genre);
 
       // Phase 2: Create Blueprint with Outline
+      onProgress?.('blueprint');
       const blueprint = {
         id: `kdp_${Date.now()}`,
         timestamp: Date.now(),
@@ -1042,10 +1044,8 @@ Output ONLY a valid JSON array: ["Title 1", "Title 2", "Title 3", "Title 4", "Ti
         APLUS_CONTENT: this.initializeAplusModules(project.title)
       };
 
-      // Phase 3: Generate Back Cover Blurb (async, will update)
-      // Asynchronously generate blurb and hook it back in
-      // Fix: Await this correctly to ensure it's in the initial return if possible, 
-      // or at least ensure it's not a dangling promise in a mission-critical path.
+      // Phase 3: Generate Back Cover Blurb
+      onProgress?.('blurb');
       const blurb = await this.generateBackCoverBlurb(blueprint as any);
       blueprint.BACK_COVER_SPEC.blurb_text = blurb;
 

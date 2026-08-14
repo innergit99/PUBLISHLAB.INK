@@ -167,6 +167,30 @@ git push origin main
 
 ---
 
+## ⚡ SKILL-FIRST PROTOCOL (check BEFORE writing new code)
+
+> You have 172 Antigravity skills + 60 Claude skills. Use them. Building from scratch = token waste.
+
+| Task | Use Skill | Location |
+|------|-----------|----------|
+| Supabase RLS / SQL | `SupabaseArchitect` | `C:\Users\gauvi\.gemini\config\skills\SupabaseArchitect\` |
+| React + Tailwind new UI | `Stitch` | `C:\Users\gauvi\.gemini\config\skills\Stitch\` |
+| Bundle performance (1.88MB!) | `PerformanceTuner` | `C:\Users\gauvi\.gemini\config\skills\PerformanceTuner\` |
+| Conversion / pricing page | `CROAgent` | `C:\Users\gauvi\.gemini\config\skills\CROAgent\` |
+| Launch checklist | `shipping-and-launch` | `C:\Users\gauvi\.gemini\config\skills\shipping-and-launch\` |
+| SEO / meta tags | `SEOArchitect` | `C:\Users\gauvi\.gemini\config\skills\SEOArchitect\` |
+| Code review | `SeniorReviewer` | `C:\Users\gauvi\.gemini\config\skills\SeniorReviewer\` |
+| Security audit | `SecurityOfficer` | `C:\Users\gauvi\.gemini\config\skills\SecurityOfficer\` |
+| Paddle / billing API | `CommerceProtocol` | `C:\Users\gauvi\.gemini\config\skills\CommerceProtocol\` |
+| 3+ parallel streams | `SwarmOrchestrator` | `C:\Users\gauvi\.gemini\config\skills\SwarmOrchestrator\` |
+| Token running low | `TokenGuard` | `C:\Users\gauvi\.claude\skills\TokenGuard\` |
+| Past session decisions | `HermesBridge` | `C:\Users\gauvi\.gemini\config\skills\HermesBridge\` |
+| Codebase map | `/graphify` skill | `C:\Users\gauvi\.claude\skills\graphify\` |
+
+Full router: `C:\Users\gauvi\.gemini\config\skills\SKILL_ROUTER.md`
+
+---
+
 ## 🗺️ PHASE ROADMAP (see PROGRESS.md for live status)
 
 | Phase | Goal | ETA |

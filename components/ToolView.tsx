@@ -21,6 +21,7 @@ import { NicheRadarView } from './NicheRadarView';
 import { CharacterVault } from './CharacterVault';
 import { PODStyleCard } from './PODStyleCard';
 import { AIDisclosureModal } from './AIDisclosureModal';
+import { GenerationProgressBar, KDP_GENERATION_STEPS } from './GenerationProgressBar';
 import { UsageGuard } from '../usageGuard';
 import {
   ChevronLeft, Sparkles, Download, Loader2, ImageIcon, X, Rocket, Upload,
@@ -313,6 +314,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   const tool = TOOLS.find(t => t.id === toolType);
   const [prompt, setPrompt] = useState(initialPrompt || '');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStepId, setGenerationStepId] = useState<string | null>(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [showDisclosureModal, setShowDisclosureModal] = useState(false);
@@ -708,6 +710,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   const handleGenerateKDP = async () => {
     if (!kdpProject.title) return;
     setIsGenerating(true);
+    setGenerationStepId('outline');
     setError(null);
     try {
       if (isLokiMode) {
@@ -716,15 +719,17 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
         setLokiVariations(variations);
         setError("✅ Multiverse generated! Select your preferred timeline.");
       } else {
-        const blueprint = await gemini.generateKDPBlueprint(kdpProject);
+        const blueprint = await gemini.generateKDPBlueprint(kdpProject, setGenerationStepId);
         if (!blueprint || !blueprint.INTERIOR_CONTENT) throw new Error("Industrial Engine failure.");
         setKdpBlueprint(blueprint);
         setKdpStep('BLUEPRINT');
-        // Record usage AFTER successful generation
         UsageGuard.recordUsage('BOOK', blueprint.PROJECT_META?.title_working, { genre: kdpProject.genre });
       }
     } catch (e: any) { setError(e.message); }
-    finally { setIsGenerating(false); }
+    finally {
+      setIsGenerating(false);
+      setGenerationStepId(null);
+    }
   };
   const runNicheAnalysis = async () => {
     if (!kdpProject.genre) return;
@@ -3018,10 +3023,16 @@ h1, h2, h3 { page -break-after: avoid; }
                     </button>
                   </div>
 
-                  <button onClick={handleGenerateKDP} disabled={isGenerating || !kdpProject.title} className="w-full bg-indigo-600 hover:bg-indigo-500 py-8 rounded-[3rem] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 shadow-2xl transition-all border-b-12 border-indigo-900 active:translate-y-1">
+                  <button onClick={handleGenerateKDP} disabled={isGenerating || !kdpProject.title} className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 py-8 rounded-[3rem] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 shadow-2xl transition-all border-b-12 border-indigo-900 active:translate-y-1">
                     {isGenerating ? <Loader2 className="animate-spin" size={24} /> : <Rocket size={24} />}
                     <span>{isGenerating ? 'Industrial Engine Active...' : 'Initialize Book Run'}</span>
                   </button>
+
+                  <GenerationProgressBar
+                    isVisible={isGenerating && !isLokiMode}
+                    steps={KDP_GENERATION_STEPS}
+                    currentStepId={generationStepId}
+                  />
 
                   {/* LOKI VARIATION PICKER */}
                   {lokiVariations.length > 0 && (
