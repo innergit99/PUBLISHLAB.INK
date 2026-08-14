@@ -23,6 +23,7 @@ import { PODStyleCard } from './PODStyleCard';
 import { AIDisclosureModal } from './AIDisclosureModal';
 import { GenerationProgressBar, KDP_GENERATION_STEPS } from './GenerationProgressBar';
 import { UsageGuard } from '../usageGuard';
+import { analytics } from '../analyticsService';
 import {
   ChevronLeft, Sparkles, Download, Loader2, ImageIcon, X, Rocket, Upload,
   Search, Copy, CheckCircle, ZoomIn, ZoomOut, Move, Palette, Edit3,
@@ -712,6 +713,8 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     setIsGenerating(true);
     setGenerationStepId('outline');
     setError(null);
+    const startMs = Date.now();
+    analytics.generationStarted(kdpProject.genre, kdpProject.title);
     try {
       if (isLokiMode) {
         setError("🔥 Loki Multiverse Engine Engaging: Architecting parallel worlds...");
@@ -724,8 +727,16 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
         setKdpBlueprint(blueprint);
         setKdpStep('BLUEPRINT');
         UsageGuard.recordUsage('BOOK', blueprint.PROJECT_META?.title_working, { genre: kdpProject.genre });
+        analytics.generationCompleted(
+          kdpProject.genre,
+          blueprint.INTERIOR_CONTENT.length,
+          Date.now() - startMs
+        );
       }
-    } catch (e: any) { setError(e.message); }
+    } catch (e: any) {
+      analytics.generationFailed(kdpProject.genre, e.message);
+      setError(e.message);
+    }
     finally {
       setIsGenerating(false);
       setGenerationStepId(null);
@@ -922,6 +933,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
   const handleExportMS = (target: KDPTarget) => {
     if (!kdpBlueprint) return;
     if (isGenerating) return;
+    analytics.exportStarted(target);
     setPendingExportTarget(target);
     setShowDisclosureModal(true);
   };
@@ -1000,6 +1012,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
           setError(`✅ Print-Ready Manuscript PDF generated successfully!`);
         }
 
+        analytics.exportCompleted(target);
         setTimeout(() => {
           setError(null);
           setDownloadProgress(0);

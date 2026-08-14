@@ -14,6 +14,7 @@ import { ToolRouter } from './components/tools/ToolRouter';
 
 import { AuthModal } from './components/AuthModal';
 import { OnboardingOverlay } from './components/OnboardingOverlay';
+import { analytics } from './analyticsService';
 import { ToolType, GeneratedImage } from './types';
 import { gemini } from './geminiService';
 import { storage } from './storageService';
@@ -70,8 +71,16 @@ const App: React.FC = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
 
-      if (event === 'SIGNED_IN' && !localStorage.getItem('pl_onboarded')) {
-        setShowOnboarding(true);
+      if (event === 'SIGNED_IN' && session?.user) {
+        analytics.loggedIn(session.user.id, session.user.email ?? '');
+        if (!localStorage.getItem('pl_onboarded')) {
+          setShowOnboarding(true);
+          analytics.onboardingStarted();
+        }
+      }
+
+      if (event === 'SIGNED_OUT') {
+        analytics.loggedOut();
       }
 
       if (event === 'PASSWORD_RECOVERY') {
