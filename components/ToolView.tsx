@@ -23,6 +23,7 @@ import { PODStyleCard } from './PODStyleCard';
 import { AIDisclosureModal } from './AIDisclosureModal';
 import { GenerationProgressBar, KDP_GENERATION_STEPS } from './GenerationProgressBar';
 import { UsageGuard } from '../usageGuard';
+import { getCurrentTier } from '../paddleIntegration';
 import { analytics } from '../analyticsService';
 import {
   ChevronLeft, Sparkles, Download, Loader2, ImageIcon, X, Rocket, Upload,
@@ -710,6 +711,15 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
 
   const handleGenerateKDP = async () => {
     if (!kdpProject.title) return;
+
+    // Check usage tier before consuming AI credits
+    const tier = await getCurrentTier();
+    const gating = await UsageGuard.checkGating('BOOK', tier);
+    if (!gating.allowed) {
+      window.dispatchEvent(new CustomEvent('pl:upgrade-needed', { detail: { message: gating.reason } }));
+      return;
+    }
+
     setIsGenerating(true);
     setGenerationStepId('outline');
     setError(null);

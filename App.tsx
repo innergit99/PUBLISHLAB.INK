@@ -14,6 +14,7 @@ import { ToolRouter } from './components/tools/ToolRouter';
 
 import { AuthModal } from './components/AuthModal';
 import { OnboardingOverlay } from './components/OnboardingOverlay';
+import { UpgradeModal } from './components/UpgradeModal';
 import { analytics } from './analyticsService';
 import { ToolType, GeneratedImage } from './types';
 import { gemini } from './geminiService';
@@ -38,6 +39,10 @@ const App: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Upgrade modal — triggered by pl:upgrade-needed custom event from any tool
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [upgradeMessage, setUpgradeMessage] = useState<string | undefined>();
 
   const [diagStatus, setDiagStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
   const [diagMessage, setDiagMessage] = useState<string>('');
@@ -89,6 +94,18 @@ const App: React.FC = () => {
     });
 
     return () => subscription.unsubscribe();
+  }, []);
+
+  // Listen for upgrade-needed events dispatched by tool components
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ message?: string }>).detail;
+      setUpgradeMessage(detail?.message);
+      setShowUpgrade(true);
+      analytics.upgradePromptShown('limit-reached');
+    };
+    window.addEventListener('pl:upgrade-needed', handler);
+    return () => window.removeEventListener('pl:upgrade-needed', handler);
   }, []);
 
   useEffect(() => {
@@ -234,6 +251,14 @@ const App: React.FC = () => {
       <OnboardingOverlay
         isOpen={showOnboarding}
         onDismiss={() => setShowOnboarding(false)}
+      />
+
+      {/* UPGRADE MODAL — shown when free tier limit hit */}
+      <UpgradeModal
+        isOpen={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
+        limitMessage={upgradeMessage}
+        userEmail={user?.email}
       />
 
       {viewingInfographics ? (
