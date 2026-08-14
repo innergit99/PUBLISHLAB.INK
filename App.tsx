@@ -13,6 +13,7 @@ import TermsPage from './components/TermsPage';
 import { ToolRouter } from './components/tools/ToolRouter';
 
 import { AuthModal } from './components/AuthModal';
+import { OnboardingOverlay } from './components/OnboardingOverlay';
 import { ToolType, GeneratedImage } from './types';
 import { gemini } from './geminiService';
 import { storage } from './storageService';
@@ -35,6 +36,7 @@ const App: React.FC = () => {
   // Auth State
   const [user, setUser] = useState<any>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const [diagStatus, setDiagStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
   const [diagMessage, setDiagMessage] = useState<string>('');
@@ -67,6 +69,10 @@ const App: React.FC = () => {
     // Listen for changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
+
+      if (event === 'SIGNED_IN' && !localStorage.getItem('pl_onboarded')) {
+        setShowOnboarding(true);
+      }
 
       if (event === 'PASSWORD_RECOVERY') {
         setShowAuthModal(true);
@@ -213,6 +219,12 @@ const App: React.FC = () => {
         onSuccess={() => {
           setShowAuthModal(false);
         }}
+      />
+
+      {/* ONBOARDING — shown once after first sign-in */}
+      <OnboardingOverlay
+        isOpen={showOnboarding}
+        onDismiss={() => setShowOnboarding(false)}
       />
 
       {viewingInfographics ? (
