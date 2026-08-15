@@ -39,6 +39,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                     password,
                 });
                 if (error) throw error;
+                // Fire-and-forget — never block auth on email delivery
+                fetch('/api/send-welcome-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email }),
+                }).catch(() => {/* non-fatal */});
                 onSuccess();
                 onClose();
             } else if (mode === 'forgot') {
