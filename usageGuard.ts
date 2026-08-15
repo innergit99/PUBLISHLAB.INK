@@ -1,29 +1,11 @@
 import { supabase, getCurrentUser } from './supabaseClient';
 import { SUBSCRIPTION_TIERS, SubscriptionTier } from './paddleIntegration';
-import { ToolType } from './types';
 
 export interface UsageStats {
     booksThisMonth: number;
     imagesThisMonth: number;
     manuscriptsThisMonth: number;
 }
-
-// Maps ToolType values to usage categories
-const BOOK_TOOLS = new Set([
-    ToolType.TEXT_TO_IMAGE,    // KDP Book Lab uses this route in some flows
-    'KDP_BOOK_LAB',            // Direct string fallback
-    ToolType.COLORING_PAGES,
-]);
-
-const IMAGE_TOOLS = new Set([
-    ToolType.POD_MERCH,
-    ToolType.LOGO_CREATOR,
-    ToolType.PATTERN_MAKER,
-]);
-
-const MANUSCRIPT_TOOLS = new Set([
-    ToolType.MANUSCRIPT_DOCTOR,
-]);
 
 export class UsageGuard {
     /**
@@ -59,32 +41,18 @@ export class UsageGuard {
         const user = await getCurrentUser();
         if (!user) return { booksThisMonth: 0, imagesThisMonth: 0, manuscriptsThisMonth: 0 };
 
-        const startOfMonth = new Date();
-        startOfMonth.setDate(1);
-        startOfMonth.setHours(0, 0, 0, 0);
-
         try {
             const { data, error } = await supabase
-                .from('content')
-                .select('type, created_at')
-                .eq('user_id', user.id)
-                .gte('created_at', startOfMonth.toISOString());
+                .rpc('get_monthly_usage', { p_user_id: user.id });
 
             if (error) throw error;
 
-            const stats: UsageStats = { booksThisMonth: 0, imagesThisMonth: 0, manuscriptsThisMonth: 0 };
-
-            data?.forEach((item: { type: string }) => {
-                if (BOOK_TOOLS.has(item.type as ToolType) || item.type === 'BOOK') {
-                    stats.booksThisMonth++;
-                } else if (MANUSCRIPT_TOOLS.has(item.type as ToolType)) {
-                    stats.manuscriptsThisMonth++;
-                } else if (IMAGE_TOOLS.has(item.type as ToolType)) {
-                    stats.imagesThisMonth++;
-                }
-            });
-
-            return stats;
+            const row = data?.[0];
+            return {
+                booksThisMonth: Number(row?.books_this_month ?? 0),
+                imagesThisMonth: Number(row?.images_this_month ?? 0),
+                manuscriptsThisMonth: Number(row?.manuscripts_this_month ?? 0),
+            };
         } catch (e) {
             console.error('UsageGuard: Failed to fetch stats', e);
             // Fail closed — return high values so limits appear reached rather than bypassed
