@@ -1,6 +1,6 @@
 # PUBLISH LAB — LIVE PROGRESS TRACKER
 > Single source of truth for all active development. Update when phase tasks complete.
-> Last updated: 2026-08-14 | Phase 2 complete, Phase 3A/3B deployed
+> Last updated: 2026-08-15 | Phase 3C deployed — upgrade modal, usage gate, Vercel secrets added
 
 ---
 
@@ -47,10 +47,16 @@ Goal: Usage limits server-enforced; first real revenue confirmed
 |------|--------|-------|
 | PostHog analytics | ✅ DONE | analyticsService.ts — full funnel instrumented |
 | Landing page SEO | ✅ DONE | JSON-LD schema, KDP keywords, canonical URL |
-| Supabase RLS for usage table | ⏳ NEXT | CRITICAL — currently bypassable frontend-only |
-| Paddle webhook env vars | ⏳ USER ACTION | Add PADDLE_WEBHOOK_SECRET + SUPABASE_SERVICE_ROLE_KEY to Vercel |
-| PostHog env var | ⏳ USER ACTION | Add VITE_POSTHOG_KEY to Vercel env vars |
-| Upgrade modal at limit | ⏳ Pending | Trigger when free tier hit |
+| Upgrade modal at limit | ✅ DONE | UpgradeModal.tsx — tiered pricing, monthly/yearly, Paddle checkout |
+| Usage gate server check | ✅ DONE | handleGenerateKDP calls checkGating() + dispatches pl:upgrade-needed |
+| Supabase RLS SQL written | ✅ DONE | supabase_rls_setup.sql in repo root — needs applying |
+| SUPABASE_SERVICE_ROLE_KEY | ✅ DONE | Added to Vercel via API 2026-08-14 |
+| PADDLE_WEBHOOK_SECRET | ✅ DONE | Added to Vercel via API 2026-08-15 |
+| Vercel API access | ✅ DONE | Token vcp_7CAV... stored in memory — full programmatic access |
+| Supabase RLS applied | ⏳ NEXT | Run supabase_rls_setup.sql in SQL Editor — project may be paused |
+| Supabase project unpaused | ⏳ USER ACTION | supabase.com → project mctmtdjbjynzlunfictm → Resume |
+| PostHog env var | ⏳ USER ACTION | Create account posthog.com → get phc_* key → Claude adds to Vercel |
+| Paddle webhook destination | ⏳ USER ACTION | vendors.paddle.com → Notifications → New → https://publishlab.ink/api/paddle-webhook |
 | Welcome email on signup | ⏳ Pending | Resend or SendGrid |
 | Dashboard usage meters live | ⏳ Pending | Real data from Supabase |
 | Recent projects list | ⏳ Pending | From Supabase content table |
@@ -158,3 +164,15 @@ Goal: Moat + retention; $500+ MRR
 - Vercel account confirmed: vercel.com/artisan-ai-s-projects/artisanai
 - 6 commits pushed, all auto-deployed to publishlab.ink
 - Pending user actions: Supabase unpause + 3 Vercel env vars
+
+### 2026-08-15 (Session 3 — INFRA + MONETIZE)
+- Phase 3C: UpgradeModal.tsx — tiered pricing modal, monthly/yearly toggle, Paddle checkout
+- Phase 3C: handleGenerateKDP now gates on checkGating() — dispatches pl:upgrade-needed event
+- Phase 3C: App.tsx listens for pl:upgrade-needed → shows UpgradeModal with user email
+- Phase 3C: supabase_rls_setup.sql — RLS for profiles + content + get_monthly_usage() fn
+- Vercel API access: token vcp_7CAV... — programmatic env var management
+- SUPABASE_SERVICE_ROLE_KEY → Vercel ✅ (via API)
+- PADDLE_WEBHOOK_SECRET → Vercel ✅ (via API, secret: pdl_ntfset_01m00...)
+- VITE_POSTHOG_KEY → pending (user needs to create/recover PostHog account)
+- Supabase project still 401 — needs unpausing at supabase.com
+- Paddle webhook destination not yet created — needs vendors.paddle.com → Notifications → New
