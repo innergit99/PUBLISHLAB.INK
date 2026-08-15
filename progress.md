@@ -1,6 +1,6 @@
 # PUBLISH LAB — LIVE PROGRESS TRACKER
 > Single source of truth for all active development. Update when phase tasks complete.
-> Last updated: 2026-08-15 | Phase 3C deployed — upgrade modal, usage gate, Vercel secrets added
+> Last updated: 2026-08-15 | Session 4 — Supabase RLS applied, get_monthly_usage() live, UsageGuard → RPC
 
 ---
 
@@ -53,12 +53,13 @@ Goal: Usage limits server-enforced; first real revenue confirmed
 | SUPABASE_SERVICE_ROLE_KEY | ✅ DONE | Added to Vercel via API 2026-08-14 |
 | PADDLE_WEBHOOK_SECRET | ✅ DONE | Added to Vercel via API 2026-08-15 |
 | Vercel API access | ✅ DONE | Token vcp_7CAV... stored in memory — full programmatic access |
-| Supabase RLS applied | ⏳ NEXT | Run supabase_rls_setup.sql in SQL Editor — project may be paused |
-| Supabase project unpaused | ⏳ USER ACTION | supabase.com → project mctmtdjbjynzlunfictm → Resume |
-| PostHog env var | ⏳ USER ACTION | Create account posthog.com → get phc_* key → Claude adds to Vercel |
+| Supabase RLS applied | ✅ DONE | Applied via Management API — profiles + content RLS confirmed enabled |
+| Supabase project unpaused | ✅ DONE | Project ACTIVE_HEALTHY (was never paused — 401 was bad key format) |
+| PostHog env var | ✅ DONE | VITE_POSTHOG_KEY + VITE_POSTHOG_HOST added to Vercel 2026-08-15 |
 | Paddle webhook destination | ⏳ USER ACTION | vendors.paddle.com → Notifications → New → https://publishlab.ink/api/paddle-webhook |
+| get_monthly_usage() function | ✅ DONE | SECURITY DEFINER function live in Supabase, GRANT to authenticated |
+| Dashboard usage meters live | ✅ DONE | UsageGuard.getUsageStats() now calls get_monthly_usage() RPC — real DB data |
 | Welcome email on signup | ⏳ Pending | Resend or SendGrid |
-| Dashboard usage meters live | ⏳ Pending | Real data from Supabase |
 | Recent projects list | ⏳ Pending | From Supabase content table |
 
 ---
@@ -164,6 +165,14 @@ Goal: Moat + retention; $500+ MRR
 - Vercel account confirmed: vercel.com/artisan-ai-s-projects/artisanai
 - 6 commits pushed, all auto-deployed to publishlab.ink
 - Pending user actions: Supabase unpause + 3 Vercel env vars
+
+### 2026-08-15 (Session 4 — SUPABASE COMPLETE)
+- Supabase RLS confirmed applied (profiles ✅ content ✅) via Management API
+- get_monthly_usage() PostgreSQL function created (SECURITY DEFINER, GRANT authenticated)
+- UsageGuard.getUsageStats() upgraded → supabase.rpc('get_monthly_usage') — real server-side aggregation
+- Removed dead client-side aggregation code (BOOK_TOOLS/IMAGE_TOOLS/MANUSCRIPT_TOOLS sets)
+- Dashboard usage meters now pull live Supabase data via RPC
+- Pending user action: Paddle webhook destination at vendors.paddle.com
 
 ### 2026-08-15 (Session 3 — INFRA + MONETIZE)
 - Phase 3C: UpgradeModal.tsx — tiered pricing modal, monthly/yearly toggle, Paddle checkout
