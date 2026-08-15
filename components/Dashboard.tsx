@@ -7,9 +7,17 @@ import {
   Palette, Shirt, Box, PenTool, Scissors, Maximize, Grid2X2,
   TrendingUp, Sparkles, Zap, ArrowRight, Loader2, BarChart3, RotateCw,
   Search, ShieldCheck, Target, BookOpen, Rocket, FileEdit, Monitor,
-  ShieldAlert, Info
+  ShieldAlert, Info, Clock
 } from 'lucide-react';
 import { UsageMeter } from './UsageMeter';
+import { supabase, getCurrentUser } from '../supabaseClient';
+
+interface RecentProject {
+  id: string;
+  type: string;
+  title: string;
+  created_at: string;
+}
 
 interface DashboardProps {
   onNavigate: (tab: ToolType, prompt?: string) => void;
@@ -81,6 +89,22 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, isDarkMode }) => {
   const [intent, setIntent] = useState<UserIntent>(UserIntent.IDLE);
   const [uiState, setUiState] = useState<DashboardUIState>(DashboardUIState.DEFAULT);
   const [activeProject, setActiveProject] = useState<any>(null);
+  const [recentProjects, setRecentProjects] = useState<RecentProject[]>([]);
+
+  useEffect(() => {
+    const loadRecent = async () => {
+      const user = await getCurrentUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from('content')
+        .select('id, type, title, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      if (data) setRecentProjects(data as RecentProject[]);
+    };
+    loadRecent();
+  }, []);
 
   useEffect(() => {
     // RESOLVE INTENT ON MOUNT
@@ -321,6 +345,59 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, isDarkMode }) => {
             );
           })}
         </div>
+
+        {/* RECENT GENERATIONS */}
+        {recentProjects.length > 0 && (
+          <div className="mt-32 space-y-12">
+            <div className="flex items-center gap-8">
+              <h2 className={`text-2xl font-black uppercase italic tracking-[0.3em] ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                🕐 Recent Work
+              </h2>
+              <div className={`h-px flex-1 ${isDarkMode ? 'bg-white/5' : 'bg-slate-200'}`} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+              {recentProjects.map((proj) => {
+                const toolDef = TOOLS.find(t => t.id === proj.type);
+                const Icon = (toolDef && IconMap[toolDef.icon]) || Sparkles;
+                const relTime = (() => {
+                  const diff = Date.now() - new Date(proj.created_at).getTime();
+                  const h = Math.floor(diff / 3600000);
+                  const d = Math.floor(diff / 86400000);
+                  if (d > 0) return `${d}d ago`;
+                  if (h > 0) return `${h}h ago`;
+                  return 'Just now';
+                })();
+                return (
+                  <button
+                    key={proj.id}
+                    onClick={() => proj.type && handleToolClick(proj.type as ToolType)}
+                    className={`group p-6 rounded-3xl border text-left transition-all duration-300 hover:-translate-y-1
+                      ${isDarkMode
+                        ? 'bg-slate-800/60 border-white/10 hover:border-indigo-500/40 hover:bg-slate-800'
+                        : 'bg-white border-slate-200 hover:border-indigo-300 shadow-sm hover:shadow-md'}`}
+                  >
+                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center mb-4
+                      ${isDarkMode ? 'bg-indigo-600/20 text-indigo-400' : 'bg-indigo-50 text-indigo-600'}`}>
+                      <Icon size={18} />
+                    </div>
+                    <p className={`text-xs font-black uppercase tracking-widest mb-1 truncate
+                      ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>
+                      {toolDef?.name ?? proj.type}
+                    </p>
+                    <p className={`text-sm font-bold truncate mb-3
+                      ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                      {proj.title}
+                    </p>
+                    <div className={`flex items-center gap-1.5 text-[10px] font-bold
+                      ${isDarkMode ? 'text-slate-600' : 'text-slate-400'}`}>
+                      <Clock size={10} /> {relTime}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
