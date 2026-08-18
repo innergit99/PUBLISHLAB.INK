@@ -56,11 +56,11 @@ Goal: Usage limits server-enforced; first real revenue confirmed
 | Supabase RLS applied | ✅ DONE | Applied via Management API — profiles + content RLS confirmed enabled |
 | Supabase project unpaused | ✅ DONE | Project ACTIVE_HEALTHY (was never paused — 401 was bad key format) |
 | PostHog env var | ✅ DONE | VITE_POSTHOG_KEY + VITE_POSTHOG_HOST added to Vercel 2026-08-15 |
-| Paddle webhook destination | ⏳ USER ACTION | vendors.paddle.com → Notifications → New → https://publishlab.ink/api/paddle-webhook |
+| Paddle webhook destination | ✅ DONE | Active at vendors.paddle.com — 56 events, PADDLE_WEBHOOK_SECRET in Vercel |
 | get_monthly_usage() function | ✅ DONE | SECURITY DEFINER function live in Supabase, GRANT to authenticated |
 | Dashboard usage meters live | ✅ DONE | UsageGuard.getUsageStats() now calls get_monthly_usage() RPC — real DB data |
-| Welcome email on signup | ⏳ Pending | Resend or SendGrid |
-| Recent projects list | ⏳ Pending | From Supabase content table |
+| Welcome email on signup | ✅ DONE | api/send-welcome-email.ts — Resend REST, fire-and-forget from AuthModal |
+| Recent projects list | ✅ DONE | Dashboard "Recent Work" panel — last 5 from content table, links back to tool |
 
 ---
 

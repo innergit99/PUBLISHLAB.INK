@@ -97,6 +97,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             body: JSON.stringify({
                 from: FROM_ADDRESS,
                 to: [email],
+                reply_to: 'publishlabink@gmail.com',
                 subject: 'Welcome to Publish Lab — your AI book studio is ready',
                 html: welcomeHtml(email),
             }),
