@@ -549,15 +549,14 @@ No explanations. No quotes.`;
 
     // UPDATED AUG 2026: Ordered by reliability. Falls through on 404 automatically.
     // Gemini 1.x/1.5 RETIRED. gemini-2.0-flash RETIRED March 2026.
+    // gemini-2.5-pro RETIRED — API redirects to gemini-3.1-pro-preview.
     // Verify at: https://ai.google.dev/gemini-api/docs/models
     const models = [
-      'gemini-2.5-flash',            // GA — most stable as of mid-2026
-      'gemini-2.5-pro',              // GA — highest quality
-      'gemini-2.5-flash-lite',       // GA — cost efficient
-      'gemini-3-flash',              // GA — if released by runtime date
+      'gemini-2.5-flash',            // GA — primary workhorse
+      'gemini-2.5-flash-lite',       // GA — fast fallback
+      'gemini-3.1-pro-preview',      // Quality fallback (replaces retired gemini-2.5-pro)
+      'gemini-3-flash',              // If GA by runtime date
       'gemini-3-flash-preview',      // Preview fallback
-      'gemini-3-pro-preview',        // Preview fallback
-      'gemini-2.0-flash-lite',       // Last resort — may be retired
     ];
 
     let lastError: any;
@@ -568,7 +567,7 @@ No explanations. No quotes.`;
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+        const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s — book gen needs time
 
         const response = await fetch(url, {
           method: "POST",
