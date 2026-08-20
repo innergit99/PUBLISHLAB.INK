@@ -92,7 +92,7 @@ interface ToolViewProps {
   toolType: ToolType;
   initialPrompt?: string | null;
   onBack: () => void;
-  onImageGenerated: (image: GeneratedImage) => void;
+  onImageGenerated?: (image: GeneratedImage) => void;
   onNavigate: (tab: ToolType, prompt?: string) => void;
   isDarkMode: boolean;
 }
@@ -780,7 +780,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     if (!kdpBlueprint) return;
     if (showStatus) setIsSaving(true);
     try {
-      await onImageGenerated({
+      await onImageGenerated?.({
         id: kdpBlueprint.id,
         url: kdpBlueprint.COVER_SPEC.ebook_url || 'https://picsum.photos/seed/kdp/400/600',
         prompt: `Master Project: ${kdpBlueprint.PROJECT_META.title_working}`,
@@ -819,7 +819,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     try {
       const url = await gemini.generateImageForModule(ch.visualPrompt, 'KDP_INTERIOR', {
         colorMode: kdpProject.interiorColor,
-        title: ch.chapterTitle || `Chapter ${idx + 1}`,
+        title: ch.title || `Chapter ${idx + 1}`,
         genre: kdpProject.genre
       });
       const n = [...kdpBlueprint.INTERIOR_CONTENT];
@@ -1169,12 +1169,7 @@ const ToolViewInner: React.FC<ToolViewProps> = ({ toolType, initialPrompt, onBac
     // 3. Generate Rich SEO Data (Mocking the AI return for speed/reliability)
     // CRITICAL: Use Smart Fallback if AI is offline to avoid "Same Text" issue
     let mockDossier;
-    try {
-      mockDossier = await gemini.generateSEOMetadata(prompt); // Attempt real AI
-    } catch {
-      // Fallback to Smart Randomizer
-      mockDossier = gemini.generateFallbackSEO(prompt);
-    }
+    mockDossier = gemini.generateFallbackSEO(prompt);
 
     // Safety check just in case
     if (!mockDossier || !mockDossier.listingDossiers) {

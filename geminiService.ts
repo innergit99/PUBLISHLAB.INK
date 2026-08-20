@@ -2742,7 +2742,7 @@ AVOID: Any imagery that could interfere with barcode scanning`;
     TITLE: ${blueprint.PROJECT_META.title_working}
     GENRE: ${blueprint.PROJECT_META.primary_genre}
     USP: ${blueprint.bookLabInspiration?.uniqueSellingPoint || "Industrial Quality"}
-    CHAPTERS: ${blueprint.INTERIOR_CONTENT.map(c => c.chapterTitle).join(', ')}
+    CHAPTERS: ${blueprint.INTERIOR_CONTENT.map(c => c.title).join(', ')}
     
     GUIDELINES:
     - Use AIDA framework (Attention, Interest, Desire, Action).

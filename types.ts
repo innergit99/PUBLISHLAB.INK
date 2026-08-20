@@ -62,7 +62,7 @@ export interface PODStyle {
 }
 
 export type MockupType =
-  | 'STANDARD_TEE' | 'LARGE_PRINT_TEE' | 'HAT' | 'STICKER' | 'PHONE_CASE'
+  | 'STANDARD_TEE' | 'LARGE_PRINT_TEE' | 'HAT' | 'BASEBALL_CAP' | 'STICKER' | 'PHONE_CASE'
   | 'DESK_MAT' | 'MOUSE_PAD' | 'PILLOW' | 'TOTE_BAG' | 'MUG'
   | 'POSTER' | 'CANVAS' | 'GREETING_CARD' | 'LAPTOP_SKIN' | 'POUCH'
   | 'DRESS' | 'SCARF' | 'DUVET' | 'SHOWER_CURTAIN' | 'JOURNAL'
@@ -188,6 +188,11 @@ export interface KDPBlueprint {
   };
   QA_CHECKLIST: string[];
   APLUS_CONTENT?: KDPAplusModule[];
+  bookLabInspiration?: {
+    basePrompt: string;
+    subNiches: string[];
+    uniqueSellingPoint: string;
+  };
 
   // Advanced Skills Data (Optional)
   SKILLS_DATA?: {

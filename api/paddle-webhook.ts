@@ -80,10 +80,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       // Look up Supabase user by email
-      const { data: users, error: userErr } = await supabase.auth.admin.listUsers();
-      if (userErr) throw userErr;
+      // Avoid destructuring to preserve discriminated union narrowing
+      const usersRes = await supabase.auth.admin.listUsers();
+      if (usersRes.error) throw usersRes.error;
 
-      const user = users.users.find(u => u.email === customerEmail);
+      // Cast needed: SDK types error branch as `users: []` (empty tuple), causing u: never
+      const user = (usersRes.data.users as Array<{ id: string; email?: string }>).find(u => u.email === customerEmail);
       if (!user) {
         console.error(`paddle-webhook: no Supabase user for email ${customerEmail}`);
         return res.status(200).json({ received: true, skipped: 'user not found' });

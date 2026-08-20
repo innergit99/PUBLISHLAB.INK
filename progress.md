@@ -166,6 +166,15 @@ Goal: Moat + retention; $500+ MRR
 - 6 commits pushed, all auto-deployed to publishlab.ink
 - Pending user actions: Supabase unpause + 3 Vercel env vars
 
+### 2026-08-19 (Session 6 — RESEND + BUGFIX PREP)
+- Resend domain: DKIM Verified ✅, SPF Pending, MX will fail (Namecheap limitation — acceptable)
+- GitHub repo confirmed PUBLIC — keys safe in Vercel env vars
+- Identified 3 TypeScript bugs to fix before Phase 4 (Gemini audit):
+  - Missing await in ManuscriptUploader.tsx:85 (analyzeContext)
+  - email property on never in paddle-webhook.ts
+  - BASEBALL_CAP missing from MockupType map in ToolView.tsx
+- Next: fix TS bugs → Phase 4 launch (example showcase, Reddit, ProductHunt)
+
 ### 2026-08-18 (Session 5 — PHASE 3 COMPLETE)
 - Phase 3 fully done: welcome email (Resend), recent projects panel, Paddle webhook active
 - RESEND_API_KEY added to Vercel; publishlab.ink DNS records added to Namecheap

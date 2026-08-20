@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useMemo } from 'react';
-import { ToolType, GeneratedImage } from '../types';
+import { ToolType, GeneratedImage } from '../../types';
 import { toolRegistry } from './registry';
 import { LoadingState } from './shared/LoadingState';
 import { ToolContainer } from './shared/ToolContainer';

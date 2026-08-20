@@ -82,7 +82,7 @@ export const ManuscriptUploader: React.FC<ManuscriptUploaderProps> = ({ onComple
 
             // Analyze context
             setStatus('analyzing');
-            const profile = manuscriptDoctorService.analyzeContext(text, selectedGenre || undefined);
+            const profile = await manuscriptDoctorService.analyzeContext(text, selectedGenre || undefined);
             setContextProfile(profile);
             setProgress(50);
 

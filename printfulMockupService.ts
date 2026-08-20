@@ -25,6 +25,7 @@ const PRODUCT_VARIANTS: Record<MockupType, number[]> = {
   STANDARD_TEE: [4012, 4013, 4014, 4015, 4016], // Unisex Jersey Short Sleeve Tee
   LARGE_PRINT_TEE: [4012, 4013, 4014, 4015, 4016],
   HAT: [7728, 7729, 7730], // Snapback Hat
+  BASEBALL_CAP: [11103, 11104, 11105], // Baseball Cap
   STICKER: [10140, 10141, 10142], // Die-cut stickers
   PHONE_CASE: [8085, 8086, 8087], // iPhone cases
   DESK_MAT: [11047], // Desk mat
@@ -66,6 +67,7 @@ const MOCKUP_TEMPLATES: Record<MockupType, {
   STANDARD_TEE: { variantId: 4012, placement: 'front', color: 'white' },
   LARGE_PRINT_TEE: { variantId: 4012, placement: 'front', color: 'white' },
   HAT: { variantId: 7728, placement: 'front', color: 'black' },
+  BASEBALL_CAP: { variantId: 11103, placement: 'front', color: 'black' },
   STICKER: { variantId: 10140, placement: 'default', color: 'white' },
   PHONE_CASE: { variantId: 8085, placement: 'default', color: 'black' },
   DESK_MAT: { variantId: 11047, placement: 'default', color: 'black' },

@@ -102,7 +102,7 @@ const App: React.FC = () => {
       const detail = (e as CustomEvent<{ message?: string }>).detail;
       setUpgradeMessage(detail?.message);
       setShowUpgrade(true);
-      analytics.upgradePromptShown('limit-reached');
+      analytics.upgradePromptShown('limit-reached', 'free');
     };
     window.addEventListener('pl:upgrade-needed', handler);
     return () => window.removeEventListener('pl:upgrade-needed', handler);
